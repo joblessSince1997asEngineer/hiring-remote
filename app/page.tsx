@@ -1,6 +1,5 @@
 import Link from 'next/link'
-import { Suspense } from 'react'
-import { SearchForm } from '@/components/SearchFormV2'
+import ClientSearchForm from '@/components/ClientSearchForm'
 
 export default function Home() {
   const jobs = [
@@ -14,12 +13,8 @@ export default function Home() {
         <div className="container">
           <h1>Find your next big opportunity</h1>
           <p>Join top companies worldwide. Work from anywhere.</p>
-          
           <div className="search-area">
-            {/* Suspense is officially the allowed way to handle useSearchParams in Next.js 15 */}
-            <Suspense fallback={<div className="text-white text-center">Loading search options...</div>}>
-              <SearchForm />
-            </Suspense>
+            <ClientSearchForm />
           </div>
         </div>
       </section>

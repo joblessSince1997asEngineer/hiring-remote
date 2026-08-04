@@ -1,4 +1,5 @@
 import Link from 'next/link'
+import { SearchForm } from '@/components/SearchFormV2' // This connects the dropdown to the page!
 
 export default function Home() {
   const jobs = [
@@ -14,11 +15,9 @@ export default function Home() {
           <h1>Find your next big opportunity</h1>
           <p>Join top companies worldwide. Work from anywhere.</p>
           
+          {/* This is where the dynamic, full-country dropdown now lives */}
           <div className="search-area">
-            <input type="text" placeholder="Job title, keywords, or company" />
-            <select><option>Location</option></select>
-            <select><option>Job Type</option></select>
-            <button className="search-btn">Filters</button>
+            <SearchForm />
           </div>
         </div>
       </section>

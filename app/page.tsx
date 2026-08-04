@@ -1,5 +1,6 @@
 import Link from 'next/link'
-import { SearchForm } from '@/components/SearchFormV2' // This connects the dropdown to the page!
+import { Suspense } from 'react' // <--- NEW IMPORT
+import { SearchForm } from '@/components/SearchFormV2'
 
 export default function Home() {
   const jobs = [
@@ -15,9 +16,11 @@ export default function Home() {
           <h1>Find your next big opportunity</h1>
           <p>Join top companies worldwide. Work from anywhere.</p>
           
-          {/* This is where the dynamic, full-country dropdown now lives */}
           <div className="search-area">
-            <SearchForm />
+            {/* THIS SUSPENSE FIXES THE BUILD CRASH */}
+            <Suspense fallback={<div>Loading search...</div>}>
+              <SearchForm />
+            </Suspense>
           </div>
         </div>
       </section>

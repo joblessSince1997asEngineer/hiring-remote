@@ -3,7 +3,13 @@ import { useActionState } from 'react'
 import { postJob } from '@/app/actions'
 
 export function PostJobForm() {
-  const [state, action, pending] = useActionState(postJob, null)
+  // Wrapper to match React 19's useActionState signature: (prevState, formData)
+  const postJobWithState = async (_prevState: any, formData: FormData) => {
+    return postJob(formData)
+  }
+
+  const [state, action, pending] = useActionState(postJobWithState, null)
+
   return (
     <form action={action} className="space-y-4">
       <input name="title" placeholder="Job Title" required className="w-full p-3 border rounded-lg" />

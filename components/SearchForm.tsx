@@ -14,7 +14,7 @@ const COUNTRIES = [
   "Haiti", "Honduras", "Hungary",
   "Iceland", "India", "Indonesia", "Iran", "Iraq", "Ireland", "Israel", "Italy",
   "Jamaica", "Japan", "Jordan",
-  "Kazakhstan", "Kenya", "Kiribati", "Korea, South", "Kuwait", "Kyrgyzstan",
+  "Kazakhstan", "Kenya", "Kiribati", "Korea South", "Kuwait", "Kyrgyzstan",
   "Laos", "Latvia", "Lebanon", "Lesotho", "Liberia", "Libya", "Liechtenstein", "Lithuania", "Luxembourg",
   "Madagascar", "Malawi", "Malaysia", "Maldives", "Mali", "Malta", "Marshall Islands", "Mauritania", "Mauritius", "Mexico", "Micronesia", "Moldova", "Monaco", "Mongolia", "Montenegro", "Morocco", "Mozambique", "Myanmar",
   "Namibia", "Nauru", "Nepal", "Netherlands", "New Zealand", "Nicaragua", "Niger", "Nigeria", "North Macedonia", "Norway",
@@ -52,7 +52,6 @@ export function SearchForm() {
         style={{ padding: '12px', flex: 1, border: '1px solid #d1d5db', borderRadius: '6px' }} 
       />
       <select name="location" defaultValue={params.get('location') || ''} style={{ padding: '12px', border: '1px solid #d1d5db', borderRadius: '6px' }}>
-        {/* Loops through every country in the array */}
         {COUNTRIES.map((country) => (
           <option key={country} value={country}>{country}</option>
         ))}

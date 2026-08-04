@@ -1,10 +1,6 @@
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
-
-// This disables Server-Side Rendering for the search bar completely.
-const SearchForm = dynamic(() => import('@/components/SearchFormV2'), { 
-  ssr: false 
-})
+import { Suspense } from 'react'
+import { SearchForm } from '@/components/SearchFormV2'
 
 export default function Home() {
   const jobs = [
@@ -18,8 +14,12 @@ export default function Home() {
         <div className="container">
           <h1>Find your next big opportunity</h1>
           <p>Join top companies worldwide. Work from anywhere.</p>
+          
           <div className="search-area">
-            <SearchForm />
+            {/* Suspense is officially the allowed way to handle useSearchParams in Next.js 15 */}
+            <Suspense fallback={<div className="text-white text-center">Loading search options...</div>}>
+              <SearchForm />
+            </Suspense>
           </div>
         </div>
       </section>

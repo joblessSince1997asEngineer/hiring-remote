@@ -1,6 +1,10 @@
 import Link from 'next/link'
-import { Suspense } from 'react' // <--- NEW IMPORT
-import { SearchForm } from '@/components/SearchFormV2'
+import dynamic from 'next/dynamic'
+
+// This disables Server-Side Rendering for the search bar completely.
+const SearchForm = dynamic(() => import('@/components/SearchFormV2'), { 
+  ssr: false 
+})
 
 export default function Home() {
   const jobs = [
@@ -10,22 +14,16 @@ export default function Home() {
 
   return (
     <main>
-      {/* Blue Hero Section */}
       <section className="hero">
         <div className="container">
           <h1>Find your next big opportunity</h1>
           <p>Join top companies worldwide. Work from anywhere.</p>
-          
           <div className="search-area">
-            {/* THIS SUSPENSE FIXES THE BUILD CRASH */}
-            <Suspense fallback={<div>Loading search...</div>}>
-              <SearchForm />
-            </Suspense>
+            <SearchForm />
           </div>
         </div>
       </section>
 
-      {/* Job Cards Section */}
       <section className="container job-section">
         <div className="job-header">
           <h2 style={{fontSize: '24px', fontWeight: 'bold'}}>Latest Remote Jobs</h2>

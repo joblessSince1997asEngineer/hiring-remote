@@ -30,18 +30,32 @@ export default function JobsList({ initialJobs }: { initialJobs: any[] }) {
           <div style={{ backgroundColor: 'white', padding: '12px', borderRadius: '16px', display: 'flex', gap: '12px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)', flexWrap: 'wrap' }}>
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px', padding: '0 12px', borderRight: '1px solid #e2e8f0' }}>
               <Search color="#94a3b8" size={20} />
-              <input type="text" placeholder="Job title, keywords, or company" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ border: 'none', outline: 'none', width: '100%', fontSize: '16px' }} />
+              <input type="text" placeholder="Job title, keywords, or company" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ border: 'none', outline: 'none', width: '100%', fontSize: '16px', color: '#1e293b' }} />
             </div>
             <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px', padding: '0 12px' }}>
               <MapPin color="#94a3b8" size={20} />
-              <select value={region} onChange={(e) => setRegion(e.target.value)} style={{ border: 'none', outline: 'none', width: '100%', fontSize: '16px', background: 'transparent', cursor: 'pointer' }}>
-                <option value="">Any Region</option>
-                <option value="Worldwide">Worldwide</option>
-                <option value="USA">USA</option>
-                <option value="UK">UK</option>
-                <option value="EMEA">EMEA</option>
-                <option value="APAC">APAC</option>
-              </select>
+             <select 
+  value={region} 
+  onChange={(e) => setRegion(e.target.value)} 
+  style={{ 
+    border: 'none', 
+    outline: 'none', 
+    width: '100%', 
+    fontSize: '16px', 
+    backgroundColor: 'white',
+    color: '#1e293b', // <--- THIS FIXES THE INVISIBLE TEXT
+    cursor: 'pointer',
+    appearance: 'auto',
+    padding: '4px 0'
+  }}
+>
+  <option value="">Any Region</option>
+  <option value="Worldwide">Worldwide</option>
+  <option value="USA">USA</option>
+  <option value="UK">UK</option>
+  <option value="EMEA">EMEA</option>
+  <option value="APAC">APAC</option>
+</select>
             </div>
             <button onClick={handleSearch} style={{ backgroundColor: 'black', color: 'white', border: 'none', padding: '12px 32px', borderRadius: '9999px', fontWeight: '600', fontSize: '16px', cursor: 'pointer' }}>Search Jobs</button>
           </div>

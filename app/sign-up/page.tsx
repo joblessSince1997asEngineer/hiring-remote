@@ -8,87 +8,92 @@ export default function SignUpPage() {
   const [role, setRole] = useState<'hiring' | 'candidate'>('hiring')
 
   return (
-    <div className="flex min-h-screen bg-white">
-      {/* LEFT SIDE - Form */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 lg:px-24 bg-[#fcfcfc]">
-        <div className="max-w-md mx-auto w-full">
+    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+      
+      {/* LEFT SIDE - The Form */}
+      <div style={{ width: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 60px', backgroundColor: '#fcfcfc' }}>
+        <div style={{ maxWidth: '400px', margin: '0 auto', width: '100%' }}>
           
-          {/* Logo - Yellow/Orange accent per your first screenshot */}
-          <div className="flex items-center gap-2 mb-10">
-            <div className="w-10 h-10 rounded-full bg-[#f59e0b] flex items-center justify-center text-white">
-              <Building2 size={20} className="fill-current" />
+          {/* Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '40px' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+              <Building2 size={20} />
             </div>
-            <span className="text-xl font-bold tracking-tight">Remote Hiring</span>
+            <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#0f172a' }}>Remote Hiring</span>
           </div>
 
           {/* Title */}
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Create an account</h1>
-          <p className="text-slate-500 mb-8">Choose your account type to get started.</p>
+          <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: '#0f172a', marginBottom: '8px' }}>Create an account</h1>
+          <p style={{ color: '#6b7280', marginBottom: '32px' }}>Choose your account type to get started.</p>
 
-          {/* Role Selector - I'm Hiring vs Candidate */}
-          <div className="grid grid-cols-2 gap-4 mb-8">
+          {/* Role Selector */}
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '32px' }}>
             <button
               onClick={() => setRole('hiring')}
-              className={`flex flex-col items-center justify-center gap-1 p-4 rounded-xl border-2 transition-colors ${
-                role === 'hiring'
-                  ? 'border-[#f59e0b] bg-[#fffbeb] text-[#f59e0b]'
-                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-              }`}
+              style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                padding: '20px', borderRadius: '12px', border: role === 'hiring' ? '2px solid #f59e0b' : '1px solid #e5e7eb',
+                backgroundColor: role === 'hiring' ? '#fffbeb' : 'white', color: role === 'hiring' ? '#f59e0b' : '#475569',
+                cursor: 'pointer'
+              }}
             >
-              <Building2 size={24} />
-              <span className="text-sm font-medium">I'm hiring</span>
+              <Building2 size={28} />
+              <span style={{ fontSize: '14px', fontWeight: '500' }}>I'm hiring</span>
             </button>
             <button
               onClick={() => setRole('candidate')}
-              className={`flex flex-col items-center justify-center gap-1 p-4 rounded-xl border-2 transition-colors ${
-                role === 'candidate'
-                  ? 'border-[#f59e0b] bg-[#fffbeb] text-[#f59e0b]'
-                  : 'border-slate-200 bg-white text-slate-600 hover:bg-slate-50'
-              }`}
+              style={{
+                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px',
+                padding: '20px', borderRadius: '12px', border: role === 'candidate' ? '2px solid #f59e0b' : '1px solid #e5e7eb',
+                backgroundColor: role === 'candidate' ? '#fffbeb' : 'white', color: role === 'candidate' ? '#f59e0b' : '#475569',
+                cursor: 'pointer'
+              }}
             >
-              <User size={24} />
-              <span className="text-sm font-medium">I'm a candidate</span>
+              <User size={28} />
+              <span style={{ fontSize: '14px', fontWeight: '500' }}>I'm a candidate</span>
             </button>
           </div>
 
           {/* Inputs */}
-          <form className="space-y-4">
+          <form style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Company Name</label>
+              <label style={{ display: 'block', fontWeight: '600', color: '#334155', marginBottom: '6px', fontSize: '14px' }}>Company Name</label>
               <input 
                 type="text" 
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b] outline-none transition-all bg-white" 
                 placeholder="Enter your company name"
+                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px' }}
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Work Email</label>
+              <label style={{ display: 'block', fontWeight: '600', color: '#334155', marginBottom: '6px', fontSize: '14px' }}>Work Email</label>
               <input 
                 type="email" 
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b] outline-none transition-all bg-white" 
                 placeholder="Enter your work email"
+                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px' }}
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
+              <label style={{ display: 'block', fontWeight: '600', color: '#334155', marginBottom: '6px', fontSize: '14px' }}>Password</label>
               <input 
                 type="password" 
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-[#f59e0b] focus:ring-1 focus:ring-[#f59e0b] outline-none transition-all bg-white" 
                 placeholder="Enter your password"
+                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px' }}
               />
             </div>
 
             <button 
               type="submit"
-              className="w-full mt-6 bg-black text-white py-3.5 rounded-full font-semibold hover:bg-slate-800 transition-colors"
+              style={{
+                marginTop: '16px', width: '100%', backgroundColor: 'black', color: 'white', padding: '16px',
+                borderRadius: '9999px', fontWeight: '600', fontSize: '16px', border: 'none', cursor: 'pointer'
+              }}
             >
               Create Account
             </button>
 
-            {/* Link to Log In */}
-            <p className="text-center text-sm text-slate-500 mt-6">
+            <p style={{ textAlign: 'center', fontSize: '14px', color: '#6b7280', marginTop: '16px' }}>
               Already have an account?{' '}
-              <Link href="/login" className="text-[#f59e0b] font-medium hover:underline">
+              <Link href="/login" style={{ color: '#f59e0b', fontWeight: '500', textDecoration: 'none' }}>
                 Log in
               </Link>
             </p>
@@ -96,13 +101,14 @@ export default function SignUpPage() {
         </div>
       </div>
 
-      {/* RIGHT SIDE - Dark Hero */}
-      <div className="hidden lg:flex w-1/2 bg-[#0f172a] text-white flex-col justify-center px-24">
-        <h2 className="text-4xl font-bold mb-4">Build your dream team.</h2>
-        <p className="text-slate-300 text-lg leading-relaxed max-w-md">
+      {/* RIGHT SIDE - The Dark Hero */}
+      <div style={{ width: '50%', backgroundColor: '#0f172a', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 80px' }}>
+        <h2 style={{ fontSize: '42px', fontWeight: 'bold', marginBottom: '16px' }}>Build your dream team.</h2>
+        <p style={{ color: '#94a3b8', fontSize: '18px', lineHeight: '1.6', maxWidth: '400px' }}>
           Access the top 1% of global talent with our comprehensive remote hiring platform.
         </p>
       </div>
+
     </div>
   )
 }

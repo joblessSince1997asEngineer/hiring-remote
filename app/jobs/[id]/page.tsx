@@ -1,6 +1,6 @@
-import { ApplyForm } from '@/components/ApplyForm'
 import { getJob } from '@/lib/queries'
 import { notFound } from 'next/navigation'
+import LongApplicationForm from '@/components/LongApplicationForm'
 
 export default async function JobDetailPage({ params }: { params: { id: string } }) {
   const job = await getJob(params.id)
@@ -14,7 +14,7 @@ export default async function JobDetailPage({ params }: { params: { id: string }
         <div className="bg-slate-50 p-6 rounded-xl mb-8 whitespace-pre-wrap leading-relaxed">
           {job.description}
         </div>
-        <ApplyForm jobId={job.id} />
+        <LongApplicationForm jobId={job.id} />
       </div>
     </div>
   )

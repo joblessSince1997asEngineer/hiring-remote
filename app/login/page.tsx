@@ -1,62 +1,60 @@
 'use client'
 
+import { Building2 } from 'lucide-react'
 import Link from 'next/link'
 
 export default function LoginPage() {
   return (
-    <div className="flex min-h-screen bg-white">
-      {/* LEFT SIDE - Login Form */}
-      <div className="w-full lg:w-1/2 flex flex-col justify-center px-8 sm:px-16 lg:px-24 bg-[#fcfcfc]">
-        <div className="max-w-md mx-auto w-full">
+    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif' }}>
+      
+      {/* LEFT SIDE - The Form */}
+      <div style={{ width: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 60px', backgroundColor: '#fcfcfc' }}>
+        <div style={{ maxWidth: '400px', margin: '0 auto', width: '100%' }}>
           
-          {/* Logo using Raw SVG to avoid import errors */}
-          <div className="flex items-center gap-2 mb-10">
-            <div className="w-10 h-10 rounded-full bg-[#2563eb] flex items-center justify-center text-white">
-              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <path d="M3 21h18" />
-                <path d="M9 8h1" />
-                <path d="M9 12h1" />
-                <path d="M9 16h1" />
-                <path d="M14 8h1" />
-                <path d="M14 12h1" />
-                <path d="M14 16h1" />
-                <path d="M5 21V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v16" />
-              </svg>
+          {/* Logo */}
+          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '40px' }}>
+            <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+              <Building2 size={20} />
             </div>
-            <span className="text-xl font-bold tracking-tight">HiringRemote</span>
+            <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#0f172a' }}>Remote Hiring</span>
           </div>
 
-          <h1 className="text-3xl font-bold text-slate-900 mb-2">Welcome back</h1>
-          <p className="text-slate-500 mb-8">Log in to your account to manage your hiring.</p>
+          {/* Title */}
+          <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: '#0f172a', marginBottom: '8px' }}>Welcome back</h1>
+          <p style={{ color: '#6b7280', marginBottom: '32px' }}>Log in to your account to manage your hiring.</p>
 
-          <form className="space-y-4">
+          {/* Inputs */}
+          <form style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Work Email</label>
+              <label style={{ display: 'block', fontWeight: '600', color: '#334155', marginBottom: '6px', fontSize: '14px' }}>Work Email</label>
               <input 
                 type="email" 
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb] outline-none transition-all bg-white" 
                 placeholder="Enter your work email"
+                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px' }}
               />
             </div>
             <div>
-              <label className="block text-sm font-semibold text-slate-700 mb-1.5">Password</label>
+              <label style={{ display: 'block', fontWeight: '600', color: '#334155', marginBottom: '6px', fontSize: '14px' }}>Password</label>
               <input 
                 type="password" 
-                className="w-full px-4 py-3 rounded-lg border border-slate-200 focus:border-[#2563eb] focus:ring-1 focus:ring-[#2563eb] outline-none transition-all bg-white" 
                 placeholder="Enter your password"
+                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px' }}
               />
             </div>
 
             <button 
               type="submit"
-              className="w-full mt-6 bg-black text-white py-3.5 rounded-full font-semibold hover:bg-slate-800 transition-colors"
+              style={{
+                marginTop: '16px', width: '100%', backgroundColor: 'black', color: 'white', padding: '16px',
+                borderRadius: '9999px', fontWeight: '600', fontSize: '16px', border: 'none', cursor: 'pointer'
+              }}
             >
               Log In
             </button>
 
-            <p className="text-center text-sm text-slate-500 mt-6">
+            <p style={{ textAlign: 'center', fontSize: '14px', color: '#6b7280', marginTop: '16px' }}>
               Don't have an account?{' '}
-              <Link href="/sign-up" className="text-[#2563eb] font-medium hover:underline">
+              <Link href="/sign-up" style={{ color: '#f59e0b', fontWeight: '500', textDecoration: 'none' }}>
                 Sign up
               </Link>
             </p>
@@ -64,13 +62,14 @@ export default function LoginPage() {
         </div>
       </div>
 
-      {/* RIGHT SIDE - Dark Hero */}
-      <div className="hidden lg:flex w-1/2 bg-[#0f172a] text-white flex-col justify-center px-24">
-        <h2 className="text-4xl font-bold mb-4">Welcome back, team.</h2>
-        <p className="text-slate-300 text-lg leading-relaxed max-w-md">
+      {/* RIGHT SIDE - The Dark Hero */}
+      <div style={{ width: '50%', backgroundColor: '#0f172a', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 80px' }}>
+        <h2 style={{ fontSize: '42px', fontWeight: 'bold', marginBottom: '16px' }}>Welcome back, team.</h2>
+        <p style={{ color: '#94a3b8', fontSize: '18px', lineHeight: '1.6', maxWidth: '400px' }}>
           Continue building your distributed team and accessing the world's top 1% of global talent.
         </p>
       </div>
+
     </div>
   )
 }

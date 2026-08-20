@@ -2,10 +2,13 @@
 
 import dynamic from 'next/dynamic'
 
-// This explicitly tells Next.js: "Ignore this during the build entirely"
-const SearchForm = dynamic(() => import('@/components/SearchFormV2'), {
-  ssr: false,
-})
+const SearchForm = dynamic(
+  () => import('@/components/SearchFormV2').then((mod) => {
+    // This automatically handles BOTH 'export default' and 'export function'
+    return mod.default || mod.SearchForm
+  }),
+  { ssr: false }
+)
 
 export default function ClientSearchForm() {
   return <SearchForm />

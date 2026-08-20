@@ -5,6 +5,7 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "seed": "ts-node prisma/seed.ts",
     "start": "next start",
     "lint": "eslint",
     "postinstall": "prisma generate"
@@ -32,6 +33,7 @@
     "eslint-config-next": "16.2.12",
     "postcss": "^8.5.25",
     "tailwindcss": "^4.3.3",
+    "ts-node": "^10.9.2",
     "typescript": "^5"
   }
 }

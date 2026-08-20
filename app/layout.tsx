@@ -30,9 +30,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <span style={{ color: '#94a3b8', cursor: 'pointer' }}>🌙</span>
             <Link href="/login" style={{ textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500' }}>Log in</Link>
-            <Link href="/sign-up">
+            <Link href="/dashboard/post">
               <button style={{ background: 'black', color: 'white', border: 'none', padding: '10px 24px', borderRadius: '9999px', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}>
-                Get Started
+                Hire Talent
               </button>
             </Link>
           </div>

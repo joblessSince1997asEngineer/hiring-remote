@@ -1,23 +1,11 @@
-'use client'
-
-import { useState, useEffect } from 'react'
 import JobsList from '@/components/JobsList'
 
-export default function JobsPage() {
-  const [jobs, setJobs] = useState([])
+export const dynamic = 'force-dynamic'
 
-  useEffect(() => {
-    async function loadJobs() {
-      try {
-        const res = await fetch('/api/jobs')
-        const data = await res.json()
-        setJobs(data.jobs || [])
-      } catch (err) {
-        console.error('Failed to fetch jobs:', err)
-      }
-    }
-    loadJobs()
-  }, [])
+export default async function JobsPage() {
+  // Same dynamic import – Prisma will never load during the build!
+  const { getJobs } = await import('@/lib/queries')
+  const jobs = await getJobs()
 
   return <JobsList initialJobs={jobs} />
 }

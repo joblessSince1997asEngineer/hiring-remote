@@ -27,9 +27,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/about" style={{ textDecoration: 'none', color: 'inherit' }}>About</Link>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
             <span style={{ color: '#94a3b8', cursor: 'pointer' }}>🌙</span>
             <Link href="/login" style={{ textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500' }}>Log in</Link>
+            
+            {/* My Jobs Link - now sits separately and correctly */}
+            <Link href="/recruiter/jobs" style={{ textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500' }}>
+              My Jobs
+            </Link>
+            
+            {/* Hire Talent Button - now sits separately */}
             <Link href="/dashboard/post">
               <button style={{ background: 'black', color: 'white', border: 'none', padding: '10px 24px', borderRadius: '9999px', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}>
                 Hire Talent

@@ -1,24 +1,11 @@
-'use client'
-
-import { useState, useEffect } from 'react'
+import { getJobs } from '@/lib/queries'
 import JobsList from '@/components/JobsList'
 
-export default function HomePage() {
-  const [jobs, setJobs] = useState([])
+export const dynamic = 'force-dynamic'
 
-  useEffect(() => {
-    // Fetch real jobs inside the browser (Bypasses Vercel build error)
-    async function loadJobs() {
-      try {
-        const res = await fetch('/api/jobs')
-        const data = await res.json()
-        setJobs(data.jobs || [])
-      } catch (err) {
-        console.error('Failed to fetch jobs:', err)
-      }
-    }
-    loadJobs()
-  }, [])
+export default async function HomePage() {
+  // This fetches the 70 real jobs from your Supabase database
+  const jobs = await getJobs()
 
   return <JobsList initialJobs={jobs} />
 }

@@ -9,7 +9,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         {/* NAVIGATION BAR */}
         <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 40px', borderBottom: '1px solid #e2e8f0', background: 'white' }}>
           <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', color: 'black' }}>
-            {/* Yellow Lightning Icon */}
             <div style={{ width: '32px', height: '32px', backgroundColor: '#facc15', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <svg width="20" height="20" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg">
                 <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" />
@@ -28,18 +27,15 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           </div>
 
                     <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            <span style={{ color: '#94a3b8', cursor: 'pointer' }}>🌙</span>
+            {/* ADD THESE 3 LINKS */}
+            <a href="/admin" style={{ color: '#1e293b', fontSize: '14px', fontWeight: '500' }}>Admin</a>
+            <a href="/client" style={{ color: '#1e293b', fontSize: '14px', fontWeight: '500' }}>Client</a>
+            <a href="/founder" style={{ color: '#1e293b', fontSize: '14px', fontWeight: '500' }}>Founder</a>
+
             <Link href="/login" style={{ textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500' }}>Log in</Link>
-            
-            {/* My Jobs Link - now sits separately and correctly */}
-            <Link href="/recruiter/jobs" style={{ textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500' }}>
-              My Jobs
-            </Link>
-            
-            {/* Hire Talent Button - now sits separately */}
-            <Link href="/dashboard/post">
+            <Link href="/sign-up">
               <button style={{ background: 'black', color: 'white', border: 'none', padding: '10px 24px', borderRadius: '9999px', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}>
-                Hire Talent
+                Get Started
               </button>
             </Link>
           </div>

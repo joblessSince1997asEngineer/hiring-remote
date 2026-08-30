@@ -1,19 +1,22 @@
-import { auth } from '@clerk/nextjs/server'
+import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { getUserApplications } from '@/lib/queries'
 
 export default async function ApplicationsPage() {
-  const { userId } = await auth()
-  
-  // If the user isn't logged in, kick them to the homepage
-  if (!userId) redirect('/')
+  // 1. Read the cookie we set in auth-actions
+  const cookieStore = await cookies()
+  const userId = cookieStore.get('userId')?.value
 
+  // 2. If no user ID is found, send them to login
+  if (!userId) redirect('/login')
+
+  // 3. Fetch the real applications from Supabase
   const applications = await getUserApplications(userId)
 
   return (
     <div className="min-h-screen bg-[#f8f9fa] py-12 px-4">
       <div className="max-w-4xl mx-auto bg-white p-8 rounded-2xl border border-slate-100 shadow-sm">
-        <h1 className="text-2xl font-bold mb-6">My Applications</h1>
+        <h1 className="text-2xl font-bold mb-6 text-slate-900">My Applications</h1>
         {applications.length === 0 ? (
           <p className="text-slate-500">You haven't applied to any jobs yet.</p>
         ) : (

@@ -19,6 +19,7 @@ model Job {
   postedAt    DateTime      @default(now())
   recruiterId String
   applications Application[]
+  assignments  Job_Assignments[]
 }
 
 model Application {
@@ -26,8 +27,63 @@ model Application {
   userId      String
   jobId       String
   coverLetter String?
+  cv_url        String?
   status      String   @default("pending")
+  feedback    String?
+  placement_fee Int?
   appliedAt   DateTime @default(now())
 
+
   job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+model Profiles {
+  id             String   @id @default(cuid())
+  full_name      String?
+  primary_skill  String?
+  years_exp      Int?
+  expected_salary Int?
+  timezone       String?
+  cv_url         String?
+  created_at     DateTime @default(now())
+  assignments    Job_Assignments[]
+}
+
+
+
+
+
+model Roles {
+  user_id String @id
+  role    String @default("candidate")
+}
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  role      String   @default("candidate")
+  createdAt DateTime @default(now())
+}
+model Job_Assignments {
+  id           String   @id @default(cuid())
+  job_id       String
+  candidate_id String
+  assigned_at  DateTime @default(now())
+   // Add the relation to connect it to the Job model
+  job          Job      @relation(fields: [job_id], references: [id])
+  candidate Profiles  @relation(fields: [candidate_id], references: [id])
+
+  @@unique([candidate_id, job_id])
+}
+model Client_Requests {
+  id            String   @id @default(cuid())
+  company_name  String
+  contact_email String
+  role_title    String
+  tech_stack    String[]
+  budget_min    Int?
+  budget_max    Int?
+  working_hours String?
+  status        String   @default("pending_review")
+  created_at    DateTime @default(now())
 }

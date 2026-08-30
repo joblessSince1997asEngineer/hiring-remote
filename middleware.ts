@@ -1,20 +1,20 @@
-import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
+import { NextResponse } from 'next/server'
 
-const isProtectedRoute = createRouteMatcher([
-  '/dashboard(.*)',
-  '/recruiter(.*)',
-])
-
-export default clerkMiddleware((auth, req) => {
-  if (isProtectedRoute(req)) {
-    // ⚠️ FIX: We use auth.protect() here, NOT auth().protect()
-    auth.protect()
+export function middleware(request: Request) {
+  // Allow POST requests (form submissions) to pass through without redirecting
+  if (request.method !== 'GET') {
+    return NextResponse.next()
   }
-})
 
-export const config = {
-  matcher: [
-    '/((?!_next|[^?]*\\.(?:html?|css|js(?!on)|jpe?g|webp|png|gif|svg|ttf|woff2?|ico|csv|docx?|xlsx?|zip|webmanifest)).*)',
-    '/(api|trpc)(.*)',
-  ],
+  const userId = request.headers.get('cookie')?.includes('userId')
+  const { pathname } = new URL(request.url)
+
+  // Protect the dashboard and recruiter routes for normal navigation
+  if ((pathname.startsWith('/dashboard') || pathname.startsWith('/recruiter')) && !userId) {
+    return NextResponse.redirect(new URL('/login', request.url))
+  }
+
+  return NextResponse.next()
 }
+
+export const config = { matcher: ['/dashboard/:path*', '/recruiter/:path*'] }

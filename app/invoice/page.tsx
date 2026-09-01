@@ -1,8 +1,8 @@
 'use client'
-import { useState, useEffect } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 
-export default function InvoicePage() {
+function InvoiceContent() {
   const searchParams = useSearchParams()
   const jobId = searchParams.get('jobId')
 
@@ -67,5 +67,13 @@ export default function InvoicePage() {
         </button>
       </div>
     </div>
+  )
+}
+
+export default function InvoicePage() {
+  return (
+    <Suspense fallback={<div className="p-8 text-center">Loading...</div>}>
+      <InvoiceContent />
+    </Suspense>
   )
 }

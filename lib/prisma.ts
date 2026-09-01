@@ -12,3 +12,5 @@ export const prisma = globalForPrisma.prisma ?? (() => {
 })()
 
 if (process.env.NODE_ENV !== 'production') globalForPrisma.prisma = prisma
+// tiny change to force new build
+

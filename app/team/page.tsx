@@ -1,7 +1,7 @@
 export default function TeamPage() {
   const team = [
     { name: 'Sarah Jenkins', role: 'CEO & Founder', desc: 'Former VP of Talent at a Fortune 500 company.' },
-    { name: 'David Chen', role: 'Head of Recruitment', desc: '10+ years matching senior technical talent with YC-backed startups.' },
+    { name: 'Adnan Riaz', role: 'Head of Recruitment', desc: '10+ years matching senior technical talent with YC-backed startups.' },
     { name: 'Elena Rodriguez', role: 'Sourcing Director', desc: 'Expert in Boolean search and discovering hidden gems.' },
     { name: 'Michael Chang', role: 'Client Success Manager', desc: 'Ensuring seamless communication for our enterprise clients.' }
   ];

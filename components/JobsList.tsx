@@ -1,5 +1,4 @@
 'use client'
-
 import { useState } from 'react'
 import Link from 'next/link'
 import { Search, MapPin, Bookmark } from 'lucide-react'
@@ -22,59 +21,74 @@ export default function JobsList({ initialJobs }: { initialJobs: any[] }) {
 
   return (
     <div>
-      {/* Dark Hero */}
-      <div style={{ backgroundColor: '#0f172a', color: 'white', padding: '60px 20px 80px', borderBottomLeftRadius: '40px', borderBottomRightRadius: '40px' }}>
+      {/* Light Grey Hero Section */}
+      <div style={{ backgroundColor: '#f8fafc', color: '#0f172a', padding: '80px 20px 100px', borderBottomLeftRadius: '40px', borderBottomRightRadius: '40px' }}>
         <div style={{ maxWidth: '1000px', margin: '0 auto', textAlign: 'center' }}>
-          <h1 style={{ fontSize: '48px', fontWeight: '800', marginBottom: '12px' }}>Find Your Next Remote Role</h1>
-          <p style={{ fontSize: '18px', color: '#94a3b8', marginBottom: '32px' }}>Join the world's best companies. Work from anywhere.</p>
-          <div style={{ backgroundColor: 'white', padding: '12px', borderRadius: '16px', display: 'flex', gap: '12px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.3)', flexWrap: 'wrap' }}>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px', padding: '0 12px', borderRight: '1px solid #e2e8f0' }}>
-              <Search color="#94a3b8" size={20} />
-              <input type="text" placeholder="Job title, keywords, or company" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ border: 'none', outline: 'none', width: '100%', fontSize: '16px', color: '#1e293b' }} />
-            </div>
-            <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px', padding: '0 12px' }}>
-              <MapPin color="#94a3b8" size={20} />
-             <select 
-  value={region} 
-  onChange={(e) => setRegion(e.target.value)} 
-  style={{ 
-    border: 'none', 
-    outline: 'none', 
-    width: '100%', 
-    fontSize: '16px', 
-    backgroundColor: 'white',
-    color: '#1e293b', // <--- THIS FIXES THE INVISIBLE TEXT
-    cursor: 'pointer',
-    appearance: 'auto',
-    padding: '4px 0'
-  }}
->
-  <option value="">Any Region</option>
-  <option value="Worldwide">Worldwide</option>
-  <option value="USA">USA</option>
-  <option value="UK">UK</option>
-  <option value="EMEA">EMEA</option>
-  <option value="APAC">APAC</option>
-</select>
-            </div>
-            <button onClick={handleSearch} style={{ backgroundColor: 'black', color: 'white', border: 'none', padding: '12px 32px', borderRadius: '9999px', fontWeight: '600', fontSize: '16px', cursor: 'pointer' }}>Search Jobs</button>
+          
+          {/* Badge - Deep Navy Text & Border */}
+          <div style={{ display: 'inline-block', backgroundColor: '#f1f5f9', border: '1px solid #cbd5e1', color: '#0f172a', padding: '8px 16px', borderRadius: '9999px', fontSize: '12px', fontWeight: '600', letterSpacing: '1px', marginBottom: '24px' }}>
+            GLOBAL REACH • ELITE TALENT
+          </div>
+
+          {/* Main Headline - Deep Navy Blue */}
+          <h1 style={{ fontSize: '56px', fontWeight: '800', lineHeight: '1.1', marginBottom: '24px', color: '#0f172a' }}>
+            Hire Top Remote <br />
+            <span style={{ color: '#0f172a' }}>Talent Worldwide.</span>
+          </h1>
+
+          {/* Subtext - Grey */}
+          <p style={{ fontSize: '18px', color: '#64748b', maxWidth: '600px', margin: '0 auto 40px', lineHeight: '1.6' }}>
+            Empowering startups and enterprises to build high-performing distributed teams. We source, screen, and vet the world's top 1% of remote professionals for you.
+          </p>
+
+          {/* Buttons - Hire Talent is BLACK, Browse Jobs stays outlined */}
+          <div style={{ display: 'flex', gap: '16px', justifyContent: 'center' }}>
+            <Link href="/dashboard/post">
+              <button style={{ backgroundColor: 'black', color: 'white', border: 'none', padding: '14px 32px', borderRadius: '9999px', fontSize: '16px', fontWeight: '600', cursor: 'pointer' }}>
+                Hire Talent
+              </button>
+            </Link>
+            <Link href="/jobs">
+              <button style={{ backgroundColor: 'transparent', color: '#0f172a', border: '1px solid #cbd5e1', padding: '14px 32px', borderRadius: '9999px', fontSize: '16px', fontWeight: '600', cursor: 'pointer' }}>
+                Browse Jobs
+              </button>
+            </Link>
           </div>
         </div>
       </div>
 
-      {/* Job List */}
-      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '32px 20px' }}>
-        <div style={{ backgroundColor: '#fffbeb', border: '1px solid #fde68a', borderRadius: '12px', padding: '24px', display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '32px' }}>
-          <div style={{ backgroundColor: '#f59e0b', color: 'white', borderRadius: '50%', width: '32px', height: '32px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 'bold' }}>✓</div>
-          <div><h4 style={{ margin: 0, color: '#0f172a' }}>Curated Quality Guarantee</h4><p style={{ margin: '4px 0 0 0', fontSize: '14px', color: '#475569' }}>Every job listed on this platform has been manually vetted and added by our team.</p></div>
+      {/* Search Area */}
+      <div style={{ maxWidth: '1000px', margin: '-40px auto 0', padding: '0 20px' }}>
+        <div style={{ backgroundColor: 'white', padding: '12px', borderRadius: '16px', display: 'flex', gap: '12px', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', flexWrap: 'wrap' }}>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px', padding: '0 12px', borderRight: '1px solid #e2e8f0' }}>
+            <Search color="#94a3b8" size={20} />
+            <input type="text" placeholder="Job title, keywords, or company" value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} style={{ border: 'none', outline: 'none', width: '100%', fontSize: '16px', color: '#1e293b' }} />
+          </div>
+          <div style={{ flex: 1, display: 'flex', alignItems: 'center', gap: '12px', padding: '0 12px' }}>
+            <MapPin color="#94a3b8" size={20} />
+            <select value={region} onChange={(e) => setRegion(e.target.value)} style={{ border: 'none', outline: 'none', width: '100%', fontSize: '16px', background: 'transparent', cursor: 'pointer', color: '#1e293b' }}>
+              <option value="">Any Region</option>
+              <option value="Worldwide">Worldwide</option>
+              <option value="USA">USA</option>
+              <option value="UK">UK</option>
+              <option value="EMEA">EMEA</option>
+              <option value="APAC">APAC</option>
+            </select>
+          </div>
+          <button onClick={handleSearch} style={{ backgroundColor: 'black', color: 'white', border: 'none', padding: '12px 32px', borderRadius: '9999px', fontWeight: '600', fontSize: '16px', cursor: 'pointer' }}>Search Jobs</button>
         </div>
+      </div>
+
+      {/* Job List Section */}
+      <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '40px 20px' }}>
         <div style={{ display: 'grid', gridTemplateColumns: '280px 1fr', gap: '40px' }}>
           <div>
             <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '24px' }}>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}><h4 style={{ margin: 0, fontSize: '18px' }}>Filters</h4><span style={{ fontSize: '14px', color: '#64748b', cursor: 'pointer', fontWeight: '500' }} onClick={() => { setSearchTerm(''); setRegion(''); setJobs(initialJobs); }}>Clear all</span></div>
+              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}><h4 style={{ margin: 0, fontSize: '18px' }}>Filters</h4><span style={{ fontSize: '14px', color: '#64748b', cursor: 'pointer', fontWeight: '500' }} onClick={() => setJobs(initialJobs)}>Clear all</span></div>
               <div><h5 style={{ margin: '0 0 12px 0', fontSize: '14px' }}>Job Type</h5>{['Full-time', 'Contract', 'Part-time', 'Freelance'].map(type => (<label key={type} style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '8px', fontSize: '14px', color: '#475569', cursor: 'pointer' }}><input type="checkbox" style={{ width: '16px', height: '16px' }} /> {type}</label>))}</div>
             </div>
           </div>
+
           <div>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}><h3 style={{ margin: 0, fontSize: '20px', fontWeight: 'bold' }}>{jobs.length} Jobs Found</h3><select style={{ padding: '8px 12px', borderRadius: '6px', border: '1px solid #e2e8f0', fontSize: '14px' }}><option>Most Recent</option></select></div>
             {jobs.length > 0 ? (

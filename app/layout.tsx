@@ -21,6 +21,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>Home</Link>
             <Link href="/services" style={{ textDecoration: 'none', color: 'inherit' }}>Services</Link>
             <Link href="/process" style={{ textDecoration: 'none', color: 'inherit' }}>Process</Link>
+            <Link href="/team" style={{ textDecoration: 'none', color: 'inherit' }}>Team</Link>
             <Link href="/jobs" style={{ textDecoration: 'none', color: 'inherit' }}>Jobs</Link>
             <Link href="/pricing" style={{ textDecoration: 'none', color: 'inherit' }}>Our Fee Structure</Link>
             <Link href="/about" style={{ textDecoration: 'none', color: 'inherit' }}>About</Link>

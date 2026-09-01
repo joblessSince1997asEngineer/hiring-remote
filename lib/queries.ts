@@ -1,5 +1,7 @@
 import { prisma } from './prisma'
 
+import { prisma } from './prisma'
+
 export async function getJobs(search?: string, location?: string, type?: string) {
   const whereClause: any = {}
   if (search) whereClause.OR = [{ title: { contains: search, mode: 'insensitive' } }, { company: { contains: search, mode: 'insensitive' } }]
@@ -8,7 +10,7 @@ export async function getJobs(search?: string, location?: string, type?: string)
   return prisma.job.findMany({ where: whereClause, orderBy: { postedAt: 'desc' } })
 }
 
-export async function getJob(id: string) { 
+export async function getJob(id: string) {
   if (!id) return null
   try {
     return await prisma.job.findUnique({ where: { id } })
@@ -19,4 +21,20 @@ export async function getJob(id: string) {
 
 export async function getUserApplications(userId: string) {
   return prisma.application.findMany({ where: { userId }, include: { job: true } })
+}
+
+export async function getJobsByRecruiter(recruiterId: string) {
+  return prisma.job.findMany({
+    where: { recruiterId },
+    orderBy: { postedAt: 'desc' },
+    include: { applications: true },
+  })
+}
+
+export async function getApplicationsForJob(jobId: string) {
+  return prisma.application.findMany({
+    where: { jobId },
+    include: { job: true },
+    orderBy: { appliedAt: 'desc' },
+  })
 }

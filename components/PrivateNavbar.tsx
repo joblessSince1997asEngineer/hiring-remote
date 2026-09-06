@@ -26,6 +26,7 @@ export default function PrivateNavbar() {
     router.push('/')
   }
 
+  // If user is NOT logged in, show nothing
   if (!role) return null
 
   return (
@@ -48,16 +49,18 @@ export default function PrivateNavbar() {
           borderRadius: '12px', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)',
           width: '200px', padding: '8px', zIndex: 100
         }}>
+          
+          {/* ALWAYS show My Account for ANY logged-in user (Including Candidates) */}
           <Link href="/account" onClick={() => setIsOpen(false)} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500', borderRadius: '6px' }} className="hover:bg-slate-50">
             My Account
           </Link>
 
-          <Link href="/dashboard/post" onClick={() => setIsOpen(false)} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500', borderRadius: '6px' }} className="hover:bg-slate-50">
-            Post a Job
-          </Link>
-
+          {/* Special Menus ONLY for specific roles */}
           {role === 'super_admin' && (
             <>
+              <Link href="/dashboard/post" onClick={() => setIsOpen(false)} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500', borderRadius: '6px' }} className="hover:bg-slate-50">
+                Post a Job
+              </Link>
               <Link href="/admin" onClick={() => setIsOpen(false)} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500', borderRadius: '6px' }} className="hover:bg-slate-50">
                 Admin Panel
               </Link>
@@ -67,7 +70,6 @@ export default function PrivateNavbar() {
               <Link href="/founder" onClick={() => setIsOpen(false)} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500', borderRadius: '6px' }} className="hover:bg-slate-50">
                 Founder Dashboard
               </Link>
-              {/* NEW LINK ADDED HERE */}
               <Link href="/founder/admins" onClick={() => setIsOpen(false)} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500', borderRadius: '6px' }} className="hover:bg-slate-50">
                 Manage Admin Accounts
               </Link>
@@ -75,6 +77,9 @@ export default function PrivateNavbar() {
           )}
           {role === 'admin' && (
             <>
+              <Link href="/dashboard/post" onClick={() => setIsOpen(false)} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500', borderRadius: '6px' }} className="hover:bg-slate-50">
+                Post a Job
+              </Link>
               <Link href="/admin" onClick={() => setIsOpen(false)} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500', borderRadius: '6px' }} className="hover:bg-slate-50">
                 Admin Panel
               </Link>
@@ -84,10 +89,16 @@ export default function PrivateNavbar() {
             </>
           )}
           {role === 'recruiter' && (
-            <Link href="/client" onClick={() => setIsOpen(false)} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500', borderRadius: '6px' }} className="hover:bg-slate-50">
-              Client Dashboard
-            </Link>
+            <>
+              <Link href="/dashboard/post" onClick={() => setIsOpen(false)} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500', borderRadius: '6px' }} className="hover:bg-slate-50">
+                Post a Job
+              </Link>
+              <Link href="/client" onClick={() => setIsOpen(false)} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500', borderRadius: '6px' }} className="hover:bg-slate-50">
+                Client Dashboard
+              </Link>
+            </>
           )}
+          {/* For candidate users, only My Account shows, Post a Job does not appear */}
 
           <div style={{ borderTop: '1px solid #e2e8f0', margin: '8px 0' }}></div>
           

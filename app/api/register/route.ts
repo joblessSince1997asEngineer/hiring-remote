@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server'
+import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(request: Request) {
@@ -21,6 +22,17 @@ export async function POST(request: Request) {
         role: role || 'candidate',
       },
     })
+
+    // *** THE FIX: CREATE THE ROLE ROW ***
+    await prisma.roles.create({
+      data: {
+        user_id: user.id,
+        role: role === 'recruiter' ? 'recruiter' : 'candidate',
+      },
+    })
+    // ************************************
+
+    cookies().set('userId', user.id, { path: '/' })
 
     return NextResponse.json({ success: true, user: { id: user.id, email: user.email } })
   } catch (error: any) {

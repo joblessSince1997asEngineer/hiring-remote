@@ -12,7 +12,6 @@ export async function GET() {
 
   const role = await prisma.roles.findUnique({ where: { user_id: userId } })
 
-  // If the role is suspended, delete the cookie immediately
   if (role && role.role === 'suspended') {
     cookieStore.delete('userId')
     return NextResponse.json({ role: null })
@@ -22,5 +21,6 @@ export async function GET() {
     return NextResponse.json({ role: role.role })
   }
 
-  return NextResponse.json({ role: null })
+  // For all other logged-in users (candidates), show the 'user' role
+  return NextResponse.json({ role: 'user' })
 }

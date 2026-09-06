@@ -23,13 +23,13 @@ export default function PricingPage() {
             <div style={{ fontSize: '16px', fontWeight: '600', color: '#0f172a', marginBottom: '16px' }}>Percentage Breakdown:</div>
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <li style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569', fontSize: '14px' }}>
-                <Check size={16} color="#facc15" /> <strong>Junior Roles:</strong> 10–15%
+                <Check size={16} color="#facc15" /> <strong>Junior Roles:</strong> 15%
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569', fontSize: '14px' }}>
-                <Check size={16} color="#facc15" /> <strong>Mid-Level Roles:</strong> 15–20%
+                <Check size={16} color="#facc15" /> <strong>Mid-Level Roles:</strong> 25%
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569', fontSize: '14px' }}>
-                <Check size={16} color="#facc15" /> <strong>Senior or Specialized Roles:</strong> 20–30%
+                <Check size={16} color="#facc15" /> <strong>Senior or Specialized Roles:</strong> 40%
               </li>
             </ul>
             <div style={{ fontSize: '14px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' }}>Example:</div>
@@ -50,13 +50,13 @@ export default function PricingPage() {
             <div style={{ fontSize: '16px', fontWeight: '600', color: 'white', marginBottom: '16px' }}>Suggested Pricing:</div>
             <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
               <li style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#cbd5e1', fontSize: '14px' }}>
-                <Check size={16} color="#facc15" /> <strong>Entry-Level Roles:</strong> $300–$500
+                <Check size={16} color="#facc15" /> <strong>Entry-Level Roles:</strong> $300
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#cbd5e1', fontSize: '14px' }}>
-                <Check size={16} color="#facc15" /> <strong>Mid-Level Roles:</strong> $500–$1,000
+                <Check size={16} color="#facc15" /> <strong>Mid-Level Roles:</strong> $500
               </li>
               <li style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#cbd5e1', fontSize: '14px' }}>
-                <Check size={16} color="#facc15" /> <strong>Senior or Specialized Roles:</strong> $1,000–$3,000+
+                <Check size={16} color="#facc15" /> <strong>Senior or Specialized Roles:</strong> $1,000
               </li>
             </ul>
             <button style={{ width: '100%', padding: '14px', borderRadius: '9999px', border: 'none', background: '#facc15', fontWeight: '700', cursor: 'pointer', color: '#0f172a' }}>

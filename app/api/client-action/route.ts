@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
+import { Resend } from 'resend'
+
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: Request) {
   const cookieStore = await cookies()
@@ -16,7 +19,7 @@ export async function POST(request: Request) {
       orderBy: { appliedAt: 'desc' }
     })
 
-    // 2. If NO application exists, we create one using the candidateId
+    // 2. If NO application exists, create one using the candidateId
     if (!application) {
       application = await prisma.application.create({
         data: {
@@ -35,27 +38,58 @@ export async function POST(request: Request) {
 
     const updateData: any = { status }
 
-    // 4. Add feedback if rejecting
     if (action === 'reject' && feedback) {
       updateData.feedback = feedback
     }
 
-    // 5. If Hiring, calculate the 40% placement fee
     if (action === 'hire') {
-      // Get the job to read the expected salary
       const job = await prisma.job.findUnique({ where: { id: jobId } })
       if (job && job.salaryMax) {
-        // 40% fee calculation based on Max Salary
         const placementFee = job.salaryMax * 0.40
         updateData.placement_fee = Math.round(placementFee)
       }
     }
 
-    // 6. Final update
     await prisma.application.update({
       where: { id: application.id },
       data: updateData,
     })
+
+    // 4. Trigger Email Notifications
+    const jobDetails = await prisma.job.findUnique({ where: { id: jobId } })
+
+    if (action === 'interview') {
+      try {
+        await resend.emails.send({
+          from: 'Remote Hirring <onboarding@resend.dev>',
+          to: ['captainbushra179@gmail.com', 'muahmada1@gmail.com'], // ⚠️ REPLACE with real emails
+          subject: `Interview Requested for ${jobDetails?.title}`,
+          html: `<p>A client has requested an interview for a candidate. Please schedule the call.</p>
+                 <p><strong>Job:</strong> ${jobDetails?.title}</p>
+                 <p><strong>Candidate ID:</strong> ${candidateId}</p>`,
+        })
+      } catch (emailError) {
+        console.error('Email failed to send:', emailError)
+      }
+    }
+
+    if (action === 'hire') {
+      try {
+        const clientEmail = 'client@example.com' // ⚠️ REPLACE with the actual client email
+        await resend.emails.send({
+          from: 'Remote Hirring <onboarding@resend.dev>',
+          to: [clientEmail],
+          bcc: ['ambreenashrafofficial@gmail.com'], // ⚠️ REPLACE with Miss Ambreen's email
+          subject: `Invoice Generated for ${jobDetails?.title}`,
+          html: `<p>Congratulations! Your placement has been finalized.</p>
+                 <p><strong>Role:</strong> ${jobDetails?.title}</p>
+                 <p><strong>Placement Fee (40%):</strong> $${updateData.placement_fee}</p>
+                 <p>Please log into your dashboard to view and print the invoice.</p>`,
+        })
+      } catch (emailError) {
+        console.error('Email failed to send:', emailError)
+      }
+    }
 
     return NextResponse.json({ success: true })
   } catch (error: any) {

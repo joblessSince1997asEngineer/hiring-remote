@@ -1,5 +1,6 @@
 import Link from 'next/link'
 import './globals.css'
+import PrivateNavbar from '@/components/PrivateNavbar'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -8,14 +9,12 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         
         {/* NAVIGATION BAR */}
         <nav style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '16px 40px', borderBottom: '1px solid #e2e8f0', background: 'white' }}>
-          <Link href="/" style={{ display: 'flex', alignItems: 'center', gap: '10px', textDecoration: 'none', color: 'black' }}>
-            <div style={{ width: '32px', height: '32px', backgroundColor: '#facc15', borderRadius: '8px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="black" xmlns="http://www.w3.org/2000/svg">
-                <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" />
-              </svg>
-            </div>
-            <span style={{ fontSize: '18px', fontWeight: '800', letterSpacing: '-0.5px' }}>REMOTE HIRING</span>
-          </Link>
+          <Link href="/" style={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start', textDecoration: 'none', lineHeight: '1.2' }}>
+  <img src="/logo.png" alt="Remote Hirring" style={{ height: '45px', width: 'auto', marginBottom: '4px' }} />
+  <span style={{ fontSize: '11px', color: '#1e293b', fontWeight: '400' }}>
+    Great recruitment starts with a conversation
+  </span>
+</Link>
 
           <div style={{ display: 'flex', gap: '32px', fontSize: '14px', fontWeight: '500', color: '#64748b' }}>
             <Link href="/" style={{ textDecoration: 'none', color: 'inherit' }}>Home</Link>
@@ -25,15 +24,16 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
             <Link href="/jobs" style={{ textDecoration: 'none', color: 'inherit' }}>Jobs</Link>
             <Link href="/pricing" style={{ textDecoration: 'none', color: 'inherit' }}>Our Fee Structure</Link>
             <Link href="/about" style={{ textDecoration: 'none', color: 'inherit' }}>About</Link>
+            
           </div>
 
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
-            {/* ADD THESE 3 LINKS */}
-            <a href="/admin" style={{ color: '#1e293b', fontSize: '14px', fontWeight: '500' }}>Admin</a>
-            <a href="/client" style={{ color: '#1e293b', fontSize: '14px', fontWeight: '500' }}>Client</a>
-            <a href="/founder" style={{ color: '#1e293b', fontSize: '14px', fontWeight: '500' }}>Founder</a>
+                             <div style={{ display: 'flex', alignItems: 'center', gap: '16px' }}>
+            {/* This automatically shows Admin/Client/Founder ONLY if the user has the right role */}
+            <PrivateNavbar />
 
+            {/* Public 'Log in' link for ALL users */}
             <Link href="/login" style={{ textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500' }}>Log in</Link>
+
             <Link href="/sign-up">
               <button style={{ background: 'black', color: 'white', border: 'none', padding: '10px 24px', borderRadius: '9999px', fontWeight: '600', fontSize: '14px', cursor: 'pointer' }}>
                 Get Started

@@ -46,7 +46,7 @@ export default function LoginPage() {
             <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
               <Building2 size={20} />
             </div>
-            <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#0f172a' }}>Remote Hiring</span>
+            <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#0f172a' }}>Remote Hirring</span>
           </div>
 
           <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: '#0f172a', marginBottom: '8px' }}>Welcome back</h1>

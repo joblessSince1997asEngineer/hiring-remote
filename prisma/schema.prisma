@@ -87,3 +87,10 @@ model Client_Requests {
   status        String   @default("pending_review")
   created_at    DateTime @default(now())
 }
+model PasswordResetToken {
+  id        String   @id @default(cuid())
+  userId    String
+  token     String
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+}

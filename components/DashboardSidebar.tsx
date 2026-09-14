@@ -1,16 +1,23 @@
 'use client'
+
 import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
-import { useState } from 'react'
 import {
   LayoutDashboard, Briefcase, Users, FileText, Calendar,
-  Inbox, BarChart3, Settings, LogOut, Menu, X
+  Inbox, BarChart3, Settings, LogOut,
 } from 'lucide-react'
 
-export default function DashboardSidebar({ role }: { role: string }) {
+export default function DashboardSidebar({
+  role,
+  isOpen,
+  onClose,
+}: {
+  role: string
+  isOpen: boolean
+  onClose: () => void
+}) {
   const pathname = usePathname()
   const router = useRouter()
-  const [isOpen, setIsOpen] = useState(false)
 
   const handleLogout = () => {
     document.cookie = 'userId=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
@@ -32,18 +39,21 @@ export default function DashboardSidebar({ role }: { role: string }) {
 
   return (
     <>
-      {/* Mobile Top Bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 bg-[#0f172a] text-white p-4 flex items-center justify-between z-40">
-        <span className="font-bold">Dashboard</span>
-        <button onClick={() => setIsOpen(!isOpen)}>
-          {isOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
-        </button>
-      </div>
+      {/* Mobile overlay — tap to close */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          onClick={onClose}
+        />
+      )}
 
-      {/* Sidebar */}
       <aside
-        className={`fixed top-0 left-0 h-screen w-64 bg-[#0f172a] text-white flex flex-col z-50 transition-transform duration-200
-        ${isOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}
+        className={`
+          fixed top-0 left-0 h-screen w-64 bg-[#0f172a] text-white
+          flex flex-col z-50 transition-transform duration-200
+          ${isOpen ? 'translate-x-0' : '-translate-x-full'}
+          md:translate-x-0
+        `}
       >
         {/* Logo + Tagline */}
         <div className="px-6 py-5 border-b border-[#1e293b]">
@@ -55,7 +65,7 @@ export default function DashboardSidebar({ role }: { role: string }) {
           </Link>
         </div>
 
-        {/* Menu Items */}
+        {/* Menu */}
         <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
           {visibleItems.map((item) => {
             const isActive = pathname === item.href
@@ -64,10 +74,10 @@ export default function DashboardSidebar({ role }: { role: string }) {
               <Link
                 key={item.href}
                 href={item.href}
-                onClick={() => setIsOpen(false)}
+                onClick={onClose}
                 className={`flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors no-underline
-                  ${isActive 
-                    ? 'bg-[#1e293b] text-yellow-400' 
+                  ${isActive
+                    ? 'bg-[#1e293b] text-yellow-400'
                     : 'text-slate-300 hover:bg-[#1e293b] hover:text-white'}`}
               >
                 <Icon className="w-5 h-5" />
@@ -88,14 +98,6 @@ export default function DashboardSidebar({ role }: { role: string }) {
           </button>
         </div>
       </aside>
-
-      {/* Mobile Overlay */}
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/50 z-30 md:hidden"
-          onClick={() => setIsOpen(false)}
-        />
-      )}
     </>
   )
 }

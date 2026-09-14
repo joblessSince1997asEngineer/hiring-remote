@@ -5,20 +5,27 @@ import { useRouter } from 'next/navigation'
 
 export default function PrivateNavbar() {
   const [role, setRole] = useState<string | null>(null)
+  const [email, setEmail] = useState<string>('') // Added email state
   const [isOpen, setIsOpen] = useState(false)
   const router = useRouter()
 
   useEffect(() => {
-    async function fetchRole() {
+    async function fetchUser() {
       try {
-        const res = await fetch('/api/check-role')
+        // Fetch account API instead of check-role, because it returns BOTH email and role
+        const res = await fetch('/api/account')
         const data = await res.json()
-        setRole(data.role)
+        if (res.ok) {
+          setEmail(data.email || '')
+          setRole(data.role || 'user')
+        } else {
+          setRole(null)
+        }
       } catch (error) {
-        console.error('Failed to fetch role:', error)
+        console.error('Failed to fetch user:', error)
       }
     }
-    fetchRole()
+    fetchUser()
   }, [])
 
   const handleLogout = () => {
@@ -26,7 +33,6 @@ export default function PrivateNavbar() {
     router.push('/')
   }
 
-  // If user is NOT logged in, show nothing
   if (!role) return null
 
   return (
@@ -39,7 +45,8 @@ export default function PrivateNavbar() {
           border: 'none', cursor: 'pointer', fontSize: '18px'
         }}
       >
-        {role.charAt(0).toUpperCase()}
+        {/* THE FIX: Uses the first letter of the EMAIL instead of ROLE */}
+        {email ? email.charAt(0).toUpperCase() : 'U'}
       </button>
 
       {isOpen && (
@@ -50,12 +57,10 @@ export default function PrivateNavbar() {
           width: '200px', padding: '8px', zIndex: 100
         }}>
           
-          {/* ALWAYS show My Account for ANY logged-in user (Including Candidates) */}
           <Link href="/account" onClick={() => setIsOpen(false)} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500', borderRadius: '6px' }} className="hover:bg-slate-50">
             My Account
           </Link>
 
-          {/* Special Menus ONLY for specific roles */}
           {role === 'super_admin' && (
             <>
               <Link href="/dashboard/post" onClick={() => setIsOpen(false)} style={{ display: 'block', padding: '10px', textDecoration: 'none', color: '#1e293b', fontSize: '14px', fontWeight: '500', borderRadius: '6px' }} className="hover:bg-slate-50">
@@ -98,7 +103,6 @@ export default function PrivateNavbar() {
               </Link>
             </>
           )}
-          {/* For candidate users, only My Account shows, Post a Job does not appear */}
 
           <div style={{ borderTop: '1px solid #e2e8f0', margin: '8px 0' }}></div>
           

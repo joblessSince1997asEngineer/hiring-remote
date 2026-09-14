@@ -2,38 +2,37 @@ import { Check } from 'lucide-react'
 
 export default function PricingPage() {
   return (
-    <div style={{ backgroundColor: '#f8fafc', padding: '60px 20px', minHeight: '100vh' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="min-h-screen bg-[#f8fafc] py-12 md:py-16 px-4">
+      <div className="max-w-6xl mx-auto">
         
-        {/* Page Header */}
-        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-          <h1 style={{ fontSize: '40px', fontWeight: '800', color: '#0f172a', marginBottom: '12px' }}>Our Pricing Models</h1>
-          <p style={{ color: '#64748b', fontSize: '18px' }}>Clear, transparent fee structures designed to scale with your hiring needs.</p>
+        <div className="text-center mb-12 md:mb-16">
+          <h1 className="text-3xl md:text-5xl font-bold text-[#0f172a] mb-4">Our Pricing Models</h1>
+          <p className="text-slate-600 text-base md:text-lg">Clear, transparent fee structures designed to scale with your hiring needs.</p>
         </div>
 
-        {/* Pricing Cards */}
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px', alignItems: 'stretch' }}>
+        {/* Pricing Cards: Stacks on Mobile, 3 Columns on Desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 items-stretch">
           
           {/* Card 1: One-Time Placement Fee */}
-          <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '32px', display: 'flex', flexDirection: 'column' }}>
-            <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#0f172a', margin: '0 0 8px 0' }}>1. One-Time Placement Fee</h3>
-            <p style={{ color: '#64748b', fontSize: '14px', margin: '0 0 24px 0', lineHeight: '1.5' }}>
+          <div className="bg-white border border-slate-200 rounded-3xl p-8 flex flex-col">
+            <h3 className="text-xl font-bold text-[#0f172a] mb-2">1. One-Time Placement Fee</h3>
+            <p className="text-slate-600 text-sm mb-6 leading-relaxed">
               We charge a one-time percentage of the candidate's annual salary after a successful hire.
             </p>
-            <div style={{ fontSize: '16px', fontWeight: '600', color: '#0f172a', marginBottom: '16px' }}>Percentage Breakdown:</div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569', fontSize: '14px' }}>
+            <div className="font-semibold text-[#0f172a] mb-4">Percentage Breakdown:</div>
+            <ul className="space-y-3 mb-6">
+              <li className="flex items-center gap-2 text-slate-600 text-sm">
                 <Check size={16} color="#facc15" /> <strong>Junior Roles:</strong> 15%
               </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569', fontSize: '14px' }}>
+              <li className="flex items-center gap-2 text-slate-600 text-sm">
                 <Check size={16} color="#facc15" /> <strong>Mid-Level Roles:</strong> 25%
               </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569', fontSize: '14px' }}>
+              <li className="flex items-center gap-2 text-slate-600 text-sm">
                 <Check size={16} color="#facc15" /> <strong>Senior or Specialized Roles:</strong> 40%
               </li>
             </ul>
-            <div style={{ fontSize: '14px', fontWeight: '600', color: '#0f172a', marginBottom: '8px' }}>Example:</div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: 0, fontSize: '14px', color: '#475569', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+            <div className="font-semibold text-[#0f172a] mb-2">Example:</div>
+            <ul className="text-slate-600 text-sm space-y-1">
               <li>• Candidate's Monthly Salary: <strong>$1,000</strong></li>
               <li>• Annual Salary: <strong>$12,000</strong></li>
               <li>• Our Fee (15%): <strong>$1,800</strong> (one-time payment)</li>
@@ -41,46 +40,46 @@ export default function PricingPage() {
           </div>
 
           {/* Card 2: Flat Fee Per Hire (The Dark/Highlighted Card) */}
-          <div style={{ background: '#0f172a', border: '1px solid #0f172a', borderRadius: '20px', padding: '32px', display: 'flex', flexDirection: 'column', position: 'relative' }}>
-            <div style={{ position: 'absolute', top: '-12px', right: '24px', background: '#facc15', padding: '4px 16px', borderRadius: '9999px', fontSize: '12px', fontWeight: '700', color: 'black' }}>
+          <div className="bg-[#0f172a] border border-slate-200 rounded-3xl p-8 flex flex-col relative">
+            <div className="absolute top-3 right-6 bg-[#facc15] text-black text-xs font-bold px-4 py-1 rounded-full">
               MOST POPULAR
             </div>
-            <h3 style={{ fontSize: '20px', fontWeight: '700', color: 'white', margin: '0 0 8px 0' }}>2. Flat Fee Per Hire</h3>
-            <p style={{ color: '#94a3b8', fontSize: '14px', margin: '0 0 24px 0', lineHeight: '1.5' }}>Ideal for startups and companies hiring remote employees.</p>
-            <div style={{ fontSize: '16px', fontWeight: '600', color: 'white', marginBottom: '16px' }}>Suggested Pricing:</div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 32px 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#cbd5e1', fontSize: '14px' }}>
+            <h3 className="text-xl font-bold text-white mb-2">2. Flat Fee Per Hire</h3>
+            <p className="text-slate-300 text-sm mb-6 leading-relaxed">Ideal for startups and companies hiring remote employees.</p>
+            <div className="font-semibold text-white mb-4">Suggested Pricing:</div>
+            <ul className="space-y-3 mb-8">
+              <li className="flex items-center gap-2 text-slate-300 text-sm">
                 <Check size={16} color="#facc15" /> <strong>Entry-Level Roles:</strong> $300
               </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#cbd5e1', fontSize: '14px' }}>
+              <li className="flex items-center gap-2 text-slate-300 text-sm">
                 <Check size={16} color="#facc15" /> <strong>Mid-Level Roles:</strong> $500
               </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#cbd5e1', fontSize: '14px' }}>
+              <li className="flex items-center gap-2 text-slate-300 text-sm">
                 <Check size={16} color="#facc15" /> <strong>Senior or Specialized Roles:</strong> $1,000
               </li>
             </ul>
-            <button style={{ width: '100%', padding: '14px', borderRadius: '9999px', border: 'none', background: '#facc15', fontWeight: '700', cursor: 'pointer', color: '#0f172a' }}>
+            <button className="w-full py-4 rounded-full bg-[#facc15] font-bold text-[#0f172a] cursor-pointer">
               Choose Flat Fee
             </button>
           </div>
 
           {/* Card 3: Monthly Recruitment Subscription */}
-          <div style={{ background: 'white', border: '1px solid #e2e8f0', borderRadius: '20px', padding: '32px', display: 'flex', flexDirection: 'column' }}>
-            <h3 style={{ fontSize: '20px', fontWeight: '700', color: '#0f172a', margin: '0 0 8px 0' }}>3. Monthly Recruitment Subscription</h3>
-            <p style={{ color: '#64748b', fontSize: '14px', margin: '0 0 24px 0', lineHeight: '1.5' }}>For businesses hiring regularly, we offer monthly recruitment plans.</p>
-            <div style={{ fontSize: '16px', fontWeight: '600', color: '#0f172a', marginBottom: '16px' }}>Example Packages:</div>
-            <ul style={{ listStyle: 'none', padding: 0, margin: '0 0 24px 0', flex: 1, display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569', fontSize: '14px' }}>
+          <div className="bg-white border border-slate-200 rounded-3xl p-8 flex flex-col">
+            <h3 className="text-xl font-bold text-[#0f172a] mb-2">3. Monthly Recruitment Subscription</h3>
+            <p className="text-slate-600 text-sm mb-6 leading-relaxed">For businesses hiring regularly, we offer monthly recruitment plans.</p>
+            <div className="font-semibold text-[#0f172a] mb-4">Example Packages:</div>
+            <ul className="space-y-3 mb-6">
+              <li className="flex items-center gap-2 text-slate-600 text-sm">
                 <Check size={16} color="#facc15" /> <strong>Starter Plan:</strong> Up to 3 hires/month
               </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569', fontSize: '14px' }}>
+              <li className="flex items-center gap-2 text-slate-600 text-sm">
                 <Check size={16} color="#facc15" /> <strong>Growth Plan:</strong> Up to 10 hires/month
               </li>
-              <li style={{ display: 'flex', alignItems: 'center', gap: '8px', color: '#475569', fontSize: '14px' }}>
+              <li className="flex items-center gap-2 text-slate-600 text-sm">
                 <Check size={16} color="#facc15" /> <strong>Enterprise Plan:</strong> Unlimited hiring with dedicated recruitment support
               </li>
             </ul>
-            <div style={{ fontSize: '13px', color: '#64748b', fontStyle: 'italic', marginTop: 'auto' }}>
+            <div className="text-slate-600 text-sm italic mt-auto">
               *(Custom pricing based on hiring volume.)*
             </div>
           </div>

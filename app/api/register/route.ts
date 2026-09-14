@@ -32,7 +32,9 @@ export async function POST(request: Request) {
     })
     // ************************************
 
-    cookies().set('userId', user.id, { path: '/' })
+    // *** THE FIX: Await the cookies() function ***
+    const cookieStore = await cookies()
+    cookieStore.set('userId', user.id, { path: '/' })
 
     return NextResponse.json({ success: true, user: { id: user.id, email: user.email } })
   } catch (error: any) {

@@ -4,11 +4,18 @@ import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-// Added prevState as the FIRST argument
 export async function postJob(prevState: unknown, formData: FormData) {
   const cookieStore = await cookies()
-  const userId = cookieStore.get('userId')?.value || 'guest'
-  
+  const userId = cookieStore.get('userId')?.value
+
+  if (!userId) throw new Error('Unauthorized')
+
+  // *** THE FIX: ONLY ADMINS CAN POST JOBS ***
+  const role = await prisma.roles.findUnique({ where: { user_id: userId } })
+  if (!role || role.role !== 'admin') {
+    throw new Error('Only administrators can post new jobs.')
+  }
+
   await prisma.job.create({
     data: {
       title: formData.get('title') as string,
@@ -22,22 +29,5 @@ export async function postJob(prevState: unknown, formData: FormData) {
     },
   })
   revalidatePath('/')
-  redirect('/')
-}
-
-// Added prevState as the SECOND argument
-export async function applyToJob(jobId: string, prevState: unknown, formData: FormData) {
-  const cookieStore = await cookies()
-  const userId = cookieStore.get('userId')?.value || 'guest'
-  
-  await prisma.application.create({
-    data: {
-      jobId,
-      userId,
-      coverLetter: formData.get('coverLetter') as string,
-      cv_url: formData.get('cv_url') as string, // <--- ADD THIS LINE
-    },
-  })
-  revalidatePath('/dashboard/applications')
-  redirect('/dashboard/applications')
+  redirect('/dashboard/jobs')
 }

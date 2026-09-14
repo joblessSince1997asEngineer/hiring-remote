@@ -38,115 +38,98 @@ export default function SignUpPage() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      {/* LEFT SIDE - Form */}
-      <div style={{ width: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 60px', backgroundColor: '#fcfcfc' }}>
-        <div style={{ maxWidth: '400px', margin: '0 auto', width: '100%' }}>
-          
-          {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '40px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+    <div className="flex flex-col md:flex-row min-h-screen bg-white">
+      {/* LEFT SIDE - Form (Full width on Mobile, Half on Desktop) */}
+      <div className="w-full md:w-1/2 flex flex-col justify-center p-6 md:px-24 bg-[#fcfcfc]">
+        <div className="max-w-md mx-auto w-full">
+          <div className="flex items-center gap-2 mb-10">
+            <div className="w-10 h-10 rounded-full bg-[#f59e0b] flex items-center justify-center text-white">
               <Building2 size={20} />
             </div>
-            <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#0f172a' }}>Remote Hirring</span>
+            <span className="text-xl font-bold text-[#0f172a]">Remote Hiring</span>
           </div>
 
-          <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: '#0f172a', marginBottom: '8px' }}>Create an account</h1>
-          <p style={{ color: '#6b7280', marginBottom: '32px' }}>Choose your account type to get started.</p>
+          <h1 className="text-3xl font-bold text-[#0f172a] mb-2">Create an account</h1>
+          <p className="text-slate-500 mb-8">Choose your account type to get started.</p>
 
-          {/* Role Selector */}
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px', marginBottom: '32px' }}>
+          <div className="grid grid-cols-2 gap-4 mb-8">
             <button
               type="button"
               onClick={() => setRole('recruiter')}
-              style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                padding: '20px', borderRadius: '12px',
-                border: role === 'recruiter' ? '2px solid #f59e0b' : '1px solid #e5e7eb',
-                backgroundColor: role === 'recruiter' ? '#fffbeb' : 'white',
-                color: role === 'recruiter' ? '#f59e0b' : '#475569',
-                cursor: 'pointer'
-              }}
+              className={`p-4 border-2 rounded-xl flex flex-col items-center justify-center gap-1 ${
+                role === 'recruiter' ? 'border-[#f59e0b] bg-[#fffbeb] text-[#f59e0b]' : 'border-slate-200 text-slate-600'
+              }`}
             >
-              <Building2 size={28} />
-              <span style={{ fontSize: '14px', fontWeight: '500' }}>I'm hiring</span>
+              <Building2 size={24} />
+              <span className="text-sm font-medium">I'm hiring</span>
             </button>
             <button
               type="button"
               onClick={() => setRole('candidate')}
-              style={{
-                display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', gap: '8px',
-                padding: '20px', borderRadius: '12px',
-                border: role === 'candidate' ? '2px solid #f59e0b' : '1px solid #e5e7eb',
-                backgroundColor: role === 'candidate' ? '#fffbeb' : 'white',
-                color: role === 'candidate' ? '#f59e0b' : '#475569',
-                cursor: 'pointer'
-              }}
+              className={`p-4 border-2 rounded-xl flex flex-col items-center justify-center gap-1 ${
+                role === 'candidate' ? 'border-[#f59e0b] bg-[#fffbeb] text-[#f59e0b]' : 'border-slate-200 text-slate-600'
+              }`}
             >
-              <User size={28} />
-              <span style={{ fontSize: '14px', fontWeight: '500' }}>I'm a candidate</span>
+              <User size={24} />
+              <span className="text-sm font-medium">I'm a candidate</span>
             </button>
           </div>
 
-          {/* Inputs */}
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label style={{ display: 'block', fontWeight: '600', color: '#334155', marginBottom: '6px', fontSize: '14px' }}>Company Name</label>
+              <label className="block font-semibold text-slate-700 mb-1 text-sm">Company Name</label>
               <input
                 type="text"
                 placeholder="Enter your company name"
                 value={companyName}
                 onChange={(e) => setCompanyName(e.target.value)}
-                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px' }}
+                className="w-full p-3 rounded-lg border border-slate-200 text-sm"
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontWeight: '600', color: '#334155', marginBottom: '6px', fontSize: '14px' }}>Work Email</label>
+              <label className="block font-semibold text-slate-700 mb-1 text-sm">Work Email</label>
               <input
                 type="email"
                 placeholder="Enter your work email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px' }}
+                className="w-full p-3 rounded-lg border border-slate-200 text-sm"
               />
             </div>
             <div>
-              <label style={{ display: 'block', fontWeight: '600', color: '#334155', marginBottom: '6px', fontSize: '14px' }}>Password</label>
+              <label className="block font-semibold text-slate-700 mb-1 text-sm">Password</label>
               <input
                 type="password"
                 placeholder="Enter your password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px' }}
+                className="w-full p-3 rounded-lg border border-slate-200 text-sm"
               />
             </div>
 
-            {error && <p style={{ color: '#ef4444', fontSize: '14px' }}>{error}</p>}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
 
             <button
               type="submit"
               disabled={loading}
-              style={{
-                marginTop: '16px', width: '100%', backgroundColor: 'black', color: 'white', padding: '16px',
-                borderRadius: '9999px', fontWeight: '600', fontSize: '16px', border: 'none', cursor: 'pointer'
-              }}
+              className="w-full mt-4 bg-black text-white py-4 rounded-full font-semibold"
             >
               {loading ? 'Creating...' : 'Create Account'}
             </button>
 
-            <p style={{ textAlign: 'center', fontSize: '14px', color: '#6b7280', marginTop: '16px' }}>
-              Already have an account? <a href="/login" style={{ color: '#f59e0b', fontWeight: '500', textDecoration: 'none' }}>Log in</a>
+            <p className="text-center text-sm text-slate-500 mt-4">
+              Already have an account? <a href="/login" className="text-[#f59e0b] font-medium">Log in</a>
             </p>
           </form>
         </div>
       </div>
 
-      {/* RIGHT SIDE - Dark Hero */}
-      <div style={{ width: '50%', backgroundColor: '#0f172a', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 80px' }}>
-        <h2 style={{ fontSize: '42px', fontWeight: 'bold', marginBottom: '16px' }}>Build your dream team.</h2>
-        <p style={{ color: '#94a3b8', fontSize: '18px', lineHeight: '1.6', maxWidth: '400px' }}>
+      {/* RIGHT SIDE - Dark Hero (Hidden on Mobile, Visible on Desktop) */}
+      <div className="hidden md:flex w-1/2 bg-[#0f172a] text-white flex-col justify-center px-20">
+        <h2 className="text-4xl font-bold mb-4">Build your dream team.</h2>
+        <p className="text-slate-300 text-lg leading-relaxed">
           Access the top 1% of global talent with our comprehensive remote hiring platform.
         </p>
       </div>

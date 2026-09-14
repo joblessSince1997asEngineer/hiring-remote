@@ -1,24 +1,24 @@
 export default function AboutPage() {
   return (
-    <div className="min-h-screen bg-[#f8f9fa] py-16 px-4">
+    <div className="min-h-screen bg-[#f8fafc] py-12 md:py-16 px-4">
       <div className="max-w-6xl mx-auto">
         
         {/* Header */}
-        <div className="text-center mb-16">
-          <h1 className="text-4xl md:text-5xl font-bold text-[#0f172a] mb-6">About Remote Hirring</h1>
+        <div className="text-center mb-12 md:mb-16">
+          <h1 className="text-3xl md:text-5xl font-bold text-[#0f172a] mb-6">About Remote Hirring</h1>
           <p className="text-lg text-slate-600 max-w-3xl mx-auto">
             We believe that talent is equally distributed globally, but opportunity is not. We're on a mission to bridge that gap.
           </p>
         </div>
 
-        {/* Story Section (Replaced with new story + Photo) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-start">
+        {/* Story Section: Stacks on Mobile, Side-by-side on Desktop */}
+        <div className="flex flex-col md:flex-row gap-10 md:gap-12 items-center mb-16">
           
-          {/* Left: New Story */}
-          <div>
-            <h2 className="text-3xl font-bold text-[#0f172a] mb-6">The Story Behind Remote Hirring</h2>
+          {/* Left: New Story (Full width on mobile, 50% on desktop) */}
+          <div className="w-full md:w-1/2">
+            <h2 className="text-2xl md:text-3xl font-bold text-[#0f172a] mb-6">The Story Behind Remote Hirring</h2>
             
-            <div className="space-y-4 text-slate-600 leading-relaxed">
+            <div className="space-y-4 text-slate-600 leading-relaxed text-sm md:text-base">
               <p>
                 Every journey has a beginning, and the journey of Remote Hirring started with an experience that gave us the confidence to build something of our own.
               </p>
@@ -58,13 +58,13 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* Right: Photo (Kept at exact size) */}
-          <div className="flex justify-center">
-            <div style={{ width: '480px', height: '600px', borderRadius: '16px', overflow: 'hidden', backgroundColor: '#e2e8f0' }}>
+          {/* Right: Photo (Stacks below text on mobile, right side on desktop) */}
+          <div className="w-full md:w-1/2 flex justify-center">
+            <div className="w-full max-w-[480px] md:max-w-none md:w-[480px] md:h-[600px] rounded-2xl overflow-hidden bg-slate-200">
               <img 
                 src="/chairperson.png" 
                 alt="Team working together" 
-                style={{ width: '100%', height: '100%', objectFit: 'cover' }} 
+                className="w-full h-auto md:h-full md:object-cover" 
               />
             </div>
           </div>

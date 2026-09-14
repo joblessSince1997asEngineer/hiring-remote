@@ -18,17 +18,29 @@ export async function POST(request: Request) {
     // Create the Assignment
     await prisma.job_Assignments.create({
       data: { candidate_id: candidateId, job_id: jobId },
-    });
+    })
 
-    // ALSO create an Application record so Clients have a CV to view
-    await prisma.application.create({
-      data: {
-        jobId: jobId,
-        userId: candidateId, // Link it to the candidate's ID
-        status: 'pending',
-        cv_url: (await prisma.profiles.findUnique({ where: { id: candidateId } }))?.cv_url || null,
+    // *** THE FIX: AUTOMATICALLY FETCH CV URL FROM PROFILE ***
+    // Check if the candidate has a CV in their Profile
+    const profile = await prisma.profiles.findUnique({ where: { id: candidateId } })
+
+    // Create or Find the Application for this candidate & job
+    await prisma.application.upsert({
+      where: { 
+        // We need a unique key here, so we will just use the first one found
+        id: (await prisma.application.findFirst({ where: { jobId, userId: candidateId } }))?.id || 'new-app'
       },
-    });
+      update: {
+        status: 'pending', // Reset status
+        cv_url: profile?.cv_url || null, // Save the CV URL from the profile
+      },
+      create: {
+        jobId,
+        userId: candidateId, // Use the candidate's ID
+        status: 'pending',
+        cv_url: profile?.cv_url || null, // Save the CV URL from the profile
+      },
+    })
 
     return NextResponse.json({ success: true })
   } catch (error: any) {

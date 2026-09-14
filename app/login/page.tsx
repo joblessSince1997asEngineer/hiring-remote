@@ -36,41 +36,36 @@ export default function LoginPage() {
   }
 
   return (
-    <div style={{ display: 'flex', minHeight: '100vh', fontFamily: 'Inter, system-ui, sans-serif' }}>
-      {/* LEFT SIDE - Form */}
-      <div style={{ width: '50%', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 60px', backgroundColor: '#fcfcfc' }}>
-        <div style={{ maxWidth: '400px', margin: '0 auto', width: '100%' }}>
-          
-          {/* Logo */}
-          <div style={{ display: 'flex', alignItems: 'center', gap: '10px', marginBottom: '40px' }}>
-            <div style={{ width: '40px', height: '40px', borderRadius: '50%', backgroundColor: '#f59e0b', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white' }}>
+    <div className="flex flex-col md:flex-row min-h-screen bg-white">
+      {/* LEFT SIDE - Form (Full width on Mobile, Half on Desktop) */}
+      <div className="w-full md:w-1/2 flex flex-col justify-center p-6 md:px-24 bg-[#fcfcfc]">
+        <div className="max-w-md mx-auto w-full">
+          <div className="flex items-center gap-2 mb-10">
+            <div className="w-10 h-10 rounded-full bg-[#f59e0b] flex items-center justify-center text-white">
               <Building2 size={20} />
             </div>
-            <span style={{ fontSize: '22px', fontWeight: 'bold', color: '#0f172a' }}>Remote Hirring</span>
+            <span className="text-xl font-bold text-[#0f172a]">Remote Hiring</span>
           </div>
 
-          <h1 style={{ fontSize: '32px', fontWeight: 'bold', color: '#0f172a', marginBottom: '8px' }}>Welcome back</h1>
-          <p style={{ color: '#6b7280', marginBottom: '32px' }}>Log in to your account to continue.</p>
+          <h1 className="text-3xl font-bold text-[#0f172a] mb-2">Welcome back</h1>
+          <p className="text-slate-500 mb-8">Log in to your account to continue.</p>
 
-          {/* Inputs */}
-          <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label style={{ display: 'block', fontWeight: '600', color: '#334155', marginBottom: '6px', fontSize: '14px' }}>Email Address</label>
+              <label className="block font-semibold text-slate-700 mb-1 text-sm">Email Address</label>
               <input
                 type="email"
                 placeholder="Enter your email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px' }}
+                className="w-full p-3 rounded-lg border border-slate-200 text-sm"
               />
             </div>
             <div>
-              <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '6px' }}>
-                <label style={{ fontWeight: '600', color: '#334155', fontSize: '14px' }}>Password</label>
-                <a href="/forgot-password" style={{ color: '#f59e0b', fontWeight: '500', fontSize: '14px', textDecoration: 'none' }}>
-                  Forgot password?
-                </a>
+              <div className="flex justify-between items-center mb-1">
+                <label className="font-semibold text-slate-700 text-sm">Password</label>
+                <a href="/forgot-password" className="text-[#f59e0b] font-medium text-sm">Forgot password?</a>
               </div>
               <input
                 type="password"
@@ -78,34 +73,31 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                style={{ width: '100%', padding: '14px', borderRadius: '8px', border: '1px solid #e2e8f0', fontSize: '14px' }}
+                className="w-full p-3 rounded-lg border border-slate-200 text-sm"
               />
             </div>
 
-            {error && <p style={{ color: '#ef4444', fontSize: '14px' }}>{error}</p>}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
 
             <button
               type="submit"
               disabled={loading}
-              style={{
-                marginTop: '16px', width: '100%', backgroundColor: 'black', color: 'white', padding: '16px',
-                borderRadius: '9999px', fontWeight: '600', fontSize: '16px', border: 'none', cursor: 'pointer'
-              }}
+              className="w-full mt-4 bg-black text-white py-4 rounded-full font-semibold"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
 
-            <p style={{ textAlign: 'center', fontSize: '14px', color: '#6b7280', marginTop: '16px' }}>
-              Don't have an account? <a href="/sign-up" style={{ color: '#f59e0b', fontWeight: '500', textDecoration: 'none' }}>Sign up</a>
+            <p className="text-center text-sm text-slate-500 mt-4">
+              Don't have an account? <a href="/sign-up" className="text-[#f59e0b] font-medium">Sign up</a>
             </p>
           </form>
         </div>
       </div>
 
-      {/* RIGHT SIDE - Dark Hero */}
-      <div style={{ width: '50%', backgroundColor: '#0f172a', color: 'white', display: 'flex', flexDirection: 'column', justifyContent: 'center', padding: '0 80px' }}>
-        <h2 style={{ fontSize: '42px', fontWeight: 'bold', marginBottom: '16px' }}>The new standard in global hiring.</h2>
-        <p style={{ color: '#94a3b8', fontSize: '18px', lineHeight: '1.6', maxWidth: '400px' }}>
+      {/* RIGHT SIDE - Dark Hero (Hidden on Mobile, Visible on Desktop) */}
+      <div className="hidden md:flex w-1/2 bg-[#0f172a] text-white flex-col justify-center px-20">
+        <h2 className="text-4xl font-bold mb-4">The new standard in global hiring.</h2>
+        <p className="text-slate-300 text-lg leading-relaxed">
           Join thousands of companies and professionals building the future of work together.
         </p>
       </div>

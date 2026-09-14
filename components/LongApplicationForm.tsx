@@ -1,16 +1,17 @@
 'use client'
-import { useActionState, useRef, useState } from 'react'
-import { applyToJob } from '@/app/actions'
+import { useRef, useState } from 'react'
+import { useRouter } from 'next/navigation'
 
 export default function LongApplicationForm({ jobId }: { jobId: string }) {
   const fileInputRef = useRef<HTMLInputElement>(null)
-  const boundAction = applyToJob.bind(null, jobId)
-  const [state, action, pending] = useActionState(boundAction, null)
+  const router = useRouter()
+  const [pending, setPending] = useState(false)
 
   const [formData, setFormData] = useState({
     fullName: '', email: '', phone: '', city: '', university: '', degree: '', semester: '', linkedin: '', portfolio: '', 
     cvFile: null as File | null,
     cv_url: '',
+    cvFileName: '', // *** ADDED: Store the file name here ***
     preferredDept: '', remoteWork: '',
     experience: '', proudProject: '', techSkills: '', languages: '', achievements: '',
     motivationJoin: '', motivationExcites: '', motivationValue: '', biggestStrength: '', biggestGrowth: '', careerGoals: '',
@@ -23,32 +24,26 @@ export default function LongApplicationForm({ jobId }: { jobId: string }) {
     setFormData(prev => ({ ...prev, [name]: value }))
   }
 
-    const [uploadingCV, setUploadingCV] = useState(false)
-
   const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
-    // 1. Check file size (5MB max)
     if (file.size > 5242880) {
       alert('File too large. Max 5MB allowed.')
       return
     }
 
-    setUploadingCV(true)
+    // *** FIX: Save the file name immediately ***
+    setFormData(prev => ({ ...prev, cvFileName: file.name }))
+
     const uploadData = new FormData()
     uploadData.append('file', file)
 
     try {
-      // 2. Upload to Supabase Storage
-      const res = await fetch('/api/upload-cv', {
-        method: 'POST',
-        body: uploadData,
-      })
+      const res = await fetch('/api/upload-cv', { method: 'POST', body: uploadData })
       const data = await res.json()
-      
       if (res.ok) {
-        // 3. Store the signed URL in formData
+        // Save the CV URL to state
         setFormData(prev => ({ ...prev, cv_url: data.url }))
         alert('CV uploaded successfully!')
       } else {
@@ -56,14 +51,35 @@ export default function LongApplicationForm({ jobId }: { jobId: string }) {
       }
     } catch (error) {
       alert('Network error during upload')
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    setPending(true)
+
+    try {
+      const res = await fetch('/api/apply', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ jobId, formData }),
+      })
+
+      if (res.ok) {
+        router.push('/dashboard/applications')
+      } else {
+        const data = await res.json()
+        alert(data.error || 'Failed to submit application')
+      }
+    } catch (err) {
+      alert('Network error')
     } finally {
-      setUploadingCV(false)
+      setPending(false)
     }
   }
 
   return (
-    <form action={action} className="mt-10 pt-8 border-t border-slate-200">
-      <input type="hidden" name="cv_url" value={formData.cv_url} />
+    <form onSubmit={handleSubmit} className="mt-10 pt-8 border-t border-slate-200">
       <h2 className="text-xl font-bold text-slate-900 mb-6">Full Application Form</h2>
       
       {/* SECTION 1: BASIC INFO */}
@@ -87,7 +103,11 @@ export default function LongApplicationForm({ jobId }: { jobId: string }) {
             <div className="flex gap-3 items-center">
               <button type="button" onClick={() => fileInputRef.current?.click()} className="bg-slate-800 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-slate-700 transition">📄 Upload CV</button>
               <input type="file" ref={fileInputRef} onChange={handleFileChange} accept=".pdf,.doc,.docx" className="hidden" />
-              <span className="text-sm text-slate-500">{formData.cvFile ? `✅ ${formData.cvFile.name}` : 'No file chosen'}</span>
+              
+              {/* *** THE FIX: Now shows the actual file name! *** */}
+              <span className="text-sm text-slate-500">
+                {formData.cvFileName ? `✅ ${formData.cvFileName}` : 'No file chosen'}
+              </span>
             </div>
           </div>
         </div>

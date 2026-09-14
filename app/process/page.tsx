@@ -9,37 +9,33 @@ export default function ProcessPage() {
   ]
 
   return (
-    <div style={{ backgroundColor: '#f8fafc', padding: '60px 20px', minHeight: '100vh' }}>
-      <div style={{ maxWidth: '800px', margin: '0 auto' }}>
+    <div className="min-h-screen bg-[#f8fafc] py-12 md:py-16 px-4">
+      <div className="max-w-4xl mx-auto">
         
-        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-          <h1 style={{ fontSize: '40px', fontWeight: '800', color: '#0f172a', marginBottom: '12px' }}>How We Hire</h1>
-          <p style={{ color: '#64748b', fontSize: '18px' }}>A refined, proven four-step methodology that guarantees you only meet the top 1% of global talent.</p>
+        <div className="text-center mb-12 md:mb-16">
+          <h1 className="text-3xl md:text-5xl font-bold text-[#0f172a] mb-4">How We Hire</h1>
+          <p className="text-slate-600 text-base md:text-lg">A refined, proven four-step methodology that guarantees you only meet the top 1% of global talent.</p>
         </div>
 
-        {/* Timeline */}
-        <div style={{ position: 'relative', marginLeft: '20px', paddingLeft: '40px', borderLeft: '2px solid #e2e8f0' }}>
+        {/* Timeline Layout: Stacks on Mobile, Line on Desktop */}
+        <div className="relative md:border-l-2 md:border-slate-200 md:ml-6 md:pl-12 space-y-12">
           {steps.map((step, index) => (
-            <div key={index} style={{ marginBottom: '48px', position: 'relative' }}>
+            <div key={index} className="relative">
               
-              {/* Yellow Circle Icon */}
-              <div style={{
-                position: 'absolute', left: '-50px', top: '0',
-                width: '48px', height: '48px', borderRadius: '50%',
-                backgroundColor: '#fffbeb', border: '2px solid #f59e0b',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                color: '#f59e0b'
-              }}>
-                {step.icon}
+              {/* Yellow Circle Icon: Centered on Mobile, Absolute on Desktop */}
+              <div className="flex md:block justify-center mb-4 md:mb-0 md:absolute md:-left-[58px] md:top-0">
+                <div className="w-12 h-12 rounded-full bg-[#fffbeb] border-2 border-[#f59e0b] flex items-center justify-center text-[#f59e0b]">
+                  {step.icon}
+                </div>
               </div>
 
               {/* Card */}
-              <div style={{ backgroundColor: 'white', border: '1px solid #e2e8f0', borderRadius: '16px', padding: '24px' }}>
-                <div style={{ color: '#f59e0b', fontSize: '12px', fontWeight: '700', letterSpacing: '1px', marginBottom: '4px' }}>
+              <div className="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 shadow-sm text-center md:text-left">
+                <div className="text-[#f59e0b] text-xs font-bold tracking-wider mb-2">
                   STEP {String(index + 1).padStart(2, '0')}
                 </div>
-                <h3 style={{ margin: '0 0 8px 0', fontSize: '18px', fontWeight: 'bold', color: '#0f172a' }}>{step.title}</h3>
-                <p style={{ margin: 0, color: '#475569', fontSize: '14px', lineHeight: '1.6' }}>{step.desc}</p>
+                <h3 className="text-xl font-bold text-[#0f172a] mb-3">{step.title}</h3>
+                <p className="text-slate-600 leading-relaxed text-sm md:text-base">{step.desc}</p>
               </div>
             </div>
           ))}

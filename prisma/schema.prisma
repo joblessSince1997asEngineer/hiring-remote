@@ -19,6 +19,7 @@ model Job {
   postedAt    DateTime      @default(now())
   recruiterId String
   applications Application[]
+  interviews  Interview[]
   assignments  Job_Assignments[]
 }
 
@@ -28,6 +29,7 @@ model Application {
   jobId       String
   coverLetter String?
   cv_url        String?
+  formData    Json?
   status      String   @default("pending")
   feedback    String?
   placement_fee Int?
@@ -54,8 +56,9 @@ model Profiles {
 
 
 model Roles {
-  user_id String @id
-  role    String @default("candidate")
+  user_id                String  @id
+  role                   String  @default("candidate")
+  allowRecruiterSchedule Boolean @default(false)
 }
 model User {
   id        String   @id @default(cuid())
@@ -93,4 +96,23 @@ model PasswordResetToken {
   token     String
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+model Interview {
+  id              String    @id @default(cuid())
+  applicationId   String
+  jobId           String
+  candidateId     String
+  interviewers    Json      @default("[]")
+  clientRequestedToAttend   Boolean   @default(false)  
+  requestedByUserId         String?                     
+  scheduledDate   DateTime?
+  timeZone        String    @default("UTC")
+  videoLink       String?
+  clientNotes     String?
+  candidateNotes  String?
+  status          String    @default("pending")
+  requestedBy     String    @default("admin")
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  job             Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
 }

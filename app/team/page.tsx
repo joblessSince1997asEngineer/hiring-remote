@@ -9,28 +9,33 @@ export default function TeamPage() {
   ]
 
   return (
-    <div style={{ backgroundColor: '#f8fafc', minHeight: '100vh', padding: '60px 20px' }}>
-      <div style={{ maxWidth: '1200px', margin: '0 auto' }}>
+    <div className="min-h-screen bg-[#f8fafc] py-12 md:py-16 px-4">
+      <div className="max-w-6xl mx-auto">
         
-        <div style={{ textAlign: 'center', marginBottom: '48px' }}>
-          <h1 style={{ fontSize: '40px', fontWeight: '800', color: '#0f172a', marginBottom: '8px' }}>Meet Our Team</h1>
-          <p style={{ fontSize: '18px', color: '#64748b' }}>The global talent experts dedicated to finding your next great hire.</p>
+        <div className="text-center mb-10 md:mb-16">
+          <h1 className="text-3xl md:text-5xl font-bold text-[#0f172a] mb-4">Meet Our Team</h1>
+          <p className="text-slate-600 text-base md:text-lg">The global talent experts dedicated to finding your next great hire.</p>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
+        {/* Responsive Grid: 1 Column Mobile, 2 Tablet, 3 Desktop */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {team.map((member, index) => (
-            <div key={index} style={{ backgroundColor: 'white', borderRadius: '16px', overflow: 'hidden', boxShadow: '0 4px 6px -1px rgba(0,0,0,0.1)' }}>
-              <img 
-                src={member.img} 
-                alt={member.name} 
-                style={{ width: '100%', height: '400px', objectFit: 'cover' }} 
-              />
-              <div style={{ padding: '20px' }}>
-                <h3 style={{ fontSize: '18px', fontWeight: '700', color: '#0f172a', marginBottom: '4px' }}>{member.name}</h3>
-                <p style={{ color: '#2563eb', fontSize: '14px', fontWeight: '500', marginBottom: '12px' }}>{member.role}</p>
+            <div key={index} className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
+              {/* FIXED IMAGE BLOCK: No fixed height, lets the photo show fully */}
+              <div className="w-full overflow-hidden">
+                <img 
+                  src={member.img} 
+                  alt={member.name} 
+                  className="w-full h-auto" 
+                />
+              </div>
+              
+              <div className="p-5">
+                <h3 className="text-lg font-bold text-[#0f172a] mb-1">{member.name}</h3>
+                <p className="text-blue-600 text-sm font-medium mb-3">{member.role}</p>
                 
-                {/* KEY FIX: whiteSpace: 'pre-line' renders the \n\n as new paragraphs */}
-                <p style={{ color: '#64748b', fontSize: '14px', lineHeight: '1.7', textAlign: 'justify', whiteSpace: 'pre-line' }}>
+                {/* Keeps the \n\n as separate paragraphs */}
+                <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">
                   {member.desc}
                 </p>
               </div>

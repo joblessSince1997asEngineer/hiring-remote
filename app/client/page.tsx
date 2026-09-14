@@ -13,7 +13,6 @@ export default async function ClientPage() {
     redirect('/unauthorized')
   }
 
-  // Fetch jobs + assignments + applications (so we get the application ID and CV URL)
   const jobs = await prisma.job.findMany({
     where: { recruiterId: userId },
     include: {
@@ -27,6 +26,7 @@ export default async function ClientPage() {
               years_exp: true,
               expected_salary: true,
               timezone: true,
+              cv_url: true // *** ADDED THIS LINE ***
             }
           }
         }
@@ -36,7 +36,7 @@ export default async function ClientPage() {
           id: true,
           status: true,
           userId: true,
-          cv_url: true // <--- THIS FETCHES THE CV
+          cv_url: true
         }
       }
     }

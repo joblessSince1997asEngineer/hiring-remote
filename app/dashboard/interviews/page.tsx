@@ -26,9 +26,10 @@ export default async function InterviewsPage() {
         <p className="text-slate-500">Manage and schedule all interview requests.</p>
       </div>
 
-      <InterviewsView 
+                  <InterviewsView 
         interviews={JSON.parse(JSON.stringify(interviews))} 
         canSchedule={canSchedule}
+        role={role.role}
       />
     </div>
   )

@@ -1,13 +1,23 @@
 'use client'
 import { useState } from 'react'
 import ViewCVButton from '@/components/ViewCVButton'
+import HireRequestModal from '@/components/HireRequestModal'
 import { CheckCircle, XCircle, Calendar, X } from 'lucide-react'
 
-export default function ApplicationsView({ applications }: { applications: any[] }) {
+export default function ApplicationsView({
+  applications,
+  role,
+}: {
+  applications: any[]
+  role: string
+}) {
   const [selectedApp, setSelectedApp] = useState<any>(applications[0] || null)
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [interviewPrompt, setInterviewPrompt] = useState<any>(null)
   const [wantToAttend, setWantToAttend] = useState(true)
+  const [hirePrompt, setHirePrompt] = useState<any>(null)
+
+  const isAdmin = role === 'admin' || role === 'super_admin'
 
   const handleAction = async (
     jobId: string,
@@ -117,10 +127,11 @@ export default function ApplicationsView({ applications }: { applications: any[]
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full capitalize ${
                       app.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
                       app.status === 'shortlisted' ? 'bg-blue-100 text-blue-700' :
+                      app.status === 'hire_pending' ? 'bg-purple-100 text-purple-700' :
                       app.status === 'hired' ? 'bg-green-100 text-green-700' :
                       'bg-red-100 text-red-700'
                     }`}>
-                      {app.status}
+                      {app.status === 'hire_pending' ? 'Hire Pending' : app.status}
                     </span>
                   </div>
                   <p className="text-xs text-slate-500 truncate">{app.job.title}</p>
@@ -161,14 +172,29 @@ export default function ApplicationsView({ applications }: { applications: any[]
                   <Calendar className="w-4 h-4" />
                   Request Interview
                 </button>
+
+                {/* Confirm Hire — different for admin vs client */}
                 <button
-                  onClick={() => handleAction(selectedApp.jobId, selectedApp.id, selectedApp.userId, 'hire')}
+                  onClick={() => {
+                    if (isAdmin) {
+                      // Admin: direct hire (unchanged for now)
+                      handleAction(selectedApp.jobId, selectedApp.id, selectedApp.userId, 'hire')
+                    } else {
+                      // Client: open plan picker modal
+                      setHirePrompt({
+                        jobId: selectedApp.jobId,
+                        candidateId: selectedApp.userId,
+                        jobTitle: selectedApp.job.title,
+                      })
+                    }
+                  }}
                   disabled={actionLoading !== null}
                   className="bg-green-600 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
                 >
                   <CheckCircle className="w-4 h-4" />
-                  {actionLoading === 'hire' ? 'Hiring...' : 'Confirm Hire'}
+                  {actionLoading === 'hire' ? 'Hiring...' : isAdmin ? 'Confirm Hire' : 'Request Hire'}
                 </button>
+
                 <button
                   onClick={() => {
                     const reason = prompt('Rejection reason (min 10 chars):')
@@ -182,6 +208,19 @@ export default function ApplicationsView({ applications }: { applications: any[]
                   Reject
                 </button>
               </div>
+
+              {/* Hire request pending info (client view) */}
+              {!isAdmin && selectedApp.status === 'hire_pending' && (
+                <div className="mb-6 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                  <p className="text-sm text-purple-800 font-medium">
+                    Hire request sent to admin for approval.
+                  </p>
+                  <p className="text-xs text-purple-600 mt-1">
+                    Plan: {selectedApp.hirePlan === 'percentage' ? 'One-Time %' : 'Flat Fee'}
+                    {selectedApp.hireNotes && ` • Note: ${selectedApp.hireNotes}`}
+                  </p>
+                </div>
+              )}
 
               {selectedApp.coverLetter && (
                 <div className="mb-6">
@@ -250,6 +289,21 @@ export default function ApplicationsView({ applications }: { applications: any[]
             </div>
           </div>
         </div>
+      )}
+
+      {/* *** HIRE REQUEST MODAL (client only) *** */}
+      {hirePrompt && (
+        <HireRequestModal
+          jobId={hirePrompt.jobId}
+          candidateId={hirePrompt.candidateId}
+          jobTitle={hirePrompt.jobTitle}
+          onClose={() => setHirePrompt(null)}
+          onSuccess={() => {
+            setHirePrompt(null)
+            alert('Hire request sent! Admin will review and generate the invoice.')
+            window.location.reload()
+          }}
+        />
       )}
     </>
   )

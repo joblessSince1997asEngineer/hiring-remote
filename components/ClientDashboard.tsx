@@ -1,12 +1,14 @@
 'use client'
 import { useState } from 'react'
 import ViewCVButton from '@/components/ViewCVButton'
+import HireRequestModal from '@/components/HireRequestModal'
 
 export default function ClientDashboard({ jobs }: { jobs: any[] }) {
   const [rejecting, setRejecting] = useState<string | null>(null)
   const [feedback, setFeedback] = useState('')
   const [interviewPrompt, setInterviewPrompt] = useState<{ jobId: string, candidateId: string } | null>(null)
   const [wantToAttend, setWantToAttend] = useState(true)
+  const [hirePrompt, setHirePrompt] = useState<{ jobId: string, candidateId: string, jobTitle: string } | null>(null)
 
   const handleAction = async (
     jobId: string,
@@ -95,11 +97,11 @@ export default function ClientDashboard({ jobs }: { jobs: any[] }) {
                         Reject
                       </button>
                       <button
-                        onClick={() => handleAction(job.id, assignment.candidate.id, 'hire')}
-                        className="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-green-700"
-                      >
-                        Confirm Hire
-                      </button>
+  onClick={() => setHirePrompt({ jobId: job.id, candidateId: assignment.candidate.id, jobTitle: job.title })}
+  className="flex-1 bg-green-600 text-white py-2 rounded-lg text-sm font-medium hover:bg-green-700"
+>
+  Confirm Hire
+</button>
                     </div>
 
                     {rejecting === assignment.id && (
@@ -174,6 +176,21 @@ export default function ClientDashboard({ jobs }: { jobs: any[] }) {
             </div>
           </div>
         </div>
+            )}
+
+      {/* *** HIRE REQUEST MODAL *** */}
+      {hirePrompt && (
+        <HireRequestModal
+          jobId={hirePrompt.jobId}
+          candidateId={hirePrompt.candidateId}
+          jobTitle={hirePrompt.jobTitle}
+          onClose={() => setHirePrompt(null)}
+          onSuccess={() => {
+            setHirePrompt(null)
+            alert('Hire request sent! Admin will review and generate the invoice.')
+            window.location.reload()
+          }}
+        />
       )}
     </div>
   )

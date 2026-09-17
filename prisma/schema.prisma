@@ -34,6 +34,9 @@ model Application {
   feedback    String?
   placement_fee Int?
   appliedAt   DateTime @default(now())
+    hirePlan        String?
+  hireNotes       String?
+  hireRequestedAt DateTime?
 
 
   job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)

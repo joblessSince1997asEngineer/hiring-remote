@@ -8,6 +8,10 @@ export default async function ApplicationsPage() {
   const userId = cookieStore.get('userId')?.value
   if (!userId) redirect('/login')
 
+  // Get the logged-in user's role
+  const roleRow = await prisma.roles.findUnique({ where: { user_id: userId } })
+  const role = roleRow?.role || 'candidate'
+
   // Fetch ALL applications with their related job
   const applications = await prisma.application.findMany({
     orderBy: { appliedAt: 'desc' },
@@ -18,10 +22,17 @@ export default async function ApplicationsPage() {
     <div className="p-6 md:p-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[#0f172a] mb-1">Applications</h1>
-        <p className="text-slate-500">Review incoming applications and take action.</p>
+        <p className="text-slate-500">
+          {role === 'admin'
+            ? 'Review incoming applications and take action.'
+            : 'Review candidates and request hires.'}
+        </p>
       </div>
 
-      <ApplicationsView applications={JSON.parse(JSON.stringify(applications))} />
+      <ApplicationsView
+        applications={JSON.parse(JSON.stringify(applications))}
+        role={role}
+      />
     </div>
   )
 }

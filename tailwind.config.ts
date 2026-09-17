@@ -7,7 +7,13 @@ const config: Config = {
     "./app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
   theme: {
-    extend: {},
+    extend: {
+      fontSize: {
+        // Bigger on mobile, normal on desktop
+        'xs':  ['0.8125rem', { lineHeight: '1.125rem' }], // 13px (was 12)
+        'sm':  ['0.9375rem', { lineHeight: '1.5rem' }],   // 15px (was 14)
+      },
+    },
   },
   plugins: [],
 };

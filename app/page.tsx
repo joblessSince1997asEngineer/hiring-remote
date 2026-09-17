@@ -51,9 +51,9 @@ export default function HomePage() {
   ]
 
   return (
-    <div className="min-h-screen w-full bg-[#0f172a] text-white flex flex-col items-center px-6 py-16 text-center">
+    <div className="min-h-screen w-full bg-[#0f172a] text-white flex flex-col items-center px-4 sm:px-6 py-12 md:py-16 text-center">
       
-      <div className="inline-block bg-white/10 border border-white/20 text-slate-300 px-3 py-1.5 rounded-full text-[10px] md:text-xs font-semibold tracking-wider mb-5">
+      <div className="inline-block bg-white/10 border border-white/20 text-slate-100 px-3 py-1.5 rounded-full text-[11px] md:text-xs font-semibold tracking-wider mb-5">
         GLOBAL REACH • ELITE TALENT
       </div>
 
@@ -62,11 +62,11 @@ export default function HomePage() {
         <span className="text-blue-500">Talent Worldwide.</span>
       </h1>
 
-      <p className="text-slate-400 text-sm md:text-lg max-w-xl leading-relaxed mb-8">
+      <p className="text-slate-200 text-base md:text-lg max-w-xl leading-relaxed mb-8">
         Empowering startups and enterprises to build high-performing distributed teams. We source, screen, and vet the world's top 1% of remote professionals for you.
       </p>
 
-      <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto justify-center mb-16">
+      <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto justify-center mb-12 md:mb-16">
         <Link href="/dashboard/post" className="w-full sm:w-auto">
           <button className="w-full bg-black text-white border-2 border-black py-3 px-8 rounded-full font-semibold text-sm md:text-base">Hire Talent</button>
         </Link>
@@ -75,10 +75,8 @@ export default function HomePage() {
         </Link>
       </div>
 
-      {/* VERTICAL STACKED LAYOUT: 3 Rows */}
-
       {/* Row 1: Our Core Services */}
-      <div className="w-full max-w-6xl mx-auto mb-16">
+      <div className="w-full max-w-6xl mx-auto mb-12 md:mb-16">
         <h2 className="text-2xl md:text-4xl font-bold mb-8 text-white">Our Services</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
@@ -88,7 +86,7 @@ export default function HomePage() {
                 {service.icon}
               </div>
               <h3 className="text-xl font-bold text-white mb-3">{service.title}</h3>
-              <p className="text-slate-300 text-sm leading-relaxed mb-4">{service.desc}</p>
+              <p className="text-slate-200 text-sm leading-relaxed mb-4">{service.desc}</p>
               <Link href={service.link} className="inline-flex items-center gap-1 text-sm font-medium text-[#2563eb] hover:text-blue-400 transition-colors">
                 Learn More →
               </Link>
@@ -98,7 +96,7 @@ export default function HomePage() {
       </div>
 
       {/* Row 2: Our Team */}
-      <div className="w-full max-w-6xl mx-auto mb-16">
+      <div className="w-full max-w-6xl mx-auto mb-12 md:mb-16">
         <h2 className="text-2xl md:text-4xl font-bold mb-8 text-white">Our Team</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
@@ -109,7 +107,7 @@ export default function HomePage() {
               </div>
               <h3 className="text-xl font-bold text-white mb-1">{member.name}</h3>
               <p className="text-[#2563eb] text-sm font-medium mb-3">{member.role}</p>
-              <p className="text-slate-300 text-sm leading-relaxed mb-4">{member.summary}</p>
+              <p className="text-slate-200 text-sm leading-relaxed mb-4">{member.summary}</p>
               <Link href="/team" className="inline-flex items-center gap-1 text-sm font-medium text-[#2563eb] hover:text-blue-400 transition-colors">
                 Learn More →
               </Link>

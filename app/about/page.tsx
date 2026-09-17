@@ -12,13 +12,13 @@ export default function AboutPage() {
         </div>
 
         {/* Story Section: Stacks on Mobile, Side-by-side on Desktop */}
-        <div className="flex flex-col md:flex-row gap-10 md:gap-12 items-center mb-16">
+        <div className="flex flex-col md:flex-row gap-10 md:gap-12 items-start mb-16">
           
-          {/* Left: New Story (Full width on mobile, 50% on desktop) */}
+          {/* Left: Story (Full width on mobile, 50% on desktop) */}
           <div className="w-full md:w-1/2">
             <h2 className="text-2xl md:text-3xl font-bold text-[#0f172a] mb-6">The Story Behind Remote Hirring</h2>
             
-            <div className="space-y-4 text-slate-600 leading-relaxed text-sm md:text-base">
+            <div className="space-y-4 text-slate-600 leading-relaxed text-base md:text-[17px] text-justify">
               <p>
                 Every journey has a beginning, and the journey of Remote Hirring started with an experience that gave us the confidence to build something of our own.
               </p>
@@ -58,13 +58,13 @@ export default function AboutPage() {
             </div>
           </div>
 
-          {/* Right: Photo (Stacks below text on mobile, right side on desktop) */}
-          <div className="w-full md:w-1/2 flex justify-center">
-            <div className="w-full max-w-[480px] md:max-w-none md:w-[480px] md:h-[600px] rounded-2xl overflow-hidden bg-slate-200">
+          {/* Right: Photo (Sticky on desktop so it stays visible while scrolling text) */}
+          <div className="w-full md:w-1/2 flex justify-center md:justify-end">
+            <div className="w-full max-w-[480px] md:max-w-none md:w-[480px] md:sticky md:top-8 rounded-2xl overflow-hidden bg-slate-200">
               <img 
                 src="/chairperson.png" 
                 alt="Team working together" 
-                className="w-full h-auto md:h-full md:object-cover" 
+                className="w-full h-auto object-cover" 
               />
             </div>
           </div>

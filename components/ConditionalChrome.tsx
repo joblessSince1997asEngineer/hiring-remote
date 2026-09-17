@@ -21,9 +21,9 @@ export default function ConditionalChrome({ children }: { children: React.ReactN
       <nav className="relative flex items-center justify-between p-4 md:px-10 border-b border-slate-200 bg-white">
         <Link href="/" className="flex flex-col items-start no-underline shrink-0 max-w-[160px] md:max-w-none">
           <img src="/logo.png" alt="Remote Hirring" className="h-10 w-auto object-contain" />
-          <span className="hidden sm:block text-[10px] text-slate-700 font-normal">
-            Great recruitment starts with a conversation
-          </span>
+          <span className="block text-[14px] md:text-[13px] text-slate-600 font-medium leading-snug mt-1 max-w-[200px] md:max-w-none">
+  Great recruitment starts with a conversation
+</span>
         </Link>
 
         <div className="hidden md:flex gap-8 items-center">

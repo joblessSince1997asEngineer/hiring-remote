@@ -37,6 +37,7 @@ model Application {
 
 
   job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  invoice     Invoice?
 }
 
 model Profiles {
@@ -66,6 +67,8 @@ model User {
   password  String
   role      String   @default("candidate")
   createdAt DateTime @default(now())
+  notifications  Notification[]
+  subscription   Subscription?
 }
 model Job_Assignments {
   id           String   @id @default(cuid())
@@ -115,4 +118,66 @@ model Interview {
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
   job             Job       @relation(fields: [jobId], references: [id], onDelete: Cascade)
+}
+
+model Invoice {
+  id                     String    @id @default(cuid())
+  applicationId          String    @unique
+  jobId                  String
+  clientId               String
+  planType               String
+  baseAmount             Int
+  discountPercent        Int       @default(0)
+  amount                 Int
+  currency               String    @default("usd")
+  status                 String    @default("pending")
+  dueAt                  DateTime
+  remindersSent          Json      @default("[]")
+  terminatedAt           DateTime?
+  stripeSessionId        String?
+  stripePaymentIntentId  String?
+  paidAt                 DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  application            Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+
+  @@index([clientId, status])
+  @@index([dueAt, status])
+}
+
+model Subscription {
+  id                     String    @id @default(cuid())
+  userId                 String    @unique
+  tier                   String
+  status                 String    @default("active")
+  startedAt              DateTime  @default(now())
+  expiresAt              DateTime
+  firstPaymentAmount     Int       @default(5000)
+  renewalAmount          Int       @default(4000)
+  stripeCustomerId       String?
+  stripeSessionId        String?
+  renewalReminderSentAt  DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+
+  user                   User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([status, expiresAt])
+}
+
+model Notification {
+  id        String   @id @default(cuid())
+  userId    String
+  type      String
+  title     String
+  message   String
+  link      String?
+  read      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId, read])
+  @@index([userId, createdAt])
 }

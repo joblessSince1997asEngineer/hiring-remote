@@ -2,15 +2,17 @@
 import { useState } from 'react'
 import ViewCVButton from '@/components/ViewCVButton'
 import HireRequestModal from '@/components/HireRequestModal'
-import { CheckCircle, XCircle, Calendar, X, Lock } from 'lucide-react'
+import { CheckCircle, XCircle, Calendar, X, Lock, User } from 'lucide-react'
 
 export default function ApplicationsView({
   applications,
   interviews,
+  profiles,
   role,
 }: {
   applications: any[]
   interviews: any[]
+  profiles: any[]
   role: string
 }) {
   const [selectedApp, setSelectedApp] = useState<any>(applications[0] || null)
@@ -24,6 +26,10 @@ export default function ApplicationsView({
   const getInterviewStatus = (applicationId: string) => {
     const interview = interviews.find((i: any) => i.applicationId === applicationId)
     return interview?.status || 'none'
+  }
+
+  const getProfile = (userId: string) => {
+    return profiles.find((p: any) => p.userId === userId) || null
   }
 
   const handleAction = async (
@@ -109,6 +115,109 @@ export default function ApplicationsView({
     )
   }
 
+  const renderProfileCard = (userId: string) => {
+    const profile = getProfile(userId)
+    if (!profile) return null
+
+    const hasAnyData =
+      profile.fullName || profile.primarySkill || profile.yearsExp ||
+      profile.expectedSalary || profile.timezone || profile.phone ||
+      profile.city || profile.country || profile.linkedinUrl ||
+      profile.portfolioUrl || profile.bio
+
+    if (!hasAnyData) return null
+
+    return (
+      <div className="mb-6 p-4 md:p-5 bg-slate-50 border border-slate-200 rounded-xl">
+        <div className="flex items-center gap-2 mb-4">
+          <User className="w-4 h-4 text-slate-600" />
+          <h3 className="text-xs font-bold text-slate-700 uppercase tracking-wide">
+            Candidate Profile
+          </h3>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-x-6 gap-y-3 text-sm">
+          {profile.fullName && (
+            <div>
+              <p className="text-xs text-slate-400 uppercase">Full Name</p>
+              <p className="text-slate-800 font-medium">{profile.fullName}</p>
+            </div>
+          )}
+          {profile.primarySkill && (
+            <div>
+              <p className="text-xs text-slate-400 uppercase">Primary Skill</p>
+              <p className="text-slate-800 font-medium">{profile.primarySkill}</p>
+            </div>
+          )}
+          {profile.yearsExp !== null && profile.yearsExp !== undefined && (
+            <div>
+              <p className="text-xs text-slate-400 uppercase">Experience</p>
+              <p className="text-slate-800">{profile.yearsExp} yrs</p>
+            </div>
+          )}
+          {profile.expectedSalary && (
+            <div>
+              <p className="text-xs text-slate-400 uppercase">Expected Salary</p>
+              <p className="text-slate-800">${profile.expectedSalary.toLocaleString()}/yr</p>
+            </div>
+          )}
+          {profile.timezone && (
+            <div>
+              <p className="text-xs text-slate-400 uppercase">Timezone</p>
+              <p className="text-slate-800">{profile.timezone}</p>
+            </div>
+          )}
+          {profile.phone && (
+            <div>
+              <p className="text-xs text-slate-400 uppercase">Phone</p>
+              <p className="text-slate-800">{profile.phone}</p>
+            </div>
+          )}
+          {(profile.city || profile.country) && (
+            <div>
+              <p className="text-xs text-slate-400 uppercase">Location</p>
+              <p className="text-slate-800">
+                {[profile.city, profile.country].filter(Boolean).join(', ')}
+              </p>
+            </div>
+          )}
+        </div>
+
+        {profile.bio && (
+          <div className="mt-4 pt-4 border-t border-slate-200">
+            <p className="text-xs text-slate-400 uppercase mb-1">Bio</p>
+            <p className="text-sm text-slate-700 whitespace-pre-wrap">{profile.bio}</p>
+          </div>
+        )}
+
+        {(profile.linkedinUrl || profile.portfolioUrl) && (
+          <div className="mt-4 pt-4 border-t border-slate-200 flex flex-wrap gap-4 text-sm">
+            {profile.linkedinUrl && (
+              <a
+                href={profile.linkedinUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-600 hover:underline font-medium"
+              >
+                LinkedIn →
+              </a>
+            )}
+            {profile.portfolioUrl && (
+              <a
+                href={profile.portfolioUrl}
+                target="_blank"
+                rel="noreferrer"
+                className="text-blue-600 hover:underline font-medium"
+              >
+                Portfolio →
+              </a>
+            )}
+          </div>
+        )}
+      </div>
+    )
+  }
+
   return (
     <>
       <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6">
@@ -168,6 +277,9 @@ export default function ApplicationsView({
                   {selectedApp.cv_url && <ViewCVButton url={selectedApp.cv_url} />}
                 </div>
               </div>
+
+              {/* Candidate Profile Card */}
+              {renderProfileCard(selectedApp.userId)}
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3 mb-6">

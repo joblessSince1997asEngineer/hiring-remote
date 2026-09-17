@@ -19,6 +19,10 @@ export default async function ApplicationsPage() {
   })
 
   const interviews = await prisma.interview.findMany()
+    const candidateIds = [...new Set(applications.map(a => a.userId))]
+  const profiles = await prisma.candidateProfile.findMany({
+    where: { userId: { in: candidateIds } },
+  })
 
   return (
     <div className="p-6 md:p-10">
@@ -31,9 +35,10 @@ export default async function ApplicationsPage() {
         </p>
       </div>
 
-            <ApplicationsView
+                  <ApplicationsView
         applications={JSON.parse(JSON.stringify(applications))}
         interviews={JSON.parse(JSON.stringify(interviews))}
+        profiles={JSON.parse(JSON.stringify(profiles))}
         role={role}
       />
     </div>

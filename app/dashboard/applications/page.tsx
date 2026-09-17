@@ -13,10 +13,12 @@ export default async function ApplicationsPage() {
   const role = roleRow?.role || 'candidate'
 
   // Fetch ALL applications with their related job
-  const applications = await prisma.application.findMany({
+    const applications = await prisma.application.findMany({
     orderBy: { appliedAt: 'desc' },
     include: { job: true },
   })
+
+  const interviews = await prisma.interview.findMany()
 
   return (
     <div className="p-6 md:p-10">
@@ -29,8 +31,9 @@ export default async function ApplicationsPage() {
         </p>
       </div>
 
-      <ApplicationsView
+            <ApplicationsView
         applications={JSON.parse(JSON.stringify(applications))}
+        interviews={JSON.parse(JSON.stringify(interviews))}
         role={role}
       />
     </div>

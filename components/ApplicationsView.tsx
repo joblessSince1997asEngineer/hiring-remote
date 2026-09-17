@@ -2,13 +2,15 @@
 import { useState } from 'react'
 import ViewCVButton from '@/components/ViewCVButton'
 import HireRequestModal from '@/components/HireRequestModal'
-import { CheckCircle, XCircle, Calendar, X } from 'lucide-react'
+import { CheckCircle, XCircle, Calendar, X, Lock } from 'lucide-react'
 
 export default function ApplicationsView({
   applications,
+  interviews,
   role,
 }: {
   applications: any[]
+  interviews: any[]
   role: string
 }) {
   const [selectedApp, setSelectedApp] = useState<any>(applications[0] || null)
@@ -18,6 +20,11 @@ export default function ApplicationsView({
   const [hirePrompt, setHirePrompt] = useState<any>(null)
 
   const isAdmin = role === 'admin' || role === 'super_admin'
+
+  const getInterviewStatus = (applicationId: string) => {
+    const interview = interviews.find((i: any) => i.applicationId === applicationId)
+    return interview?.status || 'none'
+  }
 
   const handleAction = async (
     jobId: string,
@@ -105,7 +112,7 @@ export default function ApplicationsView({
   return (
     <>
       <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6">
-        
+
         {/* Left Pane: Application List */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden max-h-[80vh] overflow-y-auto">
           {applications.length === 0 ? (
@@ -173,14 +180,12 @@ export default function ApplicationsView({
                   Request Interview
                 </button>
 
-                {/* Confirm Hire — different for admin vs client */}
+                {/* Confirm Hire / Request Hire — role + interview gated */}
                 <button
                   onClick={() => {
                     if (isAdmin) {
-                      // Admin: direct hire (unchanged for now)
                       handleAction(selectedApp.jobId, selectedApp.id, selectedApp.userId, 'hire')
                     } else {
-                      // Client: open plan picker modal
                       setHirePrompt({
                         jobId: selectedApp.jobId,
                         candidateId: selectedApp.userId,
@@ -188,11 +193,23 @@ export default function ApplicationsView({
                       })
                     }
                   }}
-                  disabled={actionLoading !== null}
-                  className="bg-green-600 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
+                  disabled={
+                    actionLoading !== null ||
+                    (!isAdmin && getInterviewStatus(selectedApp.id) !== 'completed')
+                  }
+                  className="bg-green-600 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
-                  <CheckCircle className="w-4 h-4" />
-                  {actionLoading === 'hire' ? 'Hiring...' : isAdmin ? 'Confirm Hire' : 'Request Hire'}
+                  {!isAdmin && getInterviewStatus(selectedApp.id) !== 'completed' ? (
+                    <>
+                      <Lock className="w-4 h-4" />
+                      Interview Required
+                    </>
+                  ) : (
+                    <>
+                      <CheckCircle className="w-4 h-4" />
+                      {actionLoading === 'hire' ? 'Hiring...' : isAdmin ? 'Confirm Hire' : 'Request Hire'}
+                    </>
+                  )}
                 </button>
 
                 <button
@@ -208,6 +225,25 @@ export default function ApplicationsView({
                   Reject
                 </button>
               </div>
+
+              {/* Amber warning — client only, when interview not complete */}
+              {!isAdmin && getInterviewStatus(selectedApp.id) !== 'completed' && (
+                <div className="w-full mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
+                  <p className="font-semibold mb-1">Interview required first</p>
+                  <p className="text-xs">
+                    {getInterviewStatus(selectedApp.id) === 'completion_requested' &&
+                      'Status: Awaiting admin confirmation of interview completion.'}
+                    {getInterviewStatus(selectedApp.id) === 'scheduled' &&
+                      'Status: Interview scheduled — wait for it to be marked complete.'}
+                    {getInterviewStatus(selectedApp.id) === 'pending' &&
+                      'Status: Interview pending — admin needs to schedule it.'}
+                    {getInterviewStatus(selectedApp.id) === 'none' &&
+                      'Status: No interview requested yet. Please request an interview first.'}
+                    {getInterviewStatus(selectedApp.id) === 'cancelled' &&
+                      'Status: Interview was cancelled. Please request a new one.'}
+                  </p>
+                </div>
+              )}
 
               {/* Hire request pending info (client view) */}
               {!isAdmin && selectedApp.status === 'hire_pending' && (

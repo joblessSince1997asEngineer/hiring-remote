@@ -72,6 +72,7 @@ model User {
   createdAt DateTime @default(now())
   notifications  Notification[]
   subscription   Subscription?
+  candidateProfile  CandidateProfile?
 }
 model Job_Assignments {
   id           String   @id @default(cuid())
@@ -183,4 +184,25 @@ model Notification {
 
   @@index([userId, read])
   @@index([userId, createdAt])
+}
+model CandidateProfile {
+  id              String   @id @default(cuid())
+  userId          String   @unique
+  fullName        String?
+  avatarUrl       String?
+  primarySkill    String?
+  yearsExp        Int?
+  expectedSalary  Int?
+  timezone        String?
+  phone           String?
+  city            String?
+  country         String?
+  linkedinUrl     String?
+  portfolioUrl    String?
+  bio             String?
+  cvUrl           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }

@@ -4,8 +4,27 @@ html, body {
   overflow-x: hidden;
   max-width: 100vw;
 }
+
 @media (max-width: 640px) {
   html {
     font-size: 17px; /* default is 16 — this makes 1rem = 17px, everything scales up */
   }
+}
+
+/* Tailwind v4 removed the default pointer cursor on buttons.
+   This restores it site-wide. */
+button:not(:disabled),
+[role="button"]:not([aria-disabled="true"]),
+input[type="submit"]:not(:disabled),
+input[type="button"]:not(:disabled),
+input[type="reset"]:not(:disabled) {
+  cursor: pointer;
+}
+
+button:disabled,
+[aria-disabled="true"] {
+  cursor: not-allowed;
+}
+button:not(:disabled):active {
+  transform: scale(0.98);
 }

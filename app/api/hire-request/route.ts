@@ -26,9 +26,9 @@ export async function POST(request: Request) {
       orderBy: { appliedAt: 'desc' },
     })
 
-    if (!application) {
-      return NextResponse.json({ error: 'Application not found' }, { status: 404 })
-    }
+    if (['hire_pending', 'awaiting_payment', 'hired', 'hire_cancelled'].includes(application.status)) {
+  return NextResponse.json({ error: 'This application is already past hire request stage' }, { status: 400 })
+}
 
     // Update with hire request details
     const updated = await prisma.application.update({

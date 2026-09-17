@@ -1,10 +1,10 @@
 'use client'
 
 import Link from 'next/link'
-import { usePathname, useRouter } from 'next/navigation'
+import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Briefcase, Users, FileText, Calendar,
-  Inbox, BarChart3, Settings, LogOut,
+  Inbox, BarChart3, Settings, LogOut, CheckSquare,
 } from 'lucide-react'
 
 export default function DashboardSidebar({
@@ -17,11 +17,10 @@ export default function DashboardSidebar({
   onClose: () => void
 }) {
   const pathname = usePathname()
-  const router = useRouter()
 
   const handleLogout = () => {
     document.cookie = 'userId=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
-    router.push('/')
+    window.location.href = '/'
   }
 
   const menuItems = [
@@ -30,6 +29,7 @@ export default function DashboardSidebar({
     { href: '/dashboard/candidates', label: 'Candidates', icon: Users, roles: ['admin', 'recruiter'] },
     { href: '/dashboard/applications', label: 'Applications', icon: FileText, roles: ['admin', 'recruiter'] },
     { href: '/dashboard/interviews', label: 'Interviews', icon: Calendar, roles: ['admin', 'recruiter'] },
+    { href: '/dashboard/hire-approvals', label: 'Hire Approvals', icon: CheckSquare, roles: ['admin'] },
     { href: '/dashboard/client-requests', label: 'Client Requests', icon: Inbox, roles: ['admin'] },
     { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3, roles: ['admin'] },
     { href: '/dashboard/team', label: 'Team Management', icon: Settings, roles: ['admin'] },

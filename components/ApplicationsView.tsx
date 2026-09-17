@@ -32,6 +32,14 @@ export default function ApplicationsView({
     return profiles.find((p: any) => p.userId === userId) || null
   }
 
+  // Client-side gate: can a client request a hire right now?
+  const canClientRequestHire = (app: any) => {
+    if (isAdmin) return true
+    const interviewDone = getInterviewStatus(app.id) === 'completed'
+    const notAlreadyRequested = !['hire_pending', 'awaiting_payment', 'hired', 'hire_cancelled'].includes(app.status)
+    return interviewDone && notAlreadyRequested
+  }
+
   const handleAction = async (
     jobId: string,
     applicationId: string,
@@ -284,7 +292,14 @@ export default function ApplicationsView({
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3 mb-6">
                 <button
-                  onClick={() => { setInterviewPrompt({ jobId: selectedApp.jobId, applicationId: selectedApp.id, candidateId: selectedApp.userId }); setWantToAttend(true); }}
+                  onClick={() => {
+                    setInterviewPrompt({
+                      jobId: selectedApp.jobId,
+                      applicationId: selectedApp.id,
+                      candidateId: selectedApp.userId,
+                    })
+                    setWantToAttend(true)
+                  }}
                   disabled={actionLoading !== null}
                   className="bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-slate-800 disabled:opacity-50 flex items-center gap-2"
                 >
@@ -292,10 +307,12 @@ export default function ApplicationsView({
                   Request Interview
                 </button>
 
-                {/* Confirm Hire / Request Hire — role + interview gated */}
+                {/* Confirm Hire / Request Hire — role + interview + status gated */}
                 <button
                   onClick={() => {
-                    if (isAdmin) {
+                    if (isAdmin && selectedApp.status === 'hire_pending') {
+                      window.location.href = '/dashboard/hire-approvals'
+                    } else if (isAdmin) {
                       handleAction(selectedApp.jobId, selectedApp.id, selectedApp.userId, 'hire')
                     } else {
                       setHirePrompt({
@@ -305,10 +322,7 @@ export default function ApplicationsView({
                       })
                     }
                   }}
-                  disabled={
-                    actionLoading !== null ||
-                    (!isAdmin && getInterviewStatus(selectedApp.id) !== 'completed')
-                  }
+                  disabled={actionLoading !== null || !canClientRequestHire(selectedApp)}
                   className="bg-green-600 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   {!isAdmin && getInterviewStatus(selectedApp.id) !== 'completed' ? (
@@ -316,10 +330,24 @@ export default function ApplicationsView({
                       <Lock className="w-4 h-4" />
                       Interview Required
                     </>
+                  ) : !isAdmin && ['hire_pending', 'awaiting_payment', 'hired', 'hire_cancelled'].includes(selectedApp.status) ? (
+                    <>
+                      <Lock className="w-4 h-4" />
+                      {selectedApp.status === 'hire_pending' ? 'Hire Requested' :
+                       selectedApp.status === 'awaiting_payment' ? 'Awaiting Payment' :
+                       selectedApp.status === 'hired' ? 'Hired' :
+                       'Hire Cancelled'}
+                    </>
                   ) : (
                     <>
                       <CheckCircle className="w-4 h-4" />
-                      {actionLoading === 'hire' ? 'Hiring...' : isAdmin ? 'Confirm Hire' : 'Request Hire'}
+                      {actionLoading === 'hire'
+                        ? 'Hiring...'
+                        : isAdmin && selectedApp.status === 'hire_pending'
+                          ? 'Go to Approvals →'
+                          : isAdmin
+                            ? 'Confirm Hire'
+                            : 'Request Hire'}
                     </>
                   )}
                 </button>
@@ -338,10 +366,14 @@ export default function ApplicationsView({
                 </button>
               </div>
 
-              {/* Amber warning — client only, when interview not complete */}
-              {!isAdmin && getInterviewStatus(selectedApp.id) !== 'completed' && (
+              {/* Amber warning — client only, when interview not complete OR status blocked */}
+              {!isAdmin && !canClientRequestHire(selectedApp) && (
                 <div className="w-full mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
-                  <p className="font-semibold mb-1">Interview required first</p>
+                  <p className="font-semibold mb-1">
+                    {getInterviewStatus(selectedApp.id) !== 'completed'
+                      ? 'Interview required first'
+                      : 'Hire request already in progress'}
+                  </p>
                   <p className="text-xs">
                     {getInterviewStatus(selectedApp.id) === 'completion_requested' &&
                       'Status: Awaiting admin confirmation of interview completion.'}
@@ -353,6 +385,12 @@ export default function ApplicationsView({
                       'Status: No interview requested yet. Please request an interview first.'}
                     {getInterviewStatus(selectedApp.id) === 'cancelled' &&
                       'Status: Interview was cancelled. Please request a new one.'}
+                    {getInterviewStatus(selectedApp.id) === 'completed' && selectedApp.status === 'hire_pending' &&
+                      'Status: You already sent a hire request. Waiting for admin approval.'}
+                    {getInterviewStatus(selectedApp.id) === 'completed' && selectedApp.status === 'awaiting_payment' &&
+                      'Status: Hire approved. Please pay the invoice within 15 days.'}
+                    {getInterviewStatus(selectedApp.id) === 'completed' && selectedApp.status === 'hired' &&
+                      'Status: You already hired this candidate. 🎉'}
                   </p>
                 </div>
               )}

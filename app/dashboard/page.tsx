@@ -2,7 +2,7 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
-import { Briefcase, Users, FileText, Calendar } from 'lucide-react'
+import { Briefcase, Users, FileText, Calendar, CheckSquare, DollarSign } from 'lucide-react'
 
 export default async function DashboardOverview() {
   const cookieStore = await cookies()
@@ -12,11 +12,20 @@ export default async function DashboardOverview() {
   const role = await prisma.roles.findUnique({ where: { user_id: userId } })
   if (!role) redirect('/login')
 
-  const [activeJobs, totalCandidates, totalApplications, totalInterviews] = await Promise.all([
+  const [
+    activeJobs,
+    totalCandidates,
+    totalApplications,
+    totalInterviews,
+    pendingApprovals,
+    pendingInvoices,
+  ] = await Promise.all([
     prisma.job.count(),
-    prisma.profiles.count(),
+    prisma.candidateProfile.count(),
     prisma.application.count(),
     prisma.interview.count({ where: { status: 'pending' } }),
+    prisma.application.count({ where: { status: 'hire_pending' } }),
+    prisma.invoice.count({ where: { status: 'pending' } }),
   ])
 
   const recentApplications = await prisma.application.findMany({
@@ -27,9 +36,11 @@ export default async function DashboardOverview() {
 
   const kpis = [
     { label: 'Active Jobs', value: activeJobs, icon: Briefcase, color: 'bg-blue-500', href: '/dashboard/jobs' },
-    { label: 'Total Candidates', value: totalCandidates, icon: Users, color: 'bg-green-500', href: '/dashboard/candidates' },
+    { label: 'Candidates', value: totalCandidates, icon: Users, color: 'bg-green-500', href: '/dashboard/candidates' },
     { label: 'Applications', value: totalApplications, icon: FileText, color: 'bg-yellow-500', href: '/dashboard/applications' },
     { label: 'Interviews Pending', value: totalInterviews, icon: Calendar, color: 'bg-purple-500', href: '/dashboard/interviews' },
+    { label: 'Hire Approvals', value: pendingApprovals, icon: CheckSquare, color: 'bg-orange-500', href: '/dashboard/hire-approvals' },
+    { label: 'Invoices Due', value: pendingInvoices, icon: DollarSign, color: 'bg-rose-500', href: '/dashboard/hire-approvals' },
   ]
 
   return (
@@ -40,7 +51,7 @@ export default async function DashboardOverview() {
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-10">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
         {kpis.map((kpi) => {
           const Icon = kpi.icon
           return (
@@ -87,10 +98,12 @@ export default async function DashboardOverview() {
                   <span className={`text-xs font-medium px-3 py-1 rounded-full capitalize ${
                     app.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
                     app.status === 'shortlisted' ? 'bg-blue-100 text-blue-700' :
+                    app.status === 'hire_pending' ? 'bg-purple-100 text-purple-700' :
+                    app.status === 'awaiting_payment' ? 'bg-orange-100 text-orange-700' :
                     app.status === 'hired' ? 'bg-green-100 text-green-700' :
                     'bg-red-100 text-red-700'
                   }`}>
-                    {app.status}
+                    {app.status === 'hire_pending' ? 'Hire Pending' : app.status}
                   </span>
                 </div>
               ))}
@@ -108,6 +121,15 @@ export default async function DashboardOverview() {
               <Link href="/dashboard/post" className="block no-underline">
                 <div className="w-full bg-black text-white py-3 px-4 rounded-lg font-semibold text-sm text-center hover:bg-slate-800 transition-colors">
                   + Post a New Job
+                </div>
+              </Link>
+            )}
+
+            {/* Hire Approvals - Admin Only */}
+            {role.role === 'admin' && pendingApprovals > 0 && (
+              <Link href="/dashboard/hire-approvals" className="block no-underline">
+                <div className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg font-semibold text-sm text-center hover:bg-orange-600 transition-colors">
+                  Hire Approvals ({pendingApprovals})
                 </div>
               </Link>
             )}

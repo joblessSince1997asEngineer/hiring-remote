@@ -206,3 +206,15 @@ model CandidateProfile {
 
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+model ContactMessage {
+  id         String   @id @default(cuid())
+  firstName  String
+  lastName   String
+  email      String
+  company    String?
+  message    String
+  read       Boolean  @default(false)
+  createdAt  DateTime @default(now())
+
+  @@index([read, createdAt])
+}

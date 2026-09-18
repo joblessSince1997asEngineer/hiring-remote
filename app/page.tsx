@@ -119,7 +119,7 @@ export default function HomePage() {
       {/* Row 3: Our Pricing */}
       <div className="w-full max-w-6xl mx-auto">
         <h2 className="text-2xl md:text-4xl font-bold mb-8 text-white">Our Pricing</h2>
-        
+
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 text-left">
           {/* Pricing Card 1 */}
           <div className="bg-[#1e293b] rounded-2xl p-6 shadow-lg border border-slate-700/50">
@@ -149,28 +149,40 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* Pricing Card 3 */}
-          <div className="bg-[#1e293b] rounded-2xl p-6 shadow-lg border border-slate-700/50">
-            <div className="font-bold text-white mb-4 text-lg">Monthly Subscription</div>
+          {/* Pricing Card 3 — Annual Subscription */}
+          <div className="bg-[#1e293b] rounded-2xl p-6 shadow-lg border-2 border-[#facc15] relative">
+            <div className="absolute -top-3 right-4 bg-[#facc15] text-black text-[10px] font-bold px-3 py-1 rounded-full">
+              MOST POPULAR
+            </div>
+
+            <div className="font-bold text-white mb-1 text-lg">Annual Subscription</div>
+            <div className="mb-4">
+              <span className="text-3xl font-black text-white">$5,000</span>
+              <span className="text-slate-400 text-sm"> / year</span>
+              <p className="text-[10px] text-slate-400 mt-1">Renews at $4,000/year</p>
+            </div>
+
             <div className="flex justify-between border-b border-slate-700 pb-3 mb-3">
               <span className="text-white">Starter</span>
-              <span className="text-[#2563eb] font-semibold">3 hires/month</span>
+              <span className="text-[#facc15] font-semibold">50% off / hire</span>
             </div>
             <div className="flex justify-between border-b border-slate-700 pb-3 mb-3">
               <span className="text-white">Growth</span>
-              <span className="text-[#2563eb] font-semibold">10 hires/month</span>
+              <span className="text-[#facc15] font-semibold">25% off / hire</span>
             </div>
-            <div className="flex justify-between">
+            <div className="flex justify-between mb-4">
               <span className="text-white">Enterprise</span>
-              <span className="text-[#2563eb] font-semibold">Unlimited</span>
+              <span className="text-[#facc15] font-semibold">15% off / hire</span>
             </div>
-            <Link href="/pricing" className="inline-flex items-center gap-1 text-sm font-medium text-[#2563eb] hover:text-blue-400 transition-colors mt-4">
+            <Link
+              href="/pricing"
+              className="inline-flex items-center gap-1 text-sm font-medium text-[#facc15] hover:text-yellow-300 transition-colors"
+            >
               View Full Pricing →
             </Link>
-          </div>
+                    </div>
         </div>
       </div>
-
     </div>
   )
 }

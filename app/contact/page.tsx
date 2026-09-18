@@ -66,7 +66,7 @@ export default function ContactPage() {
               <div>
                 <h3 className="font-semibold text-[#0f172a]">Email us</h3>
                 <p className="text-sm text-slate-500">Our friendly team is here to help.</p>
-                <p className="text-sm text-blue-600 font-medium">hello@hiringremote.com</p>
+                <p className="text-sm text-blue-600 font-medium">hr@remotehirring.com</p>
               </div>
             </div>
 

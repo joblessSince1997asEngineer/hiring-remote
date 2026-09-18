@@ -1,5 +1,6 @@
 import './globals.css'
 import ConditionalChrome from '@/components/ConditionalChrome'
+import { Toaster } from 'sonner'
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
@@ -8,6 +9,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <ConditionalChrome>
           {children}
         </ConditionalChrome>
+        <Toaster position="top-right" richColors closeButton />
       </body>
     </html>
   )

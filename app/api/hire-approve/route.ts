@@ -1,3 +1,4 @@
+import { getUserId } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
@@ -11,7 +12,7 @@ const TIER_DISCOUNTS: Record<string, number> = {
 export async function POST(request: Request) {
   try {
     const cookieStore = await cookies()
-    const userId = cookieStore.get('userId')?.value
+    const userId = await getUserId()
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
     // Verify admin

@@ -1,12 +1,12 @@
 'use server'
+
+import { getUserId } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { cookies } from 'next/headers'
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
 export async function postJob(prevState: unknown, formData: FormData) {
-  const cookieStore = await cookies()
-  const userId = cookieStore.get('userId')?.value
+  const userId = await getUserId()
 
   if (!userId) throw new Error('Unauthorized')
 

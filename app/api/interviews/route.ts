@@ -1,3 +1,4 @@
+import { getUserId } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
@@ -7,7 +8,7 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: Request) {
   const cookieStore = await cookies()
-  const userId = cookieStore.get('userId')?.value
+  const userId = await getUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const { applicationId, jobId, candidateId, requestedBy } = await request.json()
@@ -24,7 +25,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   const cookieStore = await cookies()
-  const userId = cookieStore.get('userId')?.value
+  const userId = await getUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const roleRecord = await prisma.roles.findUnique({ where: { user_id: userId } })

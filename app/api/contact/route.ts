@@ -1,11 +1,20 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { Resend } from 'resend'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export async function POST(request: Request) {
   try {
+    const ip = getClientIp(request)
+const rl = rateLimit(`contact:${ip}`, 3, 60 * 60 * 1000) // 3 messages / hour
+if (!rl.ok) {
+  return NextResponse.json(
+    { error: `Too many messages. Try again in ${Math.ceil(rl.retryAfterSeconds / 60)} min.` },
+    { status: 429 }
+  )
+}
     const { firstName, lastName, email, company, message } = await request.json()
 
     if (!firstName || !lastName || !email || !message) {

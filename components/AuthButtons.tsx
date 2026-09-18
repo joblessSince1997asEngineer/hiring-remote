@@ -30,14 +30,23 @@ export default function AuthButtons() {
     window.location.href = '/'
   }
 
-  // While loading
-  if (role === undefined) return null
+  // Loading → show a skeleton placeholder (matches avatar size, no layout shift)
+  if (role === undefined) {
+    return (
+      <div
+        className="w-10 h-10 rounded-full bg-slate-200 animate-pulse"
+        aria-hidden="true"
+      />
+    )
+  }
 
   // Guest (Not logged in)
   if (role === null) {
     return (
       <>
-        <Link href="/login" className="no-underline text-slate-700 font-medium text-sm hover:text-blue-600">Log in</Link>
+        <Link href="/login" className="no-underline text-slate-700 font-medium text-sm hover:text-blue-600">
+          Log in
+        </Link>
         <Link href="/sign-up">
           <button className="bg-black text-white no-underline px-4 md:px-5 py-2 rounded-full font-semibold text-xs md:text-sm cursor-pointer">
             Get Started
@@ -59,7 +68,6 @@ export default function AuthButtons() {
 
       {isOpen && (
         <div className="absolute top-12 right-0 bg-white border border-slate-200 rounded-xl shadow-lg w-52 p-2 z-50">
-          {/* Dashboard link — only for Admin and Recruiter */}
           {(role === 'admin' || role === 'recruiter') && (
             <>
               <Link

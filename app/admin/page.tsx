@@ -1,3 +1,4 @@
+import { getUserId } from '@/lib/auth'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
@@ -5,7 +6,7 @@ import AdminSearch from '@/components/AdminSearch'
 
 export default async function AdminDashboardPage() {
   const cookieStore = await cookies()
-  const userId = cookieStore.get('userId')?.value
+  const userId = await getUserId()
   if (!userId) redirect('/login')
 
   const role = await prisma.roles.findUnique({ where: { user_id: userId } })

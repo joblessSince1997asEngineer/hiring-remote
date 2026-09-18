@@ -2,9 +2,21 @@ import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
+import { signSession } from '@/lib/session'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 export async function POST(request: Request) {
   try {
+    // Rate limit: 5 attempts per IP per 15 minutes
+    const ip = getClientIp(request)
+    const rl = rateLimit(`login:${ip}`, 5, 15 * 60 * 1000)
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: `Too many login attempts. Try again in ${Math.ceil(rl.retryAfterSeconds / 60)} min.` },
+        { status: 429 }
+      )
+    }
+
     const { email, password } = await request.json()
 
     const user = await prisma.user.findUnique({ where: { email } })
@@ -45,7 +57,7 @@ export async function POST(request: Request) {
     }
 
     const cookieStore = await cookies()
-    cookieStore.set('userId', user.id, {
+    cookieStore.set('userId', signSession(user.id), {
       path: '/',
       httpOnly: true,
       sameSite: 'lax',

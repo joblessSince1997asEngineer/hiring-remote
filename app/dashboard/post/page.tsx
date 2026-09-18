@@ -1,3 +1,4 @@
+import { getUserId } from '@/lib/auth'
 import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
@@ -5,7 +6,7 @@ import { PostJobForm } from '@/components/PostJobForm'
 
 export default async function PostJobPage() {
   const cookieStore = await cookies()
-  const userId = cookieStore.get('userId')?.value
+  const userId = await getUserId()
   if (!userId) redirect('/login')
 
   const role = await prisma.roles.findUnique({ where: { user_id: userId } })

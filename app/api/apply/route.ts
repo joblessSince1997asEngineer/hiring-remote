@@ -1,13 +1,23 @@
+import { getUserId } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 export async function POST(request: Request) {
   const cookieStore = await cookies()
-  const userId = cookieStore.get('userId')?.value || 'guest'
+  const userId = (await getUserId()) || 'guest'
   const { jobId, formData } = await request.json()
 
   try {
+    const ip = getClientIp(request)
+const rl = rateLimit(`apply:${ip}`, 10, 60 * 60 * 1000) // 10 applications / hour
+if (!rl.ok) {
+  return NextResponse.json(
+    { error: `Too many applications. Please try again in ${Math.ceil(rl.retryAfterSeconds / 60)} min.` },
+    { status: 429 }
+  )
+}
     // 1. Save the full application with ALL form data
     await prisma.application.create({
       data: {

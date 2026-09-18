@@ -3,6 +3,7 @@ import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 
+
 export async function POST(request: Request) {
   try {
     const { email, password, role } = await request.json()

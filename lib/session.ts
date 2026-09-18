@@ -1,18 +1,19 @@
 import crypto from 'crypto'
 
-const SECRET = process.env.SESSION_SECRET
-
-if (!SECRET) {
-  throw new Error('SESSION_SECRET is not set in .env')
+function getSecret(): string {
+  const secret = process.env.SESSION_SECRET
+  if (!secret) {
+    throw new Error('SESSION_SECRET is not configured')
+  }
+  return secret
 }
-
 /**
  * Creates a signed token: userId.signature
  * The signature is an HMAC of the userId using SESSION_SECRET.
  */
 export function signSession(userId: string): string {
   const signature = crypto
-    .createHmac('sha256', SECRET as string)
+        .createHmac('sha256', getSecret())
     .update(userId)
     .digest('base64url')
   return `${userId}.${signature}`
@@ -31,7 +32,7 @@ export function verifySession(token: string | undefined): string | null {
   if (!userId || !signature) return null
 
   const expected = crypto
-    .createHmac('sha256', SECRET as string)
+        .createHmac('sha256', getSecret())
     .update(userId)
     .digest('base64url')
 

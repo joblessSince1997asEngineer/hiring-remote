@@ -1,13 +1,11 @@
 'use client'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
-import { useRouter } from 'next/navigation'
 
 export default function AuthButtons() {
   const [role, setRole] = useState<string | null | undefined>(undefined)
   const [email, setEmail] = useState<string>('')
   const [isOpen, setIsOpen] = useState(false)
-  const router = useRouter()
 
   useEffect(() => {
     async function fetchUser() {
@@ -27,9 +25,9 @@ export default function AuthButtons() {
     fetchUser()
   }, [])
 
-  const handleLogout = () => {
-    document.cookie = 'userId=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
-    router.push('/')
+  const handleLogout = async () => {
+    await fetch('/api/logout', { method: 'POST' })
+    window.location.href = '/'
   }
 
   // While loading

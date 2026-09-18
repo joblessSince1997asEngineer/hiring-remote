@@ -18,8 +18,8 @@ export default function DashboardSidebar({
 }) {
   const pathname = usePathname()
 
-  const handleLogout = () => {
-    document.cookie = 'userId=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT'
+    const handleLogout = async () => {
+    await fetch('/api/logout', { method: 'POST' })
     window.location.href = '/'
   }
 

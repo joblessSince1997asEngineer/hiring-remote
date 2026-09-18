@@ -1,15 +1,12 @@
 import { getUserId } from '@/lib/auth'
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import CandidatesTable from '@/components/CandidatesTable'
 
 export default async function CandidatesPage() {
-  const cookieStore = await cookies()
   const userId = await getUserId()
   if (!userId) redirect('/login')
 
-  // Fetch all jobs to populate the assign dropdown
   const jobs = await prisma.job.findMany({
     orderBy: { postedAt: 'desc' },
     select: { id: true, title: true },

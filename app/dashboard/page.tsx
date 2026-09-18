@@ -1,47 +1,136 @@
 import { getUserId } from '@/lib/auth'
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Briefcase, Users, FileText, Calendar, CheckSquare, DollarSign } from 'lucide-react'
 
 export default async function DashboardOverview() {
-  const cookieStore = await cookies()
   const userId = await getUserId()
   if (!userId) redirect('/login')
 
-  const role = await prisma.roles.findUnique({ where: { user_id: userId } })
-  if (!role) redirect('/login')
+  const roleRow = await prisma.roles.findUnique({ where: { user_id: userId } })
+  if (!roleRow) redirect('/login')
 
-  const [
-    activeJobs,
-    totalCandidates,
-    totalApplications,
-    totalInterviews,
-    pendingApprovals,
-    pendingInvoices,
-  ] = await Promise.all([
-    prisma.job.count(),
-    prisma.candidateProfile.count(),
-    prisma.application.count(),
-    prisma.interview.count({ where: { status: 'pending' } }),
-    prisma.application.count({ where: { status: 'hire_pending' } }),
-    prisma.invoice.count({ where: { status: 'pending' } }),
-  ])
+  const isAdmin = roleRow.role === 'admin' || roleRow.role === 'super_admin'
 
-  const recentApplications = await prisma.application.findMany({
-    take: 5,
-    orderBy: { appliedAt: 'desc' },
-    include: { job: true },
-  })
+  // ─── Admin: global counts ───
+  // ─── Client (recruiter): only their own jobs' data ───
+  let activeJobs = 0
+  let totalCandidates = 0
+  let totalApplications = 0
+  let totalInterviews = 0
+  let pendingApprovals = 0
+  let pendingInvoices = 0
+  let recentApplications: any[] = []
+
+  if (isAdmin) {
+    ;[
+      activeJobs,
+      totalCandidates,
+      totalApplications,
+      totalInterviews,
+      pendingApprovals,
+      pendingInvoices,
+    ] = await Promise.all([
+      prisma.job.count(),
+      prisma.candidateProfile.count(),
+      prisma.application.count(),
+      prisma.interview.count({ where: { status: 'pending' } }),
+      prisma.application.count({ where: { status: 'hire_pending' } }),
+      prisma.invoice.count({ where: { status: 'pending' } }),
+    ])
+
+    recentApplications = await prisma.application.findMany({
+      take: 5,
+      orderBy: { appliedAt: 'desc' },
+      include: { job: true },
+    })
+  } else {
+    // Client — restrict everything to their own jobs
+    const myJobs = await prisma.job.findMany({
+      where: { recruiterId: userId },
+      select: { id: true },
+    })
+    const myJobIds = myJobs.map(j => j.id)
+
+    ;[
+      activeJobs,
+      totalApplications,
+      totalInterviews,
+      pendingApprovals,
+      pendingInvoices,
+    ] = await Promise.all([
+      prisma.job.count({ where: { recruiterId: userId } }),
+      prisma.application.count({ where: { jobId: { in: myJobIds } } }),
+      prisma.interview.count({ where: { jobId: { in: myJobIds }, status: 'pending' } }),
+      prisma.application.count({ where: { jobId: { in: myJobIds }, status: 'hire_pending' } }),
+      prisma.invoice.count({
+        where: {
+          status: 'pending',
+          application: { jobId: { in: myJobIds } },
+        },
+      }),
+    ])
+
+    // Candidates count = unique candidates who applied to their jobs
+    const uniqueCandidates = await prisma.application.findMany({
+      where: { jobId: { in: myJobIds } },
+      select: { userId: true },
+      distinct: ['userId'],
+    })
+    totalCandidates = uniqueCandidates.length
+
+    recentApplications = await prisma.application.findMany({
+      where: { jobId: { in: myJobIds } },
+      take: 5,
+      orderBy: { appliedAt: 'desc' },
+      include: { job: true },
+    })
+  }
 
   const kpis = [
-    { label: 'Active Jobs', value: activeJobs, icon: Briefcase, color: 'bg-blue-500', href: '/dashboard/jobs' },
-    { label: 'Candidates', value: totalCandidates, icon: Users, color: 'bg-green-500', href: '/dashboard/candidates' },
-    { label: 'Applications', value: totalApplications, icon: FileText, color: 'bg-yellow-500', href: '/dashboard/applications' },
-    { label: 'Interviews Pending', value: totalInterviews, icon: Calendar, color: 'bg-purple-500', href: '/dashboard/interviews' },
-    { label: 'Hire Approvals', value: pendingApprovals, icon: CheckSquare, color: 'bg-orange-500', href: '/dashboard/hire-approvals' },
-    { label: 'Invoices Due', value: pendingInvoices, icon: DollarSign, color: 'bg-rose-500', href: '/dashboard/hire-approvals' },
+    {
+      label: isAdmin ? 'Active Jobs' : 'My Jobs',
+      value: activeJobs,
+      icon: Briefcase,
+      color: 'bg-blue-500',
+      href: '/dashboard/jobs',
+    },
+    {
+      label: isAdmin ? 'Candidates' : 'Candidates in My Jobs',
+      value: totalCandidates,
+      icon: Users,
+      color: 'bg-green-500',
+      href: '/dashboard/candidates',
+    },
+    {
+      label: 'Applications',
+      value: totalApplications,
+      icon: FileText,
+      color: 'bg-yellow-500',
+      href: '/dashboard/applications',
+    },
+    {
+      label: 'Interviews Pending',
+      value: totalInterviews,
+      icon: Calendar,
+      color: 'bg-purple-500',
+      href: '/dashboard/interviews',
+    },
+    {
+      label: 'Hire Approvals',
+      value: pendingApprovals,
+      icon: CheckSquare,
+      color: 'bg-orange-500',
+      href: '/dashboard/hire-approvals',
+    },
+    {
+      label: 'Invoices Due',
+      value: pendingInvoices,
+      icon: DollarSign,
+      color: 'bg-rose-500',
+      href: '/dashboard/hire-approvals',
+    },
   ]
 
   return (
@@ -71,7 +160,7 @@ export default async function DashboardOverview() {
 
       {/* Recent Applications + Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
+
         {/* Recent Applications */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
           <div className="flex justify-between items-center mb-6">
@@ -115,10 +204,9 @@ export default async function DashboardOverview() {
         {/* Quick Actions */}
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
           <h2 className="text-xl font-bold text-[#0f172a] mb-6">Quick Actions</h2>
-          
+
           <div className="space-y-3">
-            {/* Post a Job - Admin Only */}
-            {role.role === 'admin' && (
+            {isAdmin && (
               <Link href="/dashboard/post" className="block no-underline">
                 <div className="w-full bg-black text-white py-3 px-4 rounded-lg font-semibold text-sm text-center hover:bg-slate-800 transition-colors">
                   + Post a New Job
@@ -126,23 +214,21 @@ export default async function DashboardOverview() {
               </Link>
             )}
 
-            {/* Hire Approvals - Admin Only */}
-            {role.role === 'admin' && pendingApprovals > 0 && (
+            {isAdmin && pendingApprovals > 0 && (
               <Link href="/dashboard/hire-approvals" className="block no-underline">
                 <div className="w-full bg-orange-500 text-white py-3 px-4 rounded-lg font-semibold text-sm text-center hover:bg-orange-600 transition-colors">
                   Hire Approvals ({pendingApprovals})
                 </div>
               </Link>
             )}
-            
+
             <Link href="/dashboard/candidates" className="block no-underline">
               <div className="w-full bg-white border border-slate-200 text-[#0f172a] py-3 px-4 rounded-lg font-semibold text-sm text-center hover:bg-slate-50 transition-colors">
                 View Talent Pool
               </div>
             </Link>
-            
-            {/* Manage Team - Admin Only */}
-            {role.role === 'admin' && (
+
+            {isAdmin && (
               <Link href="/dashboard/team" className="block no-underline">
                 <div className="w-full bg-white border border-slate-200 text-[#0f172a] py-3 px-4 rounded-lg font-semibold text-sm text-center hover:bg-slate-50 transition-colors">
                   Manage Team

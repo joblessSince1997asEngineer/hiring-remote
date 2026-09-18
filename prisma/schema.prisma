@@ -37,6 +37,7 @@ model Application {
     hirePlan        String?
   hireNotes       String?
   hireRequestedAt DateTime?
+  source          String   @default("self_applied")
 
 
   job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)

@@ -30,7 +30,6 @@ export default function AuthButtons() {
     window.location.href = '/'
   }
 
-  // Loading → show a skeleton placeholder (matches avatar size, no layout shift)
   if (role === undefined) {
     return (
       <div
@@ -40,7 +39,6 @@ export default function AuthButtons() {
     )
   }
 
-  // Guest (Not logged in)
   if (role === null) {
     return (
       <>
@@ -56,48 +54,56 @@ export default function AuthButtons() {
     )
   }
 
-  // Logged in (Any Role) → Show Only the Avatar
   return (
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-10 h-10 rounded-full bg-[#facc15] text-black font-bold border-none cursor-pointer text-base flex items-center justify-center"
+        aria-label="Account menu"
       >
         {email ? email.charAt(0).toUpperCase() : 'U'}
       </button>
 
       {isOpen && (
-        <div className="absolute top-12 right-0 bg-white border border-slate-200 rounded-xl shadow-lg w-52 p-2 z-50">
-          {(role === 'admin' || role === 'recruiter') && (
-            <>
-              <Link
-                href="/dashboard/applications"
-                onClick={() => setIsOpen(false)}
-                className="block p-2.5 text-slate-700 text-sm font-medium rounded-md hover:bg-slate-50 no-underline"
-              >
-                Dashboard
-              </Link>
-              <div className="border-t border-slate-200 my-1"></div>
-            </>
-          )}
-
-          <Link
-            href="/account"
+        <>
+          {/* Click-outside overlay — closes menu when tapping anywhere */}
+          <div
+            className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
-            className="block p-2.5 text-slate-700 text-sm font-medium rounded-md hover:bg-slate-50 no-underline"
-          >
-            My Account
-          </Link>
+          />
 
-          <div className="border-t border-slate-200 my-1"></div>
+          <div className="absolute top-12 right-0 bg-white border border-slate-200 rounded-xl shadow-lg w-52 p-2 z-50">
+            {(role === 'admin' || role === 'recruiter') && (
+              <>
+                <Link
+                  href="/dashboard/applications"
+                  onClick={() => setIsOpen(false)}
+                  className="block p-2.5 text-slate-700 text-sm font-medium rounded-md hover:bg-slate-50 no-underline"
+                >
+                  Dashboard
+                </Link>
+                <div className="border-t border-slate-200 my-1"></div>
+              </>
+            )}
 
-          <button
-            onClick={handleLogout}
-            className="block w-full text-left p-2.5 text-red-600 text-sm font-medium rounded-md hover:bg-red-50"
-          >
-            Log Out
-          </button>
-        </div>
+            <Link
+              href="/account"
+              onClick={() => setIsOpen(false)}
+              className="block p-2.5 text-slate-700 text-sm font-medium rounded-md hover:bg-slate-50 no-underline"
+            >
+              My Account
+            </Link>
+
+            <div className="border-t border-slate-200 my-1"></div>
+
+            <button
+              onClick={handleLogout}
+              className="block w-full text-left p-2.5 text-red-600 text-sm font-medium rounded-md hover:bg-red-50"
+            >
+              Log Out
+            </button>
+          </div>
+        </>
       )}
     </div>
   )

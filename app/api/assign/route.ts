@@ -1,10 +1,8 @@
 import { getUserId } from '@/lib/auth'
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(request: Request) {
-  const cookieStore = await cookies()
   const userId = await getUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -14,40 +12,41 @@ export async function POST(request: Request) {
   }
 
   const { candidateId, jobId } = await request.json()
+  if (!candidateId || !jobId) {
+    return NextResponse.json({ error: 'Missing candidateId or jobId' }, { status: 400 })
+  }
 
   try {
-    // Create the Assignment
-    await prisma.job_Assignments.create({
-      data: { candidate_id: candidateId, job_id: jobId },
-    })
-
-    // *** THE FIX: AUTOMATICALLY FETCH CV URL FROM PROFILE ***
-    // Check if the candidate has a CV in their Profile
+    // 1. Get candidate's profile for CV URL
     const profile = await prisma.profiles.findUnique({ where: { id: candidateId } })
 
-    // Create or Find the Application for this candidate & job
-    await prisma.application.upsert({
-      where: { 
-        // We need a unique key here, so we will just use the first one found
-        id: (await prisma.application.findFirst({ where: { jobId, userId: candidateId } }))?.id || 'new-app'
-      },
-      update: {
-        status: 'pending', // Reset status
-        cv_url: profile?.cv_url || null, // Save the CV URL from the profile
-      },
-      create: {
-        jobId,
-        userId: candidateId, // Use the candidate's ID
-        status: 'pending',
-        cv_url: profile?.cv_url || null, // Save the CV URL from the profile
-      },
+    // 2. Create or update the Application
+    const existing = await prisma.application.findFirst({
+      where: { jobId, userId: candidateId },
     })
+
+    if (existing) {
+      await prisma.application.update({
+        where: { id: existing.id },
+        data: {
+          cv_url: profile?.cv_url || existing.cv_url,
+        },
+      })
+    } else {
+      await prisma.application.create({
+        data: {
+          jobId,
+          userId: candidateId,
+          status: 'pending',
+          cv_url: profile?.cv_url || null,
+          source: 'admin_assigned',
+        },
+      })
+    }
 
     return NextResponse.json({ success: true })
   } catch (error: any) {
-    if (error.code === 'P2002') {
-      return NextResponse.json({ error: 'Candidate already assigned to this job' }, { status: 400 })
-    }
+    console.error('Assign error:', error)
     return NextResponse.json({ error: error.message || 'Server error' }, { status: 500 })
   }
 }

@@ -1,16 +1,13 @@
 import { getUserId } from '@/lib/auth'
-import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Plus } from 'lucide-react'
 
 export default async function DashboardJobsPage() {
-  const cookieStore = await cookies()
   const userId = await getUserId()
   if (!userId) redirect('/login')
 
-  // *** FETCH THE ROLE ***
   const role = await prisma.roles.findUnique({ where: { user_id: userId } })
   if (!role) redirect('/login')
 
@@ -26,8 +23,7 @@ export default async function DashboardJobsPage() {
           <h1 className="text-3xl font-bold text-[#0f172a] mb-1">Jobs</h1>
           <p className="text-slate-500">Manage all posted jobs.</p>
         </div>
-        
-        {/* *** SHOW ONLY FOR ADMIN *** */}
+
         {role.role === 'admin' && (
           <Link href="/dashboard/post" className="no-underline">
             <button className="bg-black text-white px-5 py-2.5 rounded-full font-semibold text-sm flex items-center gap-2 hover:bg-slate-800 transition">
@@ -68,9 +64,12 @@ export default async function DashboardJobsPage() {
                     <td className="p-4 text-slate-600 text-sm font-medium">{job._count.applications}</td>
                     <td className="p-4 text-slate-500 text-sm">{new Date(job.postedAt).toLocaleDateString()}</td>
                     <td className="p-4">
-                      <Link href={`/jobs/${job.id}`} className="text-blue-600 text-sm font-medium no-underline hover:underline">
-                        View
-                      </Link>
+                      <Link
+  href={`/dashboard/applications?jobId=${job.id}`}
+  className="text-blue-600 text-sm font-medium no-underline hover:underline"
+>
+  View Applicants
+</Link>
                     </td>
                   </tr>
                 ))

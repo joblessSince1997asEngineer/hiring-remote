@@ -1,52 +1,61 @@
 import { getUserId } from '@/lib/auth'
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 
 export async function GET(request: Request) {
-  // 1. Verify the user is an Admin
-  const cookieStore = await cookies()
+  // 1. Verify admin
   const userId = await getUserId()
   if (!userId) {
     return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
   }
 
-  // 2. Check the Roles table
   const role = await prisma.roles.findUnique({ where: { user_id: userId } })
   if (!role || (role.role !== 'admin' && role.role !== 'super_admin')) {
     return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
   }
 
-  // 3. Extract search and filter params
+  // 2. Params
   const { searchParams } = new URL(request.url)
   const search = searchParams.get('q') || ''
   const maxSalary = searchParams.get('salary') || ''
 
-  // 4. Build the query
+  // 3. Query CandidateProfile (the new model)
   const whereClause: any = {}
   if (search) {
     whereClause.OR = [
-      { primary_skill: { contains: search, mode: 'insensitive' } },
-      { full_name: { contains: search, mode: 'insensitive' } },
+      { primarySkill: { contains: search, mode: 'insensitive' } },
+      { fullName: { contains: search, mode: 'insensitive' } },
     ]
   }
   if (maxSalary) {
-    whereClause.expected_salary = { lte: parseInt(maxSalary) }
+    whereClause.expectedSalary = { lte: parseInt(maxSalary) }
   }
 
-  // 5. Fetch candidates (Excluding sensitive data like email/phone for now)
-  const candidates = await prisma.profiles.findMany({
+  const profiles = await prisma.candidateProfile.findMany({
     where: whereClause,
     select: {
       id: true,
-      full_name: true,
-      primary_skill: true,
-      years_exp: true,
-      expected_salary: true,
+      userId: true,
+      fullName: true,
+      primarySkill: true,
+      yearsExp: true,
+      expectedSalary: true,
       timezone: true,
-      cv_url: true,
+      cvUrl: true,
     },
   })
+
+  // 4. Map to a shape the frontend expects
+  const candidates = profiles.map((p) => ({
+    id: p.userId,             // ← use userId as identifier
+    profileId: p.id,
+    full_name: p.fullName,
+    primary_skill: p.primarySkill || 'Not Set',
+    years_exp: p.yearsExp,
+    expected_salary: p.expectedSalary,
+    timezone: p.timezone,
+    cv_url: p.cvUrl,
+  }))
 
   return NextResponse.json({ candidates })
 }

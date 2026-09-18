@@ -1,4 +1,6 @@
 'use client'
+
+import { toast } from 'sonner'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -25,7 +27,7 @@ export default function ClientRequestForm() {
       })
       const data = await res.json()
       if (res.ok) {
-        alert('Hiring request submitted successfully! Admin will review it.')
+        toast.success('Hiring request submitted successfully! Admin will review it.')
         router.push('/')
       } else {
         setError(data.error || 'Something went wrong')

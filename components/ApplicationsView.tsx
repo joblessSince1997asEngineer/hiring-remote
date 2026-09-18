@@ -1,4 +1,6 @@
 'use client'
+
+import { toast } from 'sonner'
 import { useState } from 'react'
 import ViewCVButton from '@/components/ViewCVButton'
 import HireRequestModal from '@/components/HireRequestModal'
@@ -56,14 +58,14 @@ export default function ApplicationsView({
         body: JSON.stringify({ jobId, applicationId, candidateId, action, feedback: reason, clientRequestedToAttend }),
       })
       if (res.ok) {
-        alert(action === 'interview' ? 'Interview Requested!' : action === 'reject' ? 'Candidate Rejected' : 'Candidate Hired!')
+        toast.success(action === 'interview' ? 'Interview Requested!' : action === 'reject' ? 'Candidate Rejected' : 'Candidate Hired!')
         window.location.reload()
       } else {
         const data = await res.json()
-        alert(data.error || 'Action failed')
+        toast.error(data.error || 'Action failed')
       }
     } catch (err) {
-      alert('Network error')
+      toast.error('Network error')
     } finally {
       setActionLoading(null)
     }
@@ -356,7 +358,7 @@ export default function ApplicationsView({
                   onClick={() => {
                     const reason = prompt('Rejection reason (min 10 chars):')
                     if (reason && reason.length >= 10) handleAction(selectedApp.jobId, selectedApp.id, selectedApp.userId, 'reject', reason)
-                    else if (reason) alert('Reason must be at least 10 characters')
+                    else if (reason) toast.error('Reason must be at least 10 characters')
                   }}
                   disabled={actionLoading !== null}
                   className="border border-red-500 text-red-500 px-5 py-2.5 rounded-full text-sm font-medium hover:bg-red-50 disabled:opacity-50 flex items-center gap-2"
@@ -486,7 +488,7 @@ export default function ApplicationsView({
           onClose={() => setHirePrompt(null)}
           onSuccess={() => {
             setHirePrompt(null)
-            alert('Hire request sent! Admin will review and generate the invoice.')
+            toast.success('Hire request sent! Admin will review and generate the invoice.')
             window.location.reload()
           }}
         />

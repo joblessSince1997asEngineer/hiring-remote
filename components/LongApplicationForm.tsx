@@ -1,4 +1,6 @@
 'use client'
+
+import { toast } from 'sonner'
 import { useRef, useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -29,7 +31,7 @@ export default function LongApplicationForm({ jobId }: { jobId: string }) {
     if (!file) return
 
     if (file.size > 5242880) {
-      alert('File too large. Max 5MB allowed.')
+      toast.error('File too large. Max 5MB allowed.')
       return
     }
 
@@ -45,12 +47,12 @@ export default function LongApplicationForm({ jobId }: { jobId: string }) {
       if (res.ok) {
         // Save the CV URL to state
         setFormData(prev => ({ ...prev, cv_url: data.url }))
-        alert('CV uploaded successfully!')
+        toast.success('CV uploaded successfully!')
       } else {
-        alert(data.error || 'Upload failed')
+        toast.error(data.error || 'Upload failed')
       }
     } catch (error) {
-      alert('Network error during upload')
+      toast.error('Network error during upload')
     }
   }
 
@@ -69,10 +71,10 @@ export default function LongApplicationForm({ jobId }: { jobId: string }) {
         router.push('/dashboard/applications')
       } else {
         const data = await res.json()
-        alert(data.error || 'Failed to submit application')
+        toast.error(data.error || 'Failed to submit application')
       }
     } catch (err) {
-      alert('Network error')
+      toast.error('Network error')
     } finally {
       setPending(false)
     }

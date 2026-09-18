@@ -1,4 +1,6 @@
 'use client'
+
+import { toast } from 'sonner'
 import { useState } from 'react'
 import { Mail, MapPin } from 'lucide-react'
 
@@ -30,10 +32,10 @@ export default function ContactPage() {
         ;(e.target as HTMLFormElement).reset()
         setTimeout(() => setSuccess(false), 5000)
       } else {
-        alert('Failed to send. Please try again.')
+        toast.error('Failed to send. Please try again.')
       }
     } catch (err) {
-      alert('Network error')
+      toast.error('Network error')
     } finally {
       setLoading(false)
     }

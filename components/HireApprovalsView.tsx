@@ -1,4 +1,6 @@
 'use client'
+
+import { toast } from 'sonner'
 import { useState } from 'react'
 import { CheckCircle, XCircle, User, Loader2, DollarSign } from 'lucide-react'
 
@@ -27,13 +29,13 @@ export default function HireApprovalsView({
       })
       const data = await res.json()
       if (res.ok) {
-        alert(`Invoice created for $${data.amount.toLocaleString()}`)
+        toast.success(`Invoice created for $${data.amount.toLocaleString()}`)
         window.location.reload()
       } else {
-        alert(data.error || 'Approval failed')
+        toast.error(data.error || 'Approval failed')
       }
     } catch {
-      alert('Network error')
+      toast.error('Network error')
     } finally {
       setProcessing(null)
       setApproveTarget(null)
@@ -43,7 +45,7 @@ export default function HireApprovalsView({
   const handleReject = async (applicationId: string) => {
     const reason = prompt('Rejection reason (min 10 chars):')
     if (!reason || reason.length < 10) {
-      if (reason) alert('Reason must be at least 10 characters')
+      if (reason) toast.error('Reason must be at least 10 characters')
       return
     }
     setProcessing(applicationId)
@@ -55,13 +57,13 @@ export default function HireApprovalsView({
       })
       const data = await res.json()
       if (res.ok) {
-        alert('Hire request rejected.')
+        toast.success('Hire request rejected.')
         window.location.reload()
       } else {
-        alert(data.error || 'Rejection failed')
+        toast.error(data.error || 'Rejection failed')
       }
     } catch {
-      alert('Network error')
+      toast.error('Network error')
     } finally {
       setProcessing(null)
     }
@@ -259,7 +261,7 @@ function ApproveModal({
             onClick={() => {
               const n = parseInt(amount)
               if (!n || n <= 0) {
-                alert('Please enter a valid amount')
+                toast.error('Please enter a valid amount')
                 return
               }
               onSubmit(app.id, planType, n)

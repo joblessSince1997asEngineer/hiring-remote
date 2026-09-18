@@ -1,4 +1,6 @@
 'use client'
+
+import { toast } from 'sonner'
 import { useState, useEffect } from 'react'
 import { Calendar, Clock, Video, X, CheckCircle2, Lock } from 'lucide-react'
 
@@ -51,7 +53,7 @@ export default function InterviewsView({
     e.preventDefault()
 
     if (selectedInterviewers.length === 0) {
-      alert('Please select at least one interviewer.')
+      toast.error('Please select at least one interviewer.')
       return
     }
 
@@ -73,14 +75,14 @@ export default function InterviewsView({
       })
 
       if (res.ok) {
-        alert('Interview Scheduled & Emails Sent!')
+        toast.success('Interview Scheduled & Emails Sent!')
         window.location.reload()
       } else {
         const data = await res.json()
-        alert(data.error || 'Failed to schedule')
+        toast.error(data.error || 'Failed to schedule')
       }
     } catch (err) {
-      alert('Network error')
+      toast.error('Network error')
     }
   }
 
@@ -94,14 +96,14 @@ export default function InterviewsView({
         body: JSON.stringify({ interviewId }),
       })
       if (res.ok) {
-        alert('Interview marked as complete!')
+        toast.success('Interview marked as complete!')
         window.location.reload()
       } else {
         const data = await res.json()
-        alert(data.error || 'Failed')
+        toast.error(data.error || 'Failed')
       }
     } catch (err) {
-      alert('Network error')
+      toast.error('Network error')
     } finally {
       setActionLoading(null)
     }
@@ -117,14 +119,14 @@ export default function InterviewsView({
         body: JSON.stringify({ interviewId }),
       })
       if (res.ok) {
-        alert('Sent to admin for confirmation!')
+        toast.success('Sent to admin for confirmation!')
         window.location.reload()
       } else {
         const data = await res.json()
-        alert(data.error || 'Failed')
+        toast.error(data.error || 'Failed')
       }
     } catch (err) {
-      alert('Network error')
+      toast.error('Network error')
     } finally {
       setActionLoading(null)
     }

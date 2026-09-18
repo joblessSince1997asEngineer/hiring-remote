@@ -1,4 +1,6 @@
 'use client'
+
+import { toast } from 'sonner'
 import { useState } from 'react'
 
 export default function ClientRequestsView({ requests }: { requests: any[] }) {
@@ -14,14 +16,14 @@ export default function ClientRequestsView({ requests }: { requests: any[] }) {
         body: JSON.stringify({ requestId: request.id }),
       })
       if (res.ok) {
-        alert('Request approved! A new job has been posted.')
+        toast.success('Request approved! A new job has been posted.')
         window.location.reload()
       } else {
         const data = await res.json()
-        alert(data.error || 'Approval failed')
+        toast.error(data.error || 'Approval failed')
       }
     } catch (err) {
-      alert('Network error')
+      toast.error('Network error')
     } finally {
       setActionLoading(null)
     }
@@ -38,7 +40,7 @@ export default function ClientRequestsView({ requests }: { requests: any[] }) {
         body: JSON.stringify({ requestId, reason }),
       })
       if (res.ok) {
-        alert('Request rejected.')
+        toast.success('Request rejected.')
         window.location.reload()
       }
     } finally {

@@ -1,4 +1,6 @@
 'use client'
+
+import { toast } from 'sonner'
 import ViewCVButton from '@/components/ViewCVButton'
 import { useState, useEffect } from 'react'
 import { Search, Bookmark } from 'lucide-react'
@@ -33,7 +35,7 @@ export default function CandidatesTable({ initialJobs }: { initialJobs: any[] })
   }, [searchTerm, maxSalary])
 
   const handleAssign = async (candidateId: string, jobId: string) => {
-    if (!jobId) return alert('Please select a job first')
+    if (!jobId) return toast.error('Please select a job first')
     setAssigning(candidateId)
     try {
       const res = await fetch('/api/assign', {
@@ -42,10 +44,10 @@ export default function CandidatesTable({ initialJobs }: { initialJobs: any[] })
         body: JSON.stringify({ candidateId, jobId }),
       })
       const data = await res.json()
-      if (res.ok) alert('Successfully Assigned!')
-      else alert(data.error || 'Error assigning candidate')
+      if (res.ok) toast.success('Successfully Assigned!')
+      else toast.error(data.error || 'Error assigning candidate')
     } catch (e) {
-      alert('Network error')
+      toast.error('Network error')
     } finally {
       setAssigning(null)
     }

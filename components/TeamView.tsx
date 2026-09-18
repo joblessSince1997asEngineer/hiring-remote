@@ -1,4 +1,6 @@
 'use client'
+
+import { toast } from 'sonner'
 import { useState } from 'react'
 import { Shield, User, UserX, UserCheck } from 'lucide-react'
 
@@ -17,7 +19,7 @@ export default function TeamView({ members }: { members: any[] }) {
         window.location.reload()
       } else {
         const data = await res.json()
-        alert(data.error || 'Failed to update')
+        toast.error(data.error || 'Failed to update')
       }
     } finally {
       setActionLoading(null)
@@ -40,7 +42,7 @@ export default function TeamView({ members }: { members: any[] }) {
         window.location.reload()
       } else {
         const data = await res.json()
-        alert(data.error || 'Failed to update')
+        toast.error(data.error || 'Failed to update')
       }
     } finally {
       setActionLoading(null)
@@ -72,7 +74,7 @@ export default function TeamView({ members }: { members: any[] }) {
         window.location.reload()
       } else {
         const data = await res.json()
-        alert(data.error || 'Failed to update')
+        toast.error(data.error || 'Failed to update')
       }
     } finally {
       setActionLoading(null)

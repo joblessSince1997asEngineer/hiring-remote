@@ -1,4 +1,6 @@
 'use client'
+
+import { toast } from 'sonner'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 
@@ -23,7 +25,7 @@ export default function ResetPasswordPage() {
 
     const data = await res.json()
     if (res.ok) {
-      alert('Password reset successful! Please login.')
+      toast.success('Password reset successful! Please login.')
       router.push('/login')
     } else {
       setError(data.error || 'Something went wrong')

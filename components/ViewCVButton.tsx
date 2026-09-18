@@ -1,4 +1,6 @@
 'use client'
+
+import { toast } from 'sonner'
 import { useState } from 'react'
 
 export default function ViewCVButton({ url }: { url: string }) {
@@ -16,10 +18,10 @@ export default function ViewCVButton({ url }: { url: string }) {
       if (res.ok && data.url) {
         window.open(data.url, '_blank')
       } else {
-        alert(data.error || 'Could not open CV')
+        toast.error(data.error || 'Could not open CV')
       }
     } catch (err) {
-      alert('Network error')
+      toast.error('Network error')
     } finally {
       setLoading(false)
     }

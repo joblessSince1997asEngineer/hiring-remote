@@ -1,4 +1,6 @@
 'use client'
+
+import { toast } from 'sonner'
 import { useState } from 'react'
 import ViewCVButton from '@/components/ViewCVButton'
 import HireRequestModal from '@/components/HireRequestModal'
@@ -24,17 +26,17 @@ export default function ClientDashboard({ jobs }: { jobs: any[] }) {
     })
 
     if (res.ok) {
-      if (action === 'interview') alert('Interview Requested!')
-      else if (action === 'reject') alert('Candidate Rejected')
+      if (action === 'interview') toast.success('Interview Requested!')
+      else if (action === 'reject') toast.success('Candidate Rejected')
       else if (action === 'hire') {
-        alert('Candidate Hired! Redirecting to Invoice...')
+        toast.success('Candidate Hired! Redirecting to Invoice...')
         window.location.href = `/invoice?jobId=${jobId}`
         return
       }
       window.location.reload()
     } else {
       const data = await res.json()
-      alert(data.error || 'Error performing action')
+      toast.error(data.error || 'Error performing action')
     }
   }
 
@@ -120,7 +122,7 @@ export default function ClientDashboard({ jobs }: { jobs: any[] }) {
                               if (feedback.length >= 10) {
                                 handleAction(job.id, assignment.candidate.id, 'reject', feedback)
                               } else {
-                                alert('Please enter a minimum of 10 characters')
+                                toast.error('Please enter a minimum of 10 characters')
                               }
                             }}
                             className="text-xs bg-red-500 text-white px-3 py-1 rounded"
@@ -187,7 +189,7 @@ export default function ClientDashboard({ jobs }: { jobs: any[] }) {
           onClose={() => setHirePrompt(null)}
           onSuccess={() => {
             setHirePrompt(null)
-            alert('Hire request sent! Admin will review and generate the invoice.')
+            toast.success('Hire request sent! Admin will review and generate the invoice.')
             window.location.reload()
           }}
         />

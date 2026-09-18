@@ -86,7 +86,6 @@ export default function InterviewsView({
     }
   }
 
-  // NEW: Admin directly completes interview
   const handleMarkComplete = async (interviewId: string) => {
     setActionLoading(interviewId)
     try {
@@ -109,7 +108,6 @@ export default function InterviewsView({
     }
   }
 
-  // NEW: Client requests completion (admin confirms)
   const handleRequestComplete = async (interviewId: string) => {
     setActionLoading(interviewId)
     try {
@@ -126,6 +124,29 @@ export default function InterviewsView({
         toast.error(data.error || 'Failed')
       }
     } catch (err) {
+      toast.error('Network error')
+    } finally {
+      setActionLoading(null)
+    }
+  }
+
+  const handleCancel = async (interviewId: string) => {
+    if (!confirm('Cancel this interview? This cannot be undone.')) return
+    setActionLoading(interviewId)
+    try {
+      const res = await fetch('/api/interview-cancel', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ interviewId }),
+      })
+      const data = await res.json()
+      if (res.ok) {
+        toast.success('Interview cancelled')
+        window.location.reload()
+      } else {
+        toast.error(data.error || 'Failed to cancel')
+      }
+    } catch {
       toast.error('Network error')
     } finally {
       setActionLoading(null)
@@ -207,7 +228,6 @@ export default function InterviewsView({
                       </span>
                     </td>
                     <td className="p-4">
-                      {/* Pending → Schedule button (admin) or waiting (client) */}
                       {interview.status === 'pending' && canSchedule && (
                         <button
                           onClick={() => {
@@ -227,7 +247,6 @@ export default function InterviewsView({
                         <span className="text-xs text-slate-400">Awaiting Admin</span>
                       )}
 
-                      {/* Scheduled → admin can mark complete directly, client can request */}
                       {interview.status === 'scheduled' && isAdmin && (
                         <button
                           onClick={() => handleMarkComplete(interview.id)}
@@ -248,7 +267,6 @@ export default function InterviewsView({
                         </button>
                       )}
 
-                      {/* completion_requested → only admin can confirm */}
                       {interview.status === 'completion_requested' && isAdmin && (
                         <button
                           onClick={() => handleMarkComplete(interview.id)}
@@ -262,12 +280,22 @@ export default function InterviewsView({
                         <span className="text-xs text-purple-600">Waiting for admin</span>
                       )}
 
-                      {/* completed → lock indicator */}
                       {interview.status === 'completed' && (
                         <span className="text-xs text-green-600 flex items-center gap-1">
                           <Lock className="w-3 h-3" />
                           Done
                         </span>
+                      )}
+
+                      {/* Cancel — for pending/scheduled/completion_requested */}
+                      {['pending', 'scheduled', 'completion_requested'].includes(interview.status) && (
+                        <button
+                          onClick={() => handleCancel(interview.id)}
+                          disabled={actionLoading === interview.id}
+                          className="mt-2 text-xs text-red-600 hover:text-red-800 hover:underline disabled:opacity-50 block"
+                        >
+                          {actionLoading === interview.id ? 'Cancelling...' : 'Cancel Interview'}
+                        </button>
                       )}
                     </td>
                   </tr>

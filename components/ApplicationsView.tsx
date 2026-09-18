@@ -293,20 +293,24 @@ export default function ApplicationsView({
 
               {/* Action Buttons */}
               <div className="flex flex-wrap gap-3 mb-6">
-                <button
-                  onClick={() => {
-                    setInterviewPrompt({
-                      jobId: selectedApp.jobId,
-                      applicationId: selectedApp.id,
-                      candidateId: selectedApp.userId,
-                    })
-                    setWantToAttend(true)
-                  }}
-                  disabled={actionLoading !== null}
-                  className="bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-slate-800 disabled:opacity-50 flex items-center gap-2"
+                                <button
+                  onClick={() => { setInterviewPrompt({ jobId: selectedApp.jobId, applicationId: selectedApp.id, candidateId: selectedApp.userId }); setWantToAttend(true); }}
+                  disabled={
+                    actionLoading !== null ||
+                    ['pending', 'scheduled', 'completion_requested', 'completed'].includes(getInterviewStatus(selectedApp.id))
+                  }
+                  className="bg-black text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-slate-800 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
                 >
                   <Calendar className="w-4 h-4" />
-                  Request Interview
+                  {getInterviewStatus(selectedApp.id) === 'none' || getInterviewStatus(selectedApp.id) === 'cancelled'
+                    ? 'Request Interview'
+                    : getInterviewStatus(selectedApp.id) === 'pending'
+                      ? 'Interview Requested'
+                      : getInterviewStatus(selectedApp.id) === 'scheduled'
+                        ? 'Interview Scheduled'
+                        : getInterviewStatus(selectedApp.id) === 'completion_requested'
+                          ? 'Interview in Progress'
+                          : 'Interview Completed'}
                 </button>
 
                 {/* Confirm Hire / Request Hire — role + interview + status gated */}

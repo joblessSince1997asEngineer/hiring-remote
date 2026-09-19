@@ -1,7 +1,17 @@
 import Link from 'next/link'
 import { Search, ShieldCheck, Calendar } from 'lucide-react'
+import { getUserId } from '@/lib/auth'
+import { prisma } from '@/lib/prisma'
 
-export default function HomePage() {
+export default async function HomePage() {
+  // Determine where "Hire Talent" should go based on role
+  const userId = await getUserId()
+  const roleRow = userId
+    ? await prisma.roles.findUnique({ where: { user_id: userId } })
+    : null
+  const isAdmin = roleRow?.role === 'admin' || roleRow?.role === 'super_admin'
+  const hireLink = isAdmin ? '/dashboard/post' : '/request-job'
+
   const services = [
     { 
       icon: <Search size={28} color="#2563eb" />, 
@@ -67,9 +77,9 @@ export default function HomePage() {
       </p>
 
       <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto justify-center mb-12 md:mb-16">
-        <Link href="/dashboard/post" className="w-full sm:w-auto">
-          <button className="w-full bg-black text-white border-2 border-black py-3 px-8 rounded-full font-semibold text-sm md:text-base">Hire Talent</button>
-        </Link>
+        <Link href={hireLink} className="w-full sm:w-auto">
+  <button className="w-full bg-black text-white border-2 border-black py-3 px-8 rounded-full font-semibold text-sm md:text-base">Hire Talent</button>
+</Link>
         <Link href="/jobs" className="w-full sm:w-auto">
           <button className="w-full bg-transparent text-white border border-slate-600 py-3 px-8 rounded-full font-semibold text-sm md:text-base">Browse Jobs</button>
         </Link>

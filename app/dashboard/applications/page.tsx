@@ -13,22 +13,51 @@ export default async function ApplicationsPage({
 
   const roleRow = await prisma.roles.findUnique({ where: { user_id: userId } })
   const role = roleRow?.role || 'candidate'
+  const isAdmin = role === 'admin' || role === 'super_admin'
 
   const params = await searchParams
   const filterJobId = params.jobId || null
 
+  // Build the where clause based on role
+  const where: any = {}
+
+  if (!isAdmin) {
+    // Client sees only applications for THEIR jobs
+    const myJobs = await prisma.job.findMany({
+      where: { recruiterId: userId },
+      select: { id: true },
+    })
+    const myJobIds = myJobs.map(j => j.id)
+
+    // If admin filtered by a specific job, respect that
+    if (filterJobId) {
+      // Make sure it's actually their job
+      if (myJobIds.includes(filterJobId)) {
+        where.jobId = filterJobId
+      } else {
+        where.jobId = { in: [] } // no results
+      }
+    } else {
+      where.jobId = { in: myJobIds }
+    }
+  } else if (filterJobId) {
+    where.jobId = filterJobId
+  }
+
   const applications = await prisma.application.findMany({
-    where: filterJobId ? { jobId: filterJobId } : {},
+    where,
     orderBy: { appliedAt: 'desc' },
     include: { job: true },
   })
 
-  const interviews = await prisma.interview.findMany()
-
+  // Only fetch interviews/profiles for these applications
+  const appIds = applications.map(a => a.id)
   const candidateIds = [...new Set(applications.map(a => a.userId))]
-  const profiles = await prisma.candidateProfile.findMany({
-    where: { userId: { in: candidateIds } },
-  })
+
+  const [interviews, profiles] = await Promise.all([
+    prisma.interview.findMany({ where: { applicationId: { in: appIds } } }),
+    prisma.candidateProfile.findMany({ where: { userId: { in: candidateIds } } }),
+  ])
 
   const job = filterJobId
     ? await prisma.job.findUnique({ where: { id: filterJobId }, select: { title: true } })
@@ -41,7 +70,7 @@ export default async function ApplicationsPage({
           {filterJobId ? `Applicants for: ${job?.title || 'Unknown Job'}` : 'Applications'}
         </h1>
         <p className="text-slate-500">
-          {role === 'admin'
+          {isAdmin
             ? 'Review incoming applications and take action.'
             : 'Review candidates and request hires.'}
         </p>

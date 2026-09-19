@@ -8,10 +8,14 @@ export default async function DashboardJobsPage() {
   const userId = await getUserId()
   if (!userId) redirect('/login')
 
-  const role = await prisma.roles.findUnique({ where: { user_id: userId } })
-  if (!role) redirect('/login')
+  const roleRow = await prisma.roles.findUnique({ where: { user_id: userId } })
+  if (!roleRow) redirect('/login')
 
+  const isAdmin = roleRow.role === 'admin' || roleRow.role === 'super_admin'
+
+  // Admin sees all jobs, client sees only their own
   const jobs = await prisma.job.findMany({
+    where: isAdmin ? {} : { recruiterId: userId },
     orderBy: { postedAt: 'desc' },
     include: { _count: { select: { applications: true } } },
   })
@@ -20,11 +24,15 @@ export default async function DashboardJobsPage() {
     <div className="p-6 md:p-10">
       <div className="flex justify-between items-center mb-8">
         <div>
-          <h1 className="text-3xl font-bold text-[#0f172a] mb-1">Jobs</h1>
-          <p className="text-slate-500">Manage all posted jobs.</p>
+          <h1 className="text-3xl font-bold text-[#0f172a] mb-1">
+            {isAdmin ? 'Jobs' : 'My Jobs'}
+          </h1>
+          <p className="text-slate-500">
+            {isAdmin ? 'Manage all posted jobs.' : 'Jobs you have posted.'}
+          </p>
         </div>
 
-        {role.role === 'admin' && (
+        {isAdmin && (
           <Link href="/dashboard/post" className="no-underline">
             <button className="bg-black text-white px-5 py-2.5 rounded-full font-semibold text-sm flex items-center gap-2 hover:bg-slate-800 transition">
               <Plus className="w-4 h-4" /> Post New Job
@@ -50,7 +58,9 @@ export default async function DashboardJobsPage() {
             <tbody>
               {jobs.length === 0 ? (
                 <tr>
-                  <td colSpan={7} className="p-8 text-center text-slate-400 text-sm">No jobs posted yet.</td>
+                  <td colSpan={7} className="p-8 text-center text-slate-400 text-sm">
+                    {isAdmin ? 'No jobs posted yet.' : 'You have no jobs yet.'}
+                  </td>
                 </tr>
               ) : (
                 jobs.map((job) => (
@@ -65,11 +75,11 @@ export default async function DashboardJobsPage() {
                     <td className="p-4 text-slate-500 text-sm">{new Date(job.postedAt).toLocaleDateString()}</td>
                     <td className="p-4">
                       <Link
-  href={`/dashboard/applications?jobId=${job.id}`}
-  className="text-blue-600 text-sm font-medium no-underline hover:underline"
->
-  View Applicants
-</Link>
+                        href={`/dashboard/applications?jobId=${job.id}`}
+                        className="text-blue-600 text-sm font-medium no-underline hover:underline"
+                      >
+                        View Applicants
+                      </Link>
                     </td>
                   </tr>
                 ))

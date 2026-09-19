@@ -59,9 +59,9 @@ export default async function ApplicationsPage({
     prisma.candidateProfile.findMany({ where: { userId: { in: candidateIds } } }),
   ])
 
-  const job = filterJobId
-    ? await prisma.job.findUnique({ where: { id: filterJobId }, select: { title: true } })
-    : null
+    // Title comes from loaded applications — safe because we already filtered by role.
+  // If client has no access, `applications` is empty, so no title leaks.
+  const job = filterJobId && applications.length > 0 ? applications[0].job : null
 
   return (
     <div className="p-6 md:p-10">

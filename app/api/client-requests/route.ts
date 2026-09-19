@@ -1,3 +1,4 @@
+import { getUserId } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { Resend } from 'resend'
@@ -16,6 +17,8 @@ export async function POST(request: Request) {
         { status: 429 }
       )
     }
+
+        const currentUserId = await getUserId()
 
     const body = await request.json()
 
@@ -65,8 +68,9 @@ export async function POST(request: Request) {
         location: location || null,
         currency: currency || 'USD',
         budgetPeriod: budgetPeriod || 'month',
-        urgency: urgency || null,
+                urgency: urgency || null,
         requirements: requirements || null,
+        userId: currentUserId || null,
       },
     })
 

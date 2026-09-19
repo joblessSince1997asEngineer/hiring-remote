@@ -117,6 +117,7 @@ model Client_Requests {
   budgetPeriod     String  @default("month")
   urgency          String?
   requirements     String?
+  userId           String?
 }
 model PasswordResetToken {
   id        String   @id @default(cuid())

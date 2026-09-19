@@ -18,6 +18,16 @@ model Job {
   description String
   postedAt    DateTime      @default(now())
   recruiterId String
+  seniority            String?
+  remoteType           String?
+  currency             String    @default("USD")
+  salaryPeriod         String    @default("year")
+  skills               String[]  @default([])
+  responsibilities     String?
+  requirements         String?
+  niceToHave           String?
+  applicationDeadline  DateTime?
+  status               String    @default("published")
   applications Application[]
   interviews  Interview[]
   assignments  Job_Assignments[]
@@ -97,6 +107,16 @@ model Client_Requests {
   working_hours String?
   status        String   @default("pending_review")
   created_at    DateTime @default(now())
+  contactName      String?
+  companyWebsite   String?
+  companySize      String?
+  seniority        String?
+  remoteType       String?
+  location         String?
+  currency         String  @default("USD")
+  budgetPeriod     String  @default("month")
+  urgency          String?
+  requirements     String?
 }
 model PasswordResetToken {
   id        String   @id @default(cuid())

@@ -1,9 +1,7 @@
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { Resend } from 'resend'
 import { rateLimit, getClientIp } from '@/lib/rate-limit'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { sendEmail } from '@/lib/email-send'
 
 export async function POST(request: Request) {
   // Rate limit FIRST — before any DB work
@@ -18,10 +16,14 @@ export async function POST(request: Request) {
 
   const { email } = await request.json()
 
+  if (!email) {
+    return NextResponse.json({ error: 'Missing email' }, { status: 400 })
+  }
+
   // Find user
   const user = await prisma.user.findUnique({ where: { email } })
-  
-  // Security: Always say "sent" even if user doesn't exist to prevent email enumeration
+
+  // Security: Always return same message even if user doesn't exist (prevents email enumeration)
   if (!user) {
     return NextResponse.json({ message: 'If this email exists, a reset code has been sent.' })
   }
@@ -38,18 +40,30 @@ export async function POST(request: Request) {
     },
   })
 
-  // Send email via Resend
-  try {
-    await resend.emails.send({
-      from: 'Remote Hirring <onboarding@resend.dev>', // Update with your verified domain if needed
-      to: email,
-      subject: 'Reset your password',
-      html: `<p>Your password reset code is: <strong>${code}</strong></p><p>This code will expire in 15 minutes.</p>`,
-    })
-  } catch (error) {
-    console.error('Email error:', error)
-    return NextResponse.json({ error: 'Failed to send email' }, { status: 500 })
-  }
+  // ⚠️ SANDBOX WORKAROUND: log code so admin can share manually
+  // Remove this console.log once Resend domain is verified
+  console.log(`[FORGOT PASSWORD] Code for ${email}: ${code}`)
 
+  // Send branded email via shared template
+  await sendEmail({
+    to: email,
+    subject: 'Your password reset code — Remote Hirring',
+    title: 'Reset your password',
+    greeting: 'Hi there,',
+    body: `
+      <p>We received a request to reset your password.</p>
+      <p style="font-size:28px;font-weight:800;letter-spacing:8px;text-align:center;padding:16px;background-color:#f1f5f9;border-radius:12px;color:#0f172a;margin:24px 0;">
+        ${code}
+      </p>
+      <p>Enter this code on the reset page. It expires in <strong>15 minutes</strong>.</p>
+      <p style="color:#64748b;font-size:13px;margin-top:24px;">
+        If you didn't request this, you can safely ignore this email.
+      </p>
+    `,
+    footer: 'For your security, never share this code with anyone.',
+  })
+
+  // Always return success — even if email fails (sandbox limits).
+  // The token is saved and admin sees the code in terminal.
   return NextResponse.json({ message: 'If this email exists, a reset code has been sent.' })
 }

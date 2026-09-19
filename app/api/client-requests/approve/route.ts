@@ -57,8 +57,8 @@ export async function POST(request: Request) {
         skills: clientRequest.tech_stack || [],
         requirements: clientRequest.requirements || null,
 
-        // Ownership
-        recruiterId: userId,
+                // Ownership: prefer the client who requested, fallback to admin
+        recruiterId: clientRequest.userId || userId,
         status: 'published',
       },
     })

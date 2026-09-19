@@ -14,7 +14,21 @@ export async function postJob(prevState: unknown, formData: FormData) {
     throw new Error('Only administrators can post new jobs.')
   }
 
-  // Parse skills (comma-separated → array)
+  // Determine owner: selected client OR admin (for internal jobs)
+  const ownerIdRaw = formData.get('ownerId') as string
+  if (!ownerIdRaw) throw new Error('Please select who this job belongs to.')
+
+  let recruiterId: string
+  if (ownerIdRaw === '__internal__') {
+    recruiterId = userId  // admin-owned (no client to invoice)
+  } else {
+    // Verify the selected client actually exists with recruiter role
+    const client = await prisma.user.findUnique({ where: { id: ownerIdRaw } })
+    if (!client) throw new Error('Selected client not found')
+    recruiterId = client.id
+  }
+
+  // Parse skills
   const skillsRaw = formData.get('skills') as string
   const skills = skillsRaw
     ? skillsRaw.split(',').map(s => s.trim()).filter(Boolean)
@@ -34,9 +48,8 @@ export async function postJob(prevState: unknown, formData: FormData) {
       salaryMin: parseInt(formData.get('salaryMin') as string) || 0,
       salaryMax: parseInt(formData.get('salaryMax') as string) || 0,
       description: formData.get('description') as string,
-      recruiterId: userId,
+      recruiterId,
 
-      // New fields
       seniority: (formData.get('seniority') as string) || null,
       remoteType: (formData.get('remoteType') as string) || null,
       currency: (formData.get('currency') as string) || 'USD',

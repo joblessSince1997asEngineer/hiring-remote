@@ -1,13 +1,9 @@
 import { getUserId } from '@/lib/auth'
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { sendEmail } from '@/lib/email-send'
 
 export async function POST(request: Request) {
-  const cookieStore = await cookies()
   const userId = await getUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -57,55 +53,83 @@ export async function POST(request: Request) {
       data: updateData,
     })
 
-    // 4. Create Interview Record if Requested
+    // 4. Fetch job details for notifications
     const jobDetails = await prisma.job.findUnique({ where: { id: jobId } })
 
+    // 5. Handle interview request
     if (action === 'interview') {
-  // Check if an interview already exists for this application
-  const existingInterview = await prisma.interview.findFirst({
-    where: { 
-      candidateId: application.userId,
-      jobId: jobId,
-    },
-  })
+      const existingInterview = await prisma.interview.findFirst({
+        where: {
+          candidateId: application.userId,
+          jobId: jobId,
+        },
+      })
 
-  if (!existingInterview) {
-    await prisma.interview.create({
-      data: {
-        applicationId: application.id,
-        jobId: jobId,
-        candidateId: application.userId,
-        status: 'pending',
-        requestedBy: 'client',
-        requestedByUserId: userId,                                    // *** Save who requested ***
-        clientRequestedToAttend: clientRequestedToAttend || false,    // *** Save the checkbox ***
-      },
-    })
-  }
-      try {
-        await resend.emails.send({
-          from: 'Remote Hirring <onboarding@resend.dev>',
-          to: ['admin@example.com'],
-          subject: `Interview Requested for ${jobDetails?.title}`,
-          html: `<p>An interview has been requested for ${jobDetails?.title}.</p>`,
+      if (!existingInterview) {
+        await prisma.interview.create({
+          data: {
+            applicationId: application.id,
+            jobId: jobId,
+            candidateId: application.userId,
+            status: 'pending',
+            requestedBy: 'client',
+            requestedByUserId: userId,
+            clientRequestedToAttend: clientRequestedToAttend || false,
+          },
         })
-      } catch (emailError) {
-        console.error('Email failed:', emailError)
       }
+
+      // Notify admin
+      await sendEmail({
+        to: 'hr@remotehirring.com',
+        subject: `Interview Requested — ${jobDetails?.title || 'Job'}`,
+        title: 'Interview Requested',
+        greeting: 'Hi,',
+        body: `
+          <p>An interview has been requested for the following role:</p>
+          <p><strong>${jobDetails?.title || 'Untitled Job'}</strong></p>
+          <p style="color:#64748b;font-size:13px;">
+            Log in to the dashboard to schedule the interview.
+          </p>
+        `,
+        buttonText: 'View Interviews',
+        buttonUrl: 'https://hiring-remote.vercel.app/dashboard/interviews',
+      })
     }
 
+    // 6. Handle hire — generate invoice notification
     if (action === 'hire') {
-      try {
-        await resend.emails.send({
-          from: 'Remote Hirring <onboarding@resend.dev>',
-          to: ['client@example.com'],
-          bcc: ['ambreen@example.com'],
-          subject: `Invoice Generated for ${jobDetails?.title}`,
-          html: `<p>Placement Fee: $${updateData.placement_fee}</p>`,
-        })
-      } catch (emailError) {
-        console.error('Email failed:', emailError)
+      const placementFee = updateData.placement_fee || 0
+
+      // Find the client who owns this job (recruiterId on Job)
+      let clientEmail: string | null = null
+      if (jobDetails?.recruiterId) {
+        const client = await prisma.user.findUnique({ where: { id: jobDetails.recruiterId } })
+        clientEmail = client?.email || null
       }
+
+      // Send invoice email — to admin + client (if we have their email)
+      const recipients = ['hr@remotehirring.com']
+      if (clientEmail) recipients.push(clientEmail)
+
+      await sendEmail({
+        to: recipients,
+        subject: `Invoice Generated — ${jobDetails?.title || 'Job'}`,
+        title: 'Invoice Generated',
+        greeting: 'Hi,',
+        body: `
+          <p>A placement fee invoice has been generated for:</p>
+          <p><strong>${jobDetails?.title || 'Untitled Job'}</strong></p>
+          <p style="font-size:24px;font-weight:800;color:#0f172a;margin:24px 0;">
+            $${placementFee.toLocaleString()}
+          </p>
+          <p style="color:#64748b;font-size:13px;">
+            Payment is due within 15 days.
+          </p>
+        `,
+        buttonText: 'View Invoice',
+        buttonUrl: 'https://hiring-remote.vercel.app/dashboard/hire-approvals',
+      })
     }
 
     return NextResponse.json({ success: true })

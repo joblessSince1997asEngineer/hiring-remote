@@ -167,7 +167,7 @@ export default function Footer() {
           <h4 className="text-lg font-semibold mb-4">Resources & Support</h4>
           <ul className="space-y-3 text-sm text-slate-300">
             <li><Link href="/jobs" className="hover:text-[#facc15] transition-colors">Browse Jobs</Link></li>
-            <li><Link href="/dashboard/post" className="hover:text-[#facc15] transition-colors">Post a Job</Link></li>
+            <li><Link href="/request-job" className="hover:text-[#facc15] transition-colors">Request a Hire</Link></li>
             <li><Link href="/contact" className="hover:text-[#facc15] transition-colors">Contact Us</Link></li>
             <li><Link href="/forgot-password" className="hover:text-[#facc15] transition-colors">Forgot Password</Link></li>
           </ul>

@@ -7,6 +7,15 @@ export default async function CandidatesPage() {
   const userId = await getUserId()
   if (!userId) redirect('/login')
 
+  const roleRow = await prisma.roles.findUnique({ where: { user_id: userId } })
+  if (!roleRow) redirect('/login')
+
+  // Admin-only page — block clients from direct URL access
+  const isAdmin = roleRow.role === 'admin' || roleRow.role === 'super_admin'
+  if (!isAdmin) {
+    redirect('/dashboard')
+  }
+
   const jobs = await prisma.job.findMany({
     orderBy: { postedAt: 'desc' },
     select: { id: true, title: true },

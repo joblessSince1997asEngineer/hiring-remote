@@ -26,7 +26,7 @@ export default function DashboardSidebar({
   const menuItems = [
     { href: '/dashboard', label: 'Overview', icon: LayoutDashboard, roles: ['admin', 'recruiter'] },
     { href: '/dashboard/jobs', label: 'Jobs', icon: Briefcase, roles: ['admin', 'recruiter'] },
-    { href: '/dashboard/candidates', label: 'Candidates', icon: Users, roles: ['admin', 'recruiter'] },
+    { href: '/dashboard/candidates', label: 'Candidates', icon: Users, roles: ['admin'] },
     { href: '/dashboard/applications', label: 'Applications', icon: FileText, roles: ['admin', 'recruiter'] },
     { href: '/dashboard/interviews', label: 'Interviews', icon: Calendar, roles: ['admin', 'recruiter'] },
         { href: '/dashboard/my-requests', label: 'My Requests', icon: Send, roles: ['recruiter'] },

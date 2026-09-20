@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
-import { Briefcase, Calendar, Video, Clock, ExternalLink, CheckCircle2, User, ArrowRight } from 'lucide-react'
+import { Briefcase, Calendar, Video, Clock, ExternalLink, CheckCircle2, User, ArrowRight, Bookmark } from 'lucide-react'
 
 type Status = 'pending' | 'shortlisted' | 'hire_pending' | 'awaiting_payment' | 'hired' | 'rejected' | 'hire_cancelled'
 
@@ -95,6 +95,26 @@ export default function AccountPage() {
                 <h2 className="font-bold text-[#0f172a]">My Profile</h2>
                 <p className="text-sm text-slate-500 truncate">
                   Keep your skills, CV, and experience up to date so clients can find you.
+                </p>
+              </div>
+            </div>
+            <ArrowRight className="w-5 h-5 text-slate-400 group-hover:text-[#facc15] group-hover:translate-x-1 transition-all shrink-0" />
+          </div>
+        </Link>
+                {/* Saved Jobs card */}
+        <Link
+          href="/account/saved-jobs"
+          className="block bg-white rounded-2xl shadow-sm border border-slate-100 p-6 hover:border-[#facc15] transition-colors group"
+        >
+          <div className="flex items-center justify-between gap-4">
+            <div className="flex items-center gap-4 min-w-0">
+              <div className="w-12 h-12 rounded-full bg-slate-100 flex items-center justify-center shrink-0">
+                <Bookmark className="w-5 h-5 text-slate-600" />
+              </div>
+              <div className="min-w-0">
+                <h2 className="font-bold text-[#0f172a]">Saved Jobs</h2>
+                <p className="text-sm text-slate-500 truncate">
+                  Jobs you bookmarked to review or apply later.
                 </p>
               </div>
             </div>

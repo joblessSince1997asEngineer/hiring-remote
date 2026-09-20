@@ -31,6 +31,7 @@ model Job {
   applications Application[]
   interviews  Interview[]
   assignments  Job_Assignments[]
+  savedBy     SavedJob[]
 }
 
 model Application {
@@ -239,4 +240,14 @@ model ContactMessage {
   createdAt  DateTime @default(now())
 
   @@index([read, createdAt])
+}
+model SavedJob {
+  id        String   @id @default(cuid())
+  userId    String
+  jobId     String
+  createdAt DateTime @default(now())
+   job       Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, jobId])
+  @@index([userId])
 }

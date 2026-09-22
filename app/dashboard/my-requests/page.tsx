@@ -30,8 +30,8 @@ export default async function MyRequestsPage() {
           <p className="text-slate-500">Track your submitted requests and their status.</p>
         </div>
         <Link href="/request-job" className="no-underline">
-          <button className="bg-black text-white px-5 py-2.5 rounded-full font-semibold text-sm flex items-center gap-2 hover:bg-slate-800 transition">
-            <Plus className="w-4 h-4" /> New Request
+                    <button className="bg-black text-white px-5 py-2.5 rounded-full font-semibold text-sm flex items-center gap-2 hover:bg-slate-800 transition">
+            <Plus className="w-4 h-4" /> Start Hiring
           </button>
         </Link>
       </div>

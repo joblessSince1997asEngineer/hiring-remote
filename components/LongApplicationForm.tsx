@@ -103,8 +103,9 @@ export default function LongApplicationForm({ jobId }: { jobId: string }) {
         body: JSON.stringify({ jobId, formData }),
       })
 
-      if (res.ok) {
-        router.push('/dashboard/applications')
+            if (res.ok) {
+        toast.success('Application submitted successfully!')
+        router.push('/account')
       } else {
         const data = await res.json()
         toast.error(data.error || 'Failed to submit application')

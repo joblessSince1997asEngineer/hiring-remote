@@ -1,10 +1,8 @@
 import { getUserId } from '@/lib/auth'
 import { NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
-import { Resend } from 'resend'
 import { rateLimit, getClientIp } from '@/lib/rate-limit'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { sendEmail } from '@/lib/email-send'
 
 export async function POST(request: Request) {
   try {
@@ -18,8 +16,7 @@ export async function POST(request: Request) {
       )
     }
 
-        const currentUserId = await getUserId()
-
+    const currentUserId = await getUserId()
     const body = await request.json()
 
     const {
@@ -30,7 +27,6 @@ export async function POST(request: Request) {
       budget_min,
       budget_max,
       working_hours,
-      // New fields
       contactName,
       companyWebsite,
       companySize,
@@ -59,7 +55,6 @@ export async function POST(request: Request) {
         budget_max: budget_max ? parseInt(budget_max) : null,
         working_hours: working_hours || null,
         status: 'pending_review',
-        // New fields
         contactName: contactName || null,
         companyWebsite: companyWebsite || null,
         companySize: companySize || null,
@@ -68,7 +63,7 @@ export async function POST(request: Request) {
         location: location || null,
         currency: currency || 'USD',
         budgetPeriod: budgetPeriod || 'month',
-                urgency: urgency || null,
+        urgency: urgency || null,
         requirements: requirements || null,
         userId: currentUserId || null,
       },
@@ -91,41 +86,63 @@ export async function POST(request: Request) {
       })
     }
 
-    // Try to send email notification (bonus — silent fail if domain not verified)
-    try {
-      await resend.emails.send({
-        from: 'Remote Hirring <onboarding@resend.dev>',
-        to: ['hr@remotehirring.com'],
-        subject: `New Hiring Request: ${role_title} at ${company_name}`,
-        html: `
-          <h2>New Hiring Request</h2>
-          <p><strong>Company:</strong> ${company_name} ${companySize ? `(${companySize})` : ''}</p>
-          ${companyWebsite ? `<p><strong>Website:</strong> ${companyWebsite}</p>` : ''}
-          <p><strong>Contact:</strong> ${contactName || ''} — ${contact_email}</p>
-
-          <h3>Role</h3>
-          <p><strong>Title:</strong> ${role_title}</p>
-          ${seniority ? `<p><strong>Seniority:</strong> ${seniority}</p>` : ''}
-          ${remoteType ? `<p><strong>Work Mode:</strong> ${remoteType}</p>` : ''}
-          ${location ? `<p><strong>Location:</strong> ${location}</p>` : ''}
-          ${tech_stack?.length ? `<p><strong>Skills:</strong> ${tech_stack.join(', ')}</p>` : ''}
-
-          <h3>Budget</h3>
-          <p><strong>Range:</strong> ${currency} ${budget_min}–${budget_max} / ${budgetPeriod}</p>
-          ${urgency ? `<p><strong>Urgency:</strong> ${urgency}</p>` : ''}
-          ${working_hours ? `<p><strong>Hours:</strong> ${working_hours}</p>` : ''}
-          ${requirements ? `<p><strong>Extra:</strong></p><p>${requirements}</p>` : ''}
-
-          <hr />
-          <p style="color: #64748b; font-size: 12px;">
-            Also saved to your dashboard. View at /dashboard/client-requests
-          </p>
-        `,
+    // Notify the client (bell) that their request was received
+    if (currentUserId) {
+      await prisma.notification.create({
+        data: {
+          userId: currentUserId,
+          type: 'request_submitted',
+          title: 'Request submitted',
+          message: `Your request for ${role_title} is under review. We'll be in touch shortly.`,
+          link: '/dashboard/my-requests',
+        },
       })
-    } catch (emailError) {
-      // Silent fail — request is already saved, admin will see it in the dashboard
-      console.error('Client request email failed (non-fatal):', emailError)
     }
+
+    // Send branded email to admin team
+    const budgetLine = budget_min && budget_max
+      ? `${currency || 'USD'} ${parseInt(budget_min).toLocaleString()}–${parseInt(budget_max).toLocaleString()} / ${budgetPeriod || 'month'}`
+      : 'Not specified'
+
+    await sendEmail({
+      to: 'hr@remotehirring.com',
+      replyTo: contact_email,
+      subject: `New Hiring Request — ${role_title} at ${company_name}`,
+      title: 'New Hiring Request',
+      greeting: 'Hi team,',
+      body: `A new hiring request has been submitted through the platform.`,
+      infoRows: [
+        { label: 'Company', value: company_name, highlight: true },
+        ...(companySize ? [{ label: 'Company Size', value: companySize }] : []),
+        ...(companyWebsite ? [{ label: 'Website', value: companyWebsite }] : []),
+        { label: 'Contact', value: `${contactName || ''} — ${contact_email}`.trim() },
+        { label: 'Role', value: role_title },
+        ...(seniority ? [{ label: 'Seniority', value: seniority }] : []),
+        ...(remoteType ? [{ label: 'Work Mode', value: remoteType }] : []),
+        ...(location ? [{ label: 'Location', value: location }] : []),
+        ...(tech_stack?.length ? [{ label: 'Skills', value: tech_stack.join(', ') }] : []),
+        { label: 'Budget', value: budgetLine, highlight: true },
+        ...(urgency ? [{ label: 'Urgency', value: urgency }] : []),
+        ...(working_hours ? [{ label: 'Working Hours', value: working_hours }] : []),
+      ],
+      buttonText: 'Review Request',
+      buttonUrl: `${process.env.NEXT_PUBLIC_APP_URL || 'https://hiring-remote.vercel.app'}/dashboard/client-requests`,
+    })
+
+    // Send confirmation email to the client
+    await sendEmail({
+      to: contact_email,
+      subject: `We received your hiring request — ${role_title}`,
+      title: 'Hiring Request Received',
+      greeting: `Dear ${contactName || company_name},`,
+      body: `Thank you for submitting a hiring request for <strong>${role_title}</strong>. Our team is reviewing the details and will be in touch within 24 hours to confirm next steps.`,
+      infoRows: [
+        { label: 'Role', value: role_title },
+        { label: 'Company', value: company_name },
+        { label: 'Submitted', value: new Date().toLocaleDateString(), highlight: true },
+      ],
+      footer: `If you need to make changes or have any questions, simply reply to this email.`,
+    })
 
     return NextResponse.json({ success: true, id: saved.id })
   } catch (error: any) {

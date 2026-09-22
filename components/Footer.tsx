@@ -127,7 +127,7 @@ export default function Footer() {
 
   {/* YouTube */}
   <a
-    href="https://www.youtube.com/@remotehirring"
+    href="https://www.youtube.com/@remotehiring"
     target="_blank"
     rel="noreferrer"
     aria-label="YouTube"

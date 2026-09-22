@@ -75,19 +75,23 @@ export default function SignUpPage() {
             </button>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={handleSubmit} className="space-y-4">
+            {role === 'recruiter' && (
+              <div>
+                <label className="block font-semibold text-slate-700 mb-1 text-sm">Company Name</label>
+                <input
+                  type="text"
+                  placeholder="Enter your company name"
+                  value={companyName}
+                  onChange={(e) => setCompanyName(e.target.value)}
+                  className="w-full p-3 rounded-lg border border-slate-200 text-sm"
+                />
+              </div>
+            )}
             <div>
-              <label className="block font-semibold text-slate-700 mb-1 text-sm">Company Name</label>
-              <input
-                type="text"
-                placeholder="Enter your company name"
-                value={companyName}
-                onChange={(e) => setCompanyName(e.target.value)}
-                className="w-full p-3 rounded-lg border border-slate-200 text-sm"
-              />
-            </div>
-            <div>
-              <label className="block font-semibold text-slate-700 mb-1 text-sm">Work Email</label>
+              <label className="block font-semibold text-slate-700 mb-1 text-sm">
+                {role === 'recruiter' ? 'Work Email' : 'Email'}
+              </label>
               <input
                 type="email"
                 placeholder="Enter your work email"

@@ -35,7 +35,7 @@ export default function TeamPage() {
                 <p className="text-blue-600 text-sm font-medium mb-3">{member.role}</p>
                 
                 {/* Keeps the \n\n as separate paragraphs */}
-                <p className={`text-slate-600 text-sm leading-relaxed whitespace-pre-line ${member.desc.length > 200 ? 'text-justify' : ''}`}>
+                <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-line text-left">
   {member.desc}
 </p>
               </div>

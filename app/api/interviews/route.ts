@@ -1,13 +1,10 @@
 import { getUserId } from '@/lib/auth'
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
-import { Resend } from 'resend'
-
-const resend = new Resend(process.env.RESEND_API_KEY)
+import { sendEmail } from '@/lib/email-send'
+import { rateLimit, getClientIp } from '@/lib/rate-limit'
 
 export async function POST(request: Request) {
-  const cookieStore = await cookies()
   const userId = await getUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -24,14 +21,22 @@ export async function POST(request: Request) {
 }
 
 export async function PUT(request: Request) {
-  const cookieStore = await cookies()
+  // Rate limit: 10 scheduling requests / hour per IP
+  const ip = getClientIp(request)
+  const rl = rateLimit(`interviews-schedule:${ip}`, 10, 60 * 60 * 1000)
+  if (!rl.ok) {
+    return NextResponse.json(
+      { error: `Too many requests. Try again in ${Math.ceil(rl.retryAfterSeconds / 60)} min.` },
+      { status: 429 }
+    )
+  }
+
   const userId = await getUserId()
   if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
   const roleRecord = await prisma.roles.findUnique({ where: { user_id: userId } })
   if (!roleRecord) return NextResponse.json({ error: 'No role' }, { status: 403 })
 
-  // *** PERMISSION CHECK ***
   const canSchedule = roleRecord.role === 'admin' || (roleRecord.role === 'recruiter' && roleRecord.allowRecruiterSchedule)
   if (!canSchedule) {
     return NextResponse.json({ error: 'You do not have permission to schedule interviews' }, { status: 403 })
@@ -54,46 +59,90 @@ export async function PUT(request: Request) {
     })
 
     const job = await prisma.job.findUnique({ where: { id: interview.jobId } })
+    const jobTitle = job?.title || 'the role'
+    const formattedDate = new Date(scheduledDate).toLocaleString()
 
-    // Send email to each selected interviewer
-    for (const memberId of interviewers) {
+    // 1. Email each interviewer in the panel
+    for (const memberId of interviewers || []) {
       const member = await prisma.user.findUnique({ where: { id: memberId } })
       if (member?.email) {
-        try {
-          await resend.emails.send({
-            from: 'Remote Hirring <onboarding@resend.dev>',
-            to: [member.email],
-            subject: `You're invited to an interview for ${job?.title}`,
-            html: `<p>You are invited to an interview.</p>
-                   <p><strong>Date:</strong> ${new Date(scheduledDate).toLocaleString()}</p>
-                   <p><strong>Time Zone:</strong> ${timeZone}</p>
-                   <p><strong>Video Link:</strong> <a href="${videoLink}">${videoLink}</a></p>
-                   <p><strong>Notes:</strong> ${clientNotes || 'None'}</p>`,
-          })
-        } catch (emailError) {
-          console.error(`Email failed for ${member.email}:`, emailError)
-        }
+        const memberProfile = await prisma.candidateProfile.findUnique({ where: { userId: memberId } })
+        const memberName = memberProfile?.fullName || 'there'
+
+        const panelRows = [
+          { label: 'Role', value: jobTitle },
+          { label: 'Date & Time', value: formattedDate, highlight: true },
+          { label: 'Time Zone', value: timeZone },
+        ]
+        if (clientNotes) panelRows.push({ label: 'Panel Notes', value: clientNotes })
+
+        await sendEmail({
+          to: member.email,
+          subject: `Interview Panel Invite — ${jobTitle}`,
+          title: 'Interview Panel Invite',
+          greeting: `Hi ${memberName},`,
+          body: `You've been added to the interview panel for this role. Please review the details below.`,
+          infoRows: panelRows,
+          buttonText: 'Join Video Call',
+          buttonUrl: videoLink,
+        })
       }
     }
 
-    // Send email to the candidate
-    try {
-      await resend.emails.send({
-        from: 'Remote Hirring <onboarding@resend.dev>',
-        to: ['candidate@example.com'],
-        subject: `Your Interview for ${job?.title}`,
-        html: `<p>Your interview has been scheduled!</p>
-               <p><strong>Date:</strong> ${new Date(scheduledDate).toLocaleString()}</p>
-               <p><strong>Time Zone:</strong> ${timeZone}</p>
-               <p><strong>Video Link:</strong> <a href="${videoLink}">${videoLink}</a></p>
-               <p><strong>Notes:</strong> ${candidateNotes || 'None'}</p>`,
+    // 2. Email the candidate + bell notification
+    const candidate = await prisma.user.findUnique({ where: { id: interview.candidateId } })
+    const candidateProfile = await prisma.candidateProfile.findUnique({
+      where: { userId: interview.candidateId },
+    })
+    const candidateName = candidateProfile?.fullName || 'there'
+
+    if (candidate?.email) {
+      const candidateRows = [
+        { label: 'Role', value: jobTitle },
+        { label: 'Date & Time', value: formattedDate, highlight: true },
+        { label: 'Time Zone', value: timeZone },
+      ]
+      if (candidateNotes) candidateRows.push({ label: 'Preparation Notes', value: candidateNotes })
+
+      await sendEmail({
+        to: candidate.email,
+        subject: `Your interview for ${jobTitle} is scheduled`,
+        title: 'Interview Scheduled',
+        greeting: `Hi ${candidateName},`,
+        body: `Your interview has been confirmed. Please review the details below and join at the scheduled time.`,
+        infoRows: candidateRows,
+        buttonText: 'Join Video Call',
+        buttonUrl: videoLink,
       })
-    } catch (emailError) {
-      console.error('Candidate email failed:', emailError)
+
+      // Bell notification for candidate
+      await prisma.notification.create({
+        data: {
+          userId: candidate.id,
+          type: 'interview_scheduled',
+          title: 'Interview scheduled',
+          message: `Your interview for ${jobTitle} is scheduled for ${formattedDate}.`,
+          link: '/account',
+        },
+      })
+    }
+
+    // 3. Bell notification for the client who requested
+    if (interview.requestedByUserId) {
+      await prisma.notification.create({
+        data: {
+          userId: interview.requestedByUserId,
+          type: 'interview_scheduled',
+          title: 'Interview scheduled',
+          message: `Interview for ${jobTitle} scheduled for ${formattedDate}.`,
+          link: '/dashboard/interviews',
+        },
+      })
     }
 
     return NextResponse.json({ success: true, interview })
   } catch (error: any) {
+    console.error('Interview schedule error:', error)
     return NextResponse.json({ error: error.message }, { status: 500 })
   }
 }

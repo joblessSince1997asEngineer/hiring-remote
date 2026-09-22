@@ -5,6 +5,12 @@ const resend = new Resend(process.env.RESEND_API_KEY)
 
 const FROM = process.env.EMAIL_FROM || 'Remote Hirring <onboarding@resend.dev>'
 
+type InfoRow = {
+  label: string
+  value: string
+  highlight?: boolean
+}
+
 type SendEmailOptions = {
   to: string | string[]
   subject: string
@@ -15,12 +21,9 @@ type SendEmailOptions = {
   buttonUrl?: string
   footer?: string
   replyTo?: string
+  infoRows?: InfoRow[]
 }
 
-/**
- * Sends a branded email via Resend.
- * Silently returns { success: false } if sending fails (so it never breaks the API route).
- */
 export async function sendEmail(opts: SendEmailOptions) {
   try {
     const html = emailTemplate({
@@ -30,6 +33,7 @@ export async function sendEmail(opts: SendEmailOptions) {
       buttonText: opts.buttonText,
       buttonUrl: opts.buttonUrl,
       footer: opts.footer,
+      infoRows: opts.infoRows,
     })
 
     const result = await resend.emails.send({
@@ -42,7 +46,6 @@ export async function sendEmail(opts: SendEmailOptions) {
 
     return { success: true, result }
   } catch (err: any) {
-    // Log but don't throw — email failure should never break the request
     console.error('Email send failed (non-fatal):', err?.message || err)
     return { success: false, error: err?.message }
   }

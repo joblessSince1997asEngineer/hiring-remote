@@ -23,7 +23,7 @@ export default function LoginPage() {
       const data = await res.json()
 
       if (res.ok) {
-        document.cookie = `userId=${data.user.id}; path=/`
+        // Server already set the signed cookie — just navigate
         window.location.href = '/'
       } else {
         setError(data.error || 'Invalid email or password')
@@ -37,14 +37,16 @@ export default function LoginPage() {
 
   return (
     <div className="flex flex-col md:flex-row min-h-screen bg-white">
-      {/* LEFT SIDE - Form (Full width on Mobile, Half on Desktop) */}
+      {/* LEFT SIDE - Form */}
       <div className="w-full md:w-1/2 flex flex-col justify-center p-6 md:px-24 bg-[#fcfcfc]">
         <div className="max-w-md mx-auto w-full">
+
+          {/* Logo — left aligned */}
           <div className="flex items-center gap-2 mb-10">
-            <div className="w-10 h-10 rounded-full bg-[#f59e0b] flex items-center justify-center text-white">
+            <div className="w-10 h-10 rounded-full bg-[#facc15] flex items-center justify-center text-slate-900">
               <Building2 size={20} />
             </div>
-            <span className="text-xl font-bold text-[#0f172a]">Remote Hiring</span>
+            <span className="text-xl font-bold text-[#0f172a]">Remote Hirring</span>
           </div>
 
           <h1 className="text-3xl font-bold text-[#0f172a] mb-2">Welcome back</h1>
@@ -59,13 +61,16 @@ export default function LoginPage() {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
-                className="w-full p-3 rounded-lg border border-slate-200 text-sm"
+                className="w-full p-3 rounded-lg border border-slate-200 text-sm focus:border-[#facc15] outline-none"
               />
             </div>
+
             <div>
               <div className="flex justify-between items-center mb-1">
                 <label className="font-semibold text-slate-700 text-sm">Password</label>
-                <a href="/forgot-password" className="text-[#f59e0b] font-medium text-sm">Forgot password?</a>
+                <a href="/forgot-password" className="text-[#0f172a] font-semibold text-sm hover:underline">
+                  Forgot password?
+                </a>
               </div>
               <input
                 type="password"
@@ -73,7 +78,7 @@ export default function LoginPage() {
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
-                className="w-full p-3 rounded-lg border border-slate-200 text-sm"
+                className="w-full p-3 rounded-lg border border-slate-200 text-sm focus:border-[#facc15] outline-none"
               />
             </div>
 
@@ -82,19 +87,22 @@ export default function LoginPage() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full mt-4 bg-black text-white py-4 rounded-full font-semibold"
+              className="w-full mt-4 bg-black text-white py-4 rounded-full font-semibold hover:bg-slate-800 transition-colors disabled:opacity-60"
             >
               {loading ? 'Signing in...' : 'Sign In'}
             </button>
 
             <p className="text-center text-sm text-slate-500 mt-4">
-              Don't have an account? <a href="/sign-up" className="text-[#f59e0b] font-medium">Sign up</a>
+              Don't have an account?{' '}
+              <a href="/sign-up" className="text-[#0f172a] font-semibold hover:underline">
+                Sign up
+              </a>
             </p>
           </form>
         </div>
       </div>
 
-      {/* RIGHT SIDE - Dark Hero (Hidden on Mobile, Visible on Desktop) */}
+      {/* RIGHT SIDE - Dark Hero (hidden on mobile) */}
       <div className="hidden md:flex w-1/2 bg-[#0f172a] text-white flex-col justify-center px-20">
         <h2 className="text-4xl font-bold mb-4">The new standard in global hiring.</h2>
         <p className="text-slate-300 text-lg leading-relaxed">

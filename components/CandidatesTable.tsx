@@ -157,8 +157,8 @@ export default function CandidatesTable({ initialJobs }: { initialJobs: any[] })
                           <AlertCircle className="w-5 h-5 text-slate-300" />
                         )}
                       </td>
-                      <td className="p-4 font-medium text-[#0f172a] text-sm">
-                        Candidate #{getMaskedId(candidate.id)}
+                                            <td className="p-4 font-medium text-[#0f172a] text-sm">
+                        {candidate.full_name || 'Unknown Candidate'}
                       </td>
                       <td className="p-4 text-slate-600 text-sm">
                         {candidate.primary_skill && candidate.primary_skill !== 'Not Set'

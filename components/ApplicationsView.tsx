@@ -33,6 +33,15 @@ export default function ApplicationsView({
   const getProfile = (userId: string) => {
     return profiles.find((p: any) => p.userId === userId) || null
   }
+    const getCandidateName = (userId: string) => {
+    const p = getProfile(userId)
+    if (p?.fullName) return p.fullName
+    // fallback: check formData in the application
+    const app = applications.find(a => a.userId === userId)
+    const fd = app?.formData as any
+    if (fd?.fullName) return fd.fullName
+    return 'Unknown Candidate'
+  }
 
   // Client-side gate: can a client request a hire right now?
   const canClientRequestHire = (app: any) => {
@@ -247,8 +256,8 @@ export default function ApplicationsView({
                     ${isActive ? 'bg-slate-50 border-l-4 border-l-blue-600' : 'hover:bg-slate-50 border-l-4 border-l-transparent'}`}
                 >
                   <div className="flex justify-between items-start mb-1">
-                    <p className="font-semibold text-[#0f172a] text-sm">
-                      Candidate #{app.userId.slice(-4)}
+                                        <p className="font-semibold text-[#0f172a] text-sm">
+                      {getCandidateName(app.userId)}
                     </p>
                     <span className={`text-xs font-medium px-2 py-0.5 rounded-full capitalize ${
                       app.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
@@ -276,8 +285,8 @@ export default function ApplicationsView({
             <>
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-6 border-b border-slate-200">
                 <div>
-                  <h2 className="text-2xl font-bold text-[#0f172a]">
-                    Candidate #{selectedApp.userId.slice(-4)}
+                                    <h2 className="text-2xl font-bold text-[#0f172a]">
+                    {getCandidateName(selectedApp.userId)}
                   </h2>
                   <p className="text-slate-500 text-sm mt-1">
                     Applied for: <span className="font-medium text-slate-700">{selectedApp.job.title}</span>

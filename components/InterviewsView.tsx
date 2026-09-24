@@ -198,8 +198,8 @@ export default function InterviewsView({
           <table className="w-full text-left">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">App ID</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Candidate</th>
+                                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Candidate</th>
+                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Email</th>
                 <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Job</th>
                 <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Requested By</th>
                 <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Scheduled For</th>
@@ -215,8 +215,12 @@ export default function InterviewsView({
               ) : (
                 filteredInterviews.map((interview) => (
                   <tr key={interview.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                    <td className="p-4 text-slate-400 text-xs font-mono">{interview.applicationId?.slice(-6) || 'N/A'}</td>
-                    <td className="p-4 font-medium text-[#0f172a] text-sm">Candidate #{interview.candidateId?.slice(-4) || 'N/A'}</td>
+                                        <td className="p-4 font-medium text-[#0f172a] text-sm">
+                      {interview.candidateName || 'Unknown'}
+                    </td>
+                    <td className="p-4 text-slate-600 text-sm">
+                      {interview.candidateEmail || '—'}
+                    </td>
                     <td className="p-4 text-slate-600 text-sm">{interview.job?.title || 'Unknown Job'}</td>
                     <td className="p-4 text-slate-600 text-sm capitalize">{interview.requestedBy}</td>
                     <td className="p-4 text-slate-600 text-sm">
@@ -313,8 +317,10 @@ export default function InterviewsView({
               <X className="w-5 h-5 text-slate-600" />
             </button>
 
-            <h2 className="text-2xl font-bold text-[#0f172a] mb-1">Schedule Interview</h2>
-            <p className="text-slate-500 text-sm mb-6">For <strong>Candidate #{schedulingInterview.candidateId?.slice(-4)}</strong></p>
+                        <h2 className="text-2xl font-bold text-[#0f172a] mb-1">Schedule Interview</h2>
+            <p className="text-slate-500 text-sm mb-6">
+              For <strong className="text-slate-700">{schedulingInterview.candidateName || 'Unknown Candidate'}</strong>
+            </p>
 
             <form onSubmit={handleSchedule} className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

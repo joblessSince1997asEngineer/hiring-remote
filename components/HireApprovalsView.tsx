@@ -190,7 +190,7 @@ function ApproveModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div className="bg-white rounded-2xl max-w-md w-full p-6" onClick={e => e.stopPropagation()}>
-        <h3 className="text-xl font-bold text-[#0f172a] mb-1">Approve Hire</h3>
+                <h3 className="text-xl font-bold text-[#0f172a] mb-1">Approve Hire</h3>
         <p className="text-sm text-slate-500 mb-6">
           Set the placement fee for <strong>{app.job?.title}</strong>.
         </p>

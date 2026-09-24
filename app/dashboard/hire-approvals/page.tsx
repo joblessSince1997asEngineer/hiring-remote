@@ -1,11 +1,11 @@
 import { getUserId } from '@/lib/auth'
-import { cookies } from 'next/headers'
+
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import HireApprovalsView from '@/components/HireApprovalsView'
 
 export default async function HireApprovalsPage() {
-  const cookieStore = await cookies()
+  
   const userId = await getUserId()
   if (!userId) redirect('/login')
 

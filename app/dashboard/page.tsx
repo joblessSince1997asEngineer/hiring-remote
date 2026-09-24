@@ -13,8 +13,6 @@ export default async function DashboardOverview() {
 
   const isAdmin = roleRow.role === 'admin' || roleRow.role === 'super_admin'
 
-  // ─── Admin: global counts ───
-  // ─── Client (recruiter): only their own jobs' data ───
   let activeJobs = 0
   let totalCandidates = 0
   let totalApplications = 0
@@ -46,7 +44,6 @@ export default async function DashboardOverview() {
       include: { job: true },
     })
   } else {
-    // Client — restrict everything to their own jobs
     const myJobs = await prisma.job.findMany({
       where: { recruiterId: userId },
       select: { id: true },
@@ -72,7 +69,6 @@ export default async function DashboardOverview() {
       }),
     ])
 
-    // Candidates count = unique candidates who applied to their jobs
     const uniqueCandidates = await prisma.application.findMany({
       where: { jobId: { in: myJobIds } },
       select: { userId: true },
@@ -88,7 +84,21 @@ export default async function DashboardOverview() {
     })
   }
 
-  const kpis = [
+  // Enrich recent applications with candidate names
+  const recentCandidateIds = [...new Set(recentApplications.map(a => a.userId))]
+  const recentProfiles = await prisma.candidateProfile.findMany({
+    where: { userId: { in: recentCandidateIds } },
+    select: { userId: true, fullName: true },
+  })
+
+  const enrichedRecentApps = recentApplications.map((app) => {
+    const profile = recentProfiles.find(p => p.userId === app.userId)
+    const formData: any = app.formData
+    const name = profile?.fullName || formData?.fullName || 'Unknown Candidate'
+    return { ...app, candidateName: name }
+  })
+
+    const kpis = [
     {
       label: isAdmin ? 'Active Jobs' : 'My Jobs',
       value: activeJobs,
@@ -117,22 +127,24 @@ export default async function DashboardOverview() {
       color: 'bg-purple-500',
       href: '/dashboard/interviews',
     },
-    {
-      label: 'Hire Approvals',
-      value: pendingApprovals,
-      icon: CheckSquare,
-      color: 'bg-orange-500',
-      href: '/dashboard/hire-approvals',
-    },
-    {
+    // Hire Approvals — admin only (it's an admin action, not a client KPI)
+    ...(isAdmin
+      ? [{
+          label: 'Hire Approvals',
+          value: pendingApprovals,
+          icon: CheckSquare,
+          color: 'bg-orange-500',
+          href: '/dashboard/hire-approvals',
+        }]
+      : []),
+        {
       label: 'Invoices Due',
       value: pendingInvoices,
       icon: DollarSign,
       color: 'bg-rose-500',
-      href: '/dashboard/hire-approvals',
+      href: isAdmin ? '/dashboard/hire-approvals' : '/dashboard/applications',
     },
   ]
-
   return (
     <div className="p-6 md:p-10">
       <div className="mb-8">
@@ -170,18 +182,18 @@ export default async function DashboardOverview() {
             </Link>
           </div>
 
-          {recentApplications.length === 0 ? (
+          {enrichedRecentApps.length === 0 ? (
             <p className="text-slate-400 text-sm py-8 text-center">No applications yet.</p>
           ) : (
             <div className="space-y-4">
-              {recentApplications.map((app) => (
+              {enrichedRecentApps.map((app) => (
                 <div key={app.id} className="flex items-center justify-between border-b border-slate-100 pb-4 last:border-b-0 last:pb-0">
                   <div className="flex items-center gap-4">
                     <div className="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center font-bold text-slate-500 text-sm">
-                      {app.userId.charAt(0).toUpperCase()}
+                      {app.candidateName.charAt(0).toUpperCase()}
                     </div>
                     <div>
-                      <p className="font-medium text-[#0f172a] text-sm">Candidate #{app.userId.slice(-4)}</p>
+                      <p className="font-medium text-[#0f172a] text-sm">{app.candidateName}</p>
                       <p className="text-xs text-slate-500">Applied to: {app.job.title}</p>
                     </div>
                   </div>

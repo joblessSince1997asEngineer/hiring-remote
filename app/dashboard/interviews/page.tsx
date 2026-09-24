@@ -11,8 +11,6 @@ export default async function InterviewsPage() {
   if (!roleRow) redirect('/login')
 
   const isAdmin = roleRow.role === 'admin' || roleRow.role === 'super_admin'
-
-  // Admin can always schedule. Recruiters need permission.
   const canSchedule = isAdmin || (roleRow.role === 'recruiter' && roleRow.allowRecruiterSchedule)
 
   // Build filter: admin sees all, client sees only their jobs' interviews
@@ -32,19 +30,41 @@ export default async function InterviewsPage() {
     include: { job: true },
   })
 
+  // Enrich with candidate name + email
+  const candidateIds = [...new Set(interviews.map(i => i.candidateId))]
+
+  const [users, profiles] = await Promise.all([
+    prisma.user.findMany({
+      where: { id: { in: candidateIds } },
+      select: { id: true, email: true },
+    }),
+    prisma.candidateProfile.findMany({
+      where: { userId: { in: candidateIds } },
+      select: { userId: true, fullName: true },
+    }),
+  ])
+
+  const enrichedInterviews = interviews.map((i) => {
+    const u = users.find(x => x.id === i.candidateId)
+    const p = profiles.find(x => x.userId === i.candidateId)
+    return {
+      ...i,
+      candidateName: p?.fullName || u?.email?.split('@')[0] || 'Unknown Candidate',
+      candidateEmail: u?.email || null,
+    }
+  })
+
   return (
     <div className="p-6 md:p-10">
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[#0f172a] mb-1">Interviews</h1>
         <p className="text-slate-500">
-          {isAdmin
-            ? 'Manage and schedule all interview requests.'
-            : 'Interviews for your jobs.'}
+          {isAdmin ? 'Manage and schedule all interview requests.' : 'Interviews for your jobs.'}
         </p>
       </div>
 
       <InterviewsView
-        interviews={JSON.parse(JSON.stringify(interviews))}
+        interviews={JSON.parse(JSON.stringify(enrichedInterviews))}
         canSchedule={canSchedule}
         role={roleRow.role}
       />

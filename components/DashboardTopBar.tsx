@@ -73,10 +73,11 @@ export default function DashboardTopBar({ onMenuClick }: { onMenuClick: () => vo
     window.location.href = '/'
   }
 
-  const handleSearch = (e: React.FormEvent) => {
+    const handleSearch = (e: React.FormEvent) => {
     e.preventDefault()
-    if (searchQuery.trim()) {
-      router.push(`/dashboard/candidates?search=${encodeURIComponent(searchQuery)}`)
+    const q = searchQuery.trim()
+    if (q) {
+      window.location.href = `/dashboard/search?q=${encodeURIComponent(q)}`
     }
   }
 
@@ -154,7 +155,7 @@ export default function DashboardTopBar({ onMenuClick }: { onMenuClick: () => vo
             placeholder="Search candidates, jobs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-16 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-400"
+                        className="w-full pl-9 pr-16 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-[#facc15]"
           />
           <span className="absolute right-3 top-1/2 -translate-y-1/2 text-[10px] font-mono bg-white border border-slate-200 px-1.5 py-0.5 rounded text-slate-400">
             Ctrl K
@@ -306,7 +307,7 @@ export default function DashboardTopBar({ onMenuClick }: { onMenuClick: () => vo
             placeholder="Search candidates, jobs..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-blue-400"
+                        className="w-full pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm outline-none focus:border-[#facc15]"
           />
         </form>
       </div>

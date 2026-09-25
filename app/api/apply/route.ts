@@ -58,6 +58,24 @@ export async function POST(request: Request) {
     // 4. Get user + profile info for emails
     const user = await prisma.user.findUnique({ where: { id: userId } })
     const profile = await prisma.candidateProfile.findUnique({ where: { userId } })
+        // Auto-sync name from application form to profile (if profile is empty)
+    if (profile && !profile.fullName && formData.fullName) {
+      await prisma.candidateProfile.update({
+        where: { userId },
+        data: { fullName: formData.fullName },
+      })
+    }
+
+    // If no profile exists at all, create a minimal one
+    if (!profile && formData.fullName) {
+      await prisma.candidateProfile.create({
+        data: {
+          userId,
+          fullName: formData.fullName,
+          cvUrl: formData.cv_url || null,
+        },
+      })
+    }
 
     const candidateName = profile?.fullName || formData.fullName || user?.email?.split('@')[0] || 'Candidate'
     const candidateEmail = user?.email || formData.email

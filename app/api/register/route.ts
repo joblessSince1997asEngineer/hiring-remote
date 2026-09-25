@@ -16,8 +16,26 @@ if (!rl.ok) {
 }
     const { email, password, role } = await request.json()
 
-    if (!email || !password) {
+        if (!email || !password) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
+    }
+
+    // Block free email providers for recruiter accounts
+    if (role === 'recruiter') {
+      const freeDomains = [
+        'gmail.com', 'yahoo.com', 'yahoo.co.uk', 'outlook.com', 'hotmail.com',
+        'live.com', 'msn.com', 'aol.com', 'icloud.com', 'me.com', 'mac.com',
+        'protonmail.com', 'proton.me', 'mail.com', 'gmx.com', 'gmx.net',
+        'yandex.com', 'yandex.ru', 'qq.com', '163.com', '126.com', 'rediffmail.com',
+        'zoho.com', 'tutanota.com', 'fastmail.com',
+      ]
+      const domain = email.split('@')[1]?.toLowerCase()
+      if (domain && freeDomains.includes(domain)) {
+        return NextResponse.json(
+          { error: 'Please use your work email. Personal email addresses (Gmail, Yahoo, etc.) are not accepted for company accounts.' },
+          { status: 400 }
+        )
+      }
     }
 
     if (password.length < 8) {

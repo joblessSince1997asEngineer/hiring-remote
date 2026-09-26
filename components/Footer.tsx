@@ -1,12 +1,19 @@
 'use client'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { ArrowUp } from 'lucide-react'
 
 export default function Footer() {
-  const [email, setEmail] = useState('')
+    const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'ok' | 'error'>('idle')
+  const [showBackToTop, setShowBackToTop] = useState(false)
 
+  useEffect(() => {
+    const onScroll = () => setShowBackToTop(window.scrollY > 400)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll() // initial check
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
   const handleSubscribe = async (e: React.FormEvent) => {
     e.preventDefault()
     if (!email) return
@@ -174,25 +181,29 @@ export default function Footer() {
         </div>
       </div>
 
-      {/* Bottom Bar */}
+            {/* Bottom Bar */}
       <div className="border-t border-slate-700/50">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-slate-400">
-          <p>© 2026 Remote Hirring. All rights reserved.</p>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
+          <p className="text-slate-200">© 2026 Remote Hirring. All rights reserved.</p>
           <div className="flex gap-6">
-            <Link href="/privacy" className="hover:text-[#facc15] transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-[#facc15] transition-colors">Terms of Service</Link>
-            <Link href="/cookies" className="hover:text-[#facc15] transition-colors">Cookie Policy</Link>
+            <Link href="/privacy" className="text-slate-200 hover:text-[#facc15] transition-colors">Privacy Policy</Link>
+            <Link href="/terms" className="text-slate-200 hover:text-[#facc15] transition-colors">Terms of Service</Link>
+            <Link href="/cookies" className="text-slate-200 hover:text-[#facc15] transition-colors">Cookie Policy</Link>
           </div>
         </div>
       </div>
 
-      {/* Back to Top Button */}
+            {/* Back to Top Button — appears after scrolling */}
       <button
         onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })}
-        className="fixed bottom-6 right-6 bg-[#facc15] text-black p-3 rounded-full shadow-lg hover:bg-yellow-300 transition-colors z-50"
+        className={`fixed bottom-5 right-5 bg-[#facc15] text-black p-2.5 rounded-full shadow-lg hover:bg-yellow-300 transition-all duration-300 z-50 ${
+          showBackToTop
+            ? 'opacity-100 translate-y-0'
+            : 'opacity-0 translate-y-4 pointer-events-none'
+        }`}
         aria-label="Back to top"
       >
-        <ArrowUp className="w-5 h-5" />
+        <ArrowUp className="w-4 h-4" />
       </button>
     </footer>
   )

@@ -44,28 +44,28 @@ export default function TeamPage() {
         </div>
       </div>
 
-      {/* Modal */}
+            {/* Modal */}
       {selected && (
         <div
           className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto"
           onClick={() => setSelected(null)}
         >
           <div
-            className="bg-white rounded-2xl max-w-2xl w-full my-8 relative overflow-hidden shadow-2xl"
+            className="bg-white rounded-2xl max-w-2xl w-full my-8 relative overflow-hidden shadow-2xl max-h-[calc(100vh-4rem)] flex flex-col"
             onClick={(e) => e.stopPropagation()}
           >
             {/* Close button */}
             <button
               onClick={() => setSelected(null)}
-              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-md"
+              className="absolute top-3 right-3 z-10 w-9 h-9 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-md"
               aria-label="Close"
             >
               <X className="w-5 h-5 text-slate-700" />
             </button>
 
             {/* Photo — small + centered at top */}
-            <div className="pt-10 pb-6 flex justify-center bg-slate-50">
-              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden bg-slate-200 ring-4 ring-white shadow-lg">
+            <div className="pt-8 pb-5 flex justify-center bg-slate-50 shrink-0">
+              <div className="w-28 h-28 md:w-36 md:h-36 rounded-full overflow-hidden bg-slate-200 ring-4 ring-white shadow-lg">
                 <img
                   src={selected.img}
                   alt={selected.name}
@@ -74,8 +74,8 @@ export default function TeamPage() {
               </div>
             </div>
 
-            {/* Info */}
-            <div className="p-6 md:p-8 text-center max-h-[60vh] md:max-h-none overflow-y-auto">
+            {/* Info — scrollable if content is long */}
+            <div className="p-6 md:p-8 text-center overflow-y-auto flex-1">
               <h2 className="text-2xl md:text-3xl font-bold text-[#0f172a] mb-1">
                 {selected.name}
               </h2>

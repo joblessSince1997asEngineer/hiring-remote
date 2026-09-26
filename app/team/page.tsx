@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { ChevronDown, ChevronUp } from 'lucide-react'
+import { useState, useEffect } from 'react'
+import { X } from 'lucide-react'
 
 export default function TeamPage() {
   const team = [
@@ -13,45 +13,101 @@ export default function TeamPage() {
     { name: 'Ulishba Arif Malik', role: 'Recruitment Specialist', desc: `Knows the methodology to recruit, effectively identifying, sourcing, and placing top-tier talent.\n\nEnsuring a seamless and engaging experience for both candidates and clients.`, img: '/ulishba.png' }
   ]
 
+  const [selected, setSelected] = useState<any | null>(null)
+
+  useEffect(() => {
+    if (!selected) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setSelected(null) }
+    window.addEventListener('keydown', onKey)
+    document.body.style.overflow = 'hidden'
+    return () => {
+      window.removeEventListener('keydown', onKey)
+      document.body.style.overflow = ''
+    }
+  }, [selected])
+
   return (
     <div className="min-h-screen bg-[#f8fafc] py-12 md:py-16 px-4">
       <div className="max-w-6xl mx-auto">
 
         <div className="text-center mb-10 md:mb-16">
           <h1 className="text-3xl md:text-5xl font-bold text-[#0f172a] mb-4">Meet Our Team</h1>
-          <p className="text-slate-600 text-base md:text-lg">The global talent experts dedicated to finding your next great hire.</p>
+          <p className="text-slate-600 text-base md:text-lg">
+            The global talent experts dedicated to finding your next great hire.
+          </p>
         </div>
 
-        {/* NO items-stretch — cards size to their own content */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8 items-start">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
           {team.map((member, index) => (
-            <TeamCard key={index} member={member} />
+            <TeamCard key={index} member={member} onOpen={() => setSelected(member)} />
           ))}
         </div>
       </div>
+
+      {/* Modal */}
+      {selected && (
+        <div
+          className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4 overflow-y-auto"
+          onClick={() => setSelected(null)}
+        >
+          <div
+            className="bg-white rounded-2xl max-w-2xl w-full my-8 relative overflow-hidden shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Close button */}
+            <button
+              onClick={() => setSelected(null)}
+              className="absolute top-4 right-4 z-10 w-9 h-9 rounded-full bg-white/90 hover:bg-white flex items-center justify-center shadow-md"
+              aria-label="Close"
+            >
+              <X className="w-5 h-5 text-slate-700" />
+            </button>
+
+            {/* Photo — small + centered at top */}
+            <div className="pt-10 pb-6 flex justify-center bg-slate-50">
+              <div className="w-32 h-32 md:w-40 md:h-40 rounded-full overflow-hidden bg-slate-200 ring-4 ring-white shadow-lg">
+                <img
+                  src={selected.img}
+                  alt={selected.name}
+                  className="w-full h-full object-cover object-top"
+                />
+              </div>
+            </div>
+
+            {/* Info */}
+            <div className="p-6 md:p-8 text-center max-h-[60vh] md:max-h-none overflow-y-auto">
+              <h2 className="text-2xl md:text-3xl font-bold text-[#0f172a] mb-1">
+                {selected.name}
+              </h2>
+              <p className="text-[#0f172a] text-sm font-semibold mb-6">{selected.role}</p>
+
+              <div className="text-slate-600 leading-relaxed text-[15px] space-y-4 text-left">
+                {selected.desc.split('\n\n').map((para: string, i: number) => (
+                  <p key={i}>{para}</p>
+                ))}
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
 
-function getPreview(desc: string): { text: string; hasMore: boolean } {
-  const MAX = 130
-  if (desc.length <= MAX) return { text: desc, hasMore: false }
+// Always truncate to first ~150 chars of the first paragraph
+const PREVIEW_LENGTH = 150
 
-  const firstParagraph = desc.split('\n\n')[0].trim()
-  if (firstParagraph.length <= MAX) return { text: firstParagraph + '…', hasMore: true }
-
-  const cut = firstParagraph.slice(0, MAX)
+function TeamCard({ member, onOpen }: { member: any; onOpen: () => void }) {
+  // Always truncate — real bios will be long
+  const firstPara = member.desc.split('\n\n')[0].trim()
+  const clean = firstPara.replace(/\s+/g, ' ').trim()
+  const cut = clean.slice(0, PREVIEW_LENGTH)
   const lastSpace = cut.lastIndexOf(' ')
-  const clean = lastSpace > 0 ? cut.slice(0, lastSpace) : cut
-  return { text: clean + '…', hasMore: true }
-}
-
-function TeamCard({ member }: { member: any }) {
-  const [expanded, setExpanded] = useState(false)
-  const { text: preview, hasMore } = getPreview(member.desc)
+  const preview = (lastSpace > 0 ? cut.slice(0, lastSpace) : cut) + '…'
 
   return (
-    <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100">
+    <div className="bg-white rounded-2xl overflow-hidden shadow-sm border border-slate-100 flex flex-col">
+
       {/* Photo */}
       <div className="w-full aspect-[4/5] overflow-hidden bg-slate-100">
         <img
@@ -62,27 +118,21 @@ function TeamCard({ member }: { member: any }) {
       </div>
 
       {/* Info */}
-      <div className="p-5">
+      <div className="p-5 flex-1 flex flex-col">
         <h3 className="text-lg font-bold text-[#0f172a] mb-1">{member.name}</h3>
         <p className="text-[#0f172a] text-sm font-semibold mb-3">{member.role}</p>
 
-        <p className="text-slate-600 text-sm leading-relaxed whitespace-pre-line">
-          {expanded ? member.desc : preview}
+        <p className="text-slate-600 text-sm leading-relaxed flex-1">
+          {preview}
         </p>
 
-        {hasMore && (
-          <button
-            type="button"
-            onClick={() => setExpanded(v => !v)}
-            className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-[#0f172a] hover:opacity-70 transition-opacity"
-          >
-            {expanded ? (
-              <>Show Less <ChevronUp className="w-3.5 h-3.5" /></>
-            ) : (
-              <>Read More <ChevronDown className="w-3.5 h-3.5" /></>
-            )}
-          </button>
-        )}
+        <button
+          type="button"
+          onClick={onOpen}
+          className="mt-3 inline-flex items-center gap-1 text-xs font-semibold text-[#0f172a] hover:opacity-70 transition-opacity self-start"
+        >
+          Read More →
+        </button>
       </div>
     </div>
   )

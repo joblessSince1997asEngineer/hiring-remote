@@ -2,7 +2,7 @@ export default function AboutPage() {
   return (
     <div className="min-h-screen bg-[#f8fafc] py-12 md:py-16 px-4">
       <div className="max-w-6xl mx-auto">
-        
+
         {/* Header */}
         <div className="text-center mb-12 md:mb-16">
           <h1 className="text-3xl md:text-5xl font-bold text-[#0f172a] mb-6">About Remote Hirring</h1>
@@ -11,14 +11,16 @@ export default function AboutPage() {
           </p>
         </div>
 
-        {/* Story Section: Stacks on Mobile, Side-by-side on Desktop */}
-        <div className="flex flex-col md:flex-row gap-10 md:gap-12 items-start mb-16">
-          
-          {/* Left: Story (Full width on mobile, 50% on desktop) */}
-          <div className="w-full md:w-1/2">
-            <h2 className="text-2xl md:text-3xl font-bold text-[#0f172a] mb-6">The Story Behind Remote Hirring</h2>
-            
-            <div className="space-y-4 text-slate-600 leading-relaxed text-base md:text-[17px] text-justify">
+        {/* SECTION 1: Text Left, Image Right */}
+        <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-center mb-20 md:mb-32">
+
+          {/* Text */}
+          <div className="w-full md:w-1/2 order-2 md:order-1">
+            <h2 className="text-2xl md:text-3xl font-bold text-[#0f172a] mb-6">
+              The Story Behind Remote Hirring
+            </h2>
+
+            <div className="space-y-4 text-slate-600 leading-relaxed text-base md:text-[17px] text-left">
               <p>
                 Every journey has a beginning, and the journey of Remote Hirring started with an experience that gave us the confidence to build something of our own.
               </p>
@@ -34,6 +36,42 @@ export default function AboutPage() {
               <p>
                 Everyone gave me different suggestions and ideas. But among all the options, one idea really stood out to me—HR and recruitment.
               </p>
+            </div>
+          </div>
+
+          {/* Image */}
+          <div className="w-full md:w-1/2 order-1 md:order-2 flex justify-center md:justify-end">
+            <div className="w-full max-w-[480px] rounded-2xl overflow-hidden bg-slate-200 shadow-lg">
+              <img
+                src="/chairperson.png"
+                alt="Remote Hirring founder"
+                className="w-full h-auto object-cover"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* SECTION 2: Image Left, Text Right */}
+        <div className="flex flex-col md:flex-row gap-10 md:gap-16 items-center">
+
+          {/* Image */}
+          <div className="w-full md:w-1/2 flex justify-center md:justify-start">
+            <div className="w-full max-w-[480px] rounded-2xl overflow-hidden bg-slate-200 shadow-lg">
+              <img
+                src="/chairperson.png"
+                alt="Remote Hirring team"
+                className="w-full h-auto object-cover"
+              />
+            </div>
+          </div>
+
+          {/* Text */}
+          <div className="w-full md:w-1/2">
+            <h2 className="text-2xl md:text-3xl font-bold text-[#0f172a] mb-6">
+              Where We Are Today
+            </h2>
+
+            <div className="space-y-4 text-slate-600 leading-relaxed text-base md:text-[17px] text-left">
               <p>
                 I realized that we already had experience in hiring, we understood the process, and most importantly, we genuinely enjoyed doing it.
               </p>
@@ -57,19 +95,8 @@ export default function AboutPage() {
               </p>
             </div>
           </div>
-
-          {/* Right: Photo (Sticky on desktop so it stays visible while scrolling text) */}
-          <div className="w-full md:w-1/2 flex justify-center md:justify-end">
-            <div className="w-full max-w-[480px] md:max-w-none md:w-[480px] md:sticky md:top-8 rounded-2xl overflow-hidden bg-slate-200">
-              <img 
-                src="/chairperson.png" 
-                alt="Team working together" 
-                className="w-full h-auto object-cover" 
-              />
-            </div>
-          </div>
-
         </div>
+
       </div>
     </div>
   )

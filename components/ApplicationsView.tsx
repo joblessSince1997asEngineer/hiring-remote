@@ -341,7 +341,13 @@ export default function ApplicationsView({
                           }
                         }}
                         disabled={!canGoToApprovals}
-                        className="bg-green-600 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                                              className={`px-5 py-2.5 rounded-full text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${
+                        selectedApp.status === 'hire_cancelled'
+                          ? 'bg-red-600 text-white'
+                          : selectedApp.status === 'hired'
+                            ? 'bg-green-600 text-white'
+                            : 'bg-green-600 text-white'
+                      }`}
                       >
                         {selectedApp.status === 'hire_pending' ? (
                           <><CheckCircle className="w-4 h-4" /> Go to Approvals →</>
@@ -369,20 +375,28 @@ export default function ApplicationsView({
                         })
                       }}
                       disabled={actionLoading !== null || !canClientRequestHire(selectedApp)}
-                      className="bg-green-600 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      className={`px-5 py-2.5 rounded-full text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2 ${
+                        selectedApp.status === 'hire_cancelled'
+                          ? 'bg-red-600 text-white'
+                          : 'bg-green-600 text-white'
+                      }`}
                     >
                       {getInterviewStatus(selectedApp.id) !== 'completed' ? (
                         <>
                           <Lock className="w-4 h-4" />
                           Interview Required
                         </>
-                      ) : ['hire_pending', 'awaiting_payment', 'hired', 'hire_cancelled'].includes(selectedApp.status) ? (
+                                            ) : selectedApp.status === 'hire_cancelled' ? (
+                        <>
+                          <XCircle className="w-4 h-4" />
+                          Hire Cancelled
+                        </>
+                      ) : ['hire_pending', 'awaiting_payment', 'hired'].includes(selectedApp.status) ? (
                         <>
                           <Lock className="w-4 h-4" />
                           {selectedApp.status === 'hire_pending' ? 'Hire Requested' :
                            selectedApp.status === 'awaiting_payment' ? 'Awaiting Payment' :
-                           selectedApp.status === 'hired' ? 'Hired' :
-                           'Hire Cancelled'}
+                           'Hired'}
                         </>
                       ) : (
                         <>
@@ -424,10 +438,12 @@ export default function ApplicationsView({
               {/* Amber warning — client only, when interview not complete OR status blocked */}
               {!isAdmin && !canClientRequestHire(selectedApp) && (
                 <div className="w-full mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg text-sm text-amber-800">
-                  <p className="font-semibold mb-1">
-                    {getInterviewStatus(selectedApp.id) !== 'completed'
-                      ? 'Interview required first'
-                      : 'Hire request already in progress'}
+                                    <p className="font-semibold mb-1">
+                    {selectedApp.status === 'hire_cancelled'
+                      ? 'Hire cancelled'
+                      : getInterviewStatus(selectedApp.id) !== 'completed'
+                        ? 'Interview required first'
+                        : 'Hire request already in progress'}
                   </p>
                   <p className="text-xs">
                     {getInterviewStatus(selectedApp.id) === 'completion_requested' &&
@@ -446,6 +462,8 @@ export default function ApplicationsView({
                       'Status: Hire approved. Please pay the invoice within 15 days.'}
                     {getInterviewStatus(selectedApp.id) === 'completed' && selectedApp.status === 'hired' &&
                       'Status: You already hired this candidate. 🎉'}
+                    {selectedApp.status === 'hire_cancelled' &&
+                      'Status: The invoice for this hire was not paid within the deadline. The hire has been cancelled by admin.'}
                   </p>
                 </div>
               )}

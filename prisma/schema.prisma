@@ -149,6 +149,7 @@ model Interview {
 
 model Invoice {
   id                     String    @id @default(cuid())
+  invoiceNumber          String    @unique
   applicationId          String    @unique
   jobId                  String
   clientId               String

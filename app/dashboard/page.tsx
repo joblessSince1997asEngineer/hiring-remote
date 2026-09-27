@@ -198,9 +198,10 @@ export default async function DashboardOverview() {
     <div className="p-6 md:p-10">
             {/* Payment reminder alert — client only, when unpaid invoices exist */}
       {!isAdmin && pendingInvoiceDetails && pendingInvoiceDetails.length > 0 && (
-        <InvoiceAlert
+            <InvoiceAlert
           invoices={pendingInvoiceDetails.map(inv => ({
             id: inv.id,
+            invoiceNumber: inv.invoiceNumber,
             amount: inv.amount,
             dueAt: inv.dueAt.toISOString(),
           }))}

@@ -15,7 +15,7 @@ export async function POST(request: Request) {
 
     // Verify admin
     const roleRow = await prisma.roles.findUnique({ where: { user_id: userId } })
-    if (!roleRow || !['admin', 'super_admin'].includes(roleRow.role)) {
+    if (!roleRow || roleRow.role !== 'admin') {
       return NextResponse.json({ error: 'Only admin can approve hires' }, { status: 403 })
     }
 
@@ -62,7 +62,6 @@ export async function POST(request: Request) {
     }
 
     // Apply client's subscription discount (if active)
-    // NOTE: subscription is on the CLIENT, not the candidate
     const subscription = await prisma.subscription.findFirst({
       where: {
         userId: clientId,
@@ -78,34 +77,70 @@ export async function POST(request: Request) {
     dueAt.setDate(dueAt.getDate() + 15)
 
     // Create invoice + update application (transaction)
-    const [invoice] = await prisma.$transaction([
-      prisma.invoice.create({
-        data: {
-          applicationId: application.id,
-          jobId: application.jobId,
-          clientId,                          // ← client (job owner), NOT candidate
-          planType,
-          baseAmount: amount,
-          discountPercent,
-          amount: finalAmount,
-          status: 'pending',
-          dueAt,
-          remindersSent: [],
-        },
-      }),
-      prisma.application.update({
-        where: { id: application.id },
-        data: { status: 'awaiting_payment' },
-      }),
-    ])
+    // Retry loop handles concurrent invoice number collisions
+    let invoice: any = null
+    let attempts = 0
+    const maxAttempts = 3
 
-    // Notify the client (job owner)
+    while (attempts < maxAttempts) {
+      try {
+        const year = new Date().getFullYear()
+        const lastInvoice = await prisma.invoice.findFirst({
+          where: { invoiceNumber: { startsWith: `INV-${year}-` } },
+          orderBy: { invoiceNumber: 'desc' },
+        })
+
+        let nextNumber = 1
+        if (lastInvoice?.invoiceNumber) {
+          const match = lastInvoice.invoiceNumber.match(/INV-\d{4}-(\d+)/)
+          if (match) nextNumber = parseInt(match[1]) + 1
+        }
+        const invoiceNumberAttempt = `INV-${year}-${String(nextNumber).padStart(4, '0')}`
+
+        const result = await prisma.$transaction([
+          prisma.invoice.create({
+            data: {
+              invoiceNumber: invoiceNumberAttempt,
+              applicationId: application.id,
+              jobId: application.jobId,
+              clientId,
+              planType,
+              baseAmount: amount,
+              discountPercent,
+              amount: finalAmount,
+              status: 'pending',
+              dueAt,
+              remindersSent: [],
+            },
+          }),
+          prisma.application.update({
+            where: { id: application.id },
+            data: { status: 'awaiting_payment' },
+          }),
+        ])
+
+        invoice = result[0]
+        break
+      } catch (err: any) {
+        if (err?.code === 'P2002' && attempts < maxAttempts - 1) {
+          attempts++
+          continue
+        }
+        throw err
+      }
+    }
+
+    if (!invoice) {
+      return NextResponse.json({ error: 'Could not generate invoice number' }, { status: 500 })
+    }
+
+    // Notify the client
     await prisma.notification.create({
       data: {
-        userId: clientId,                    // ← client, NOT candidate
+        userId: clientId,
         type: 'invoice_created',
         title: 'Hire approved — invoice ready',
-        message: `Your hire has been approved. Invoice of $${finalAmount.toLocaleString()} is due within 15 days.`,
+        message: `Your hire has been approved. Invoice ${invoice.invoiceNumber} for $${finalAmount.toLocaleString()} is due within 15 days.`,
         link: `/invoice?id=${invoice.id}`,
       },
     })

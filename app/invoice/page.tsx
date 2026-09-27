@@ -57,7 +57,7 @@ function InvoiceContent() {
             </div>
             <div className="text-left md:text-right">
               <p className="text-slate-500 text-xs uppercase">Invoice #</p>
-              <p className="font-mono text-sm text-slate-800">{invoice.id.slice(-8).toUpperCase()}</p>
+              <p className="font-mono text-sm text-slate-800">{invoice.invoiceNumber}</p>
             </div>
           </div>
         </div>

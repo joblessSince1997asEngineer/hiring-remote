@@ -90,7 +90,7 @@ export async function GET(request: Request) {
       }
 
       const jobTitle = invoice.application?.job?.title || 'your recent hire'
-      const invoiceNum = invoice.id.slice(-8).toUpperCase()
+      const invoiceNum = invoice.invoiceNumber
       const amount = invoice.amount.toLocaleString()
 
       // Severity based on days left

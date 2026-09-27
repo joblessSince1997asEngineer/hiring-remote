@@ -6,6 +6,7 @@ import { AlertTriangle, X } from 'lucide-react'
 
 type PendingInvoice = {
   id: string
+  invoiceNumber: string
   amount: number
   dueAt: string
 }
@@ -56,7 +57,7 @@ export default function InvoiceAlert({ invoices }: { invoices: PendingInvoice[] 
         <p className={`text-sm font-semibold ${textClass}`}>{label}</p>
         <p className={`text-xs mt-1 ${textClass}`}>
           {invoices.length === 1
-            ? `Invoice #${soonest.id.slice(-8).toUpperCase()} for $${soonest.amount.toLocaleString()} is due in ${daysLeft} day${daysLeft === 1 ? '' : 's'}.`
+            ? `Invoice ${soonest.invoiceNumber} for $${soonest.amount.toLocaleString()} is due in ${daysLeft} day${daysLeft === 1 ? '' : 's'}.`
             : `You have ${invoices.length} unpaid invoices. The soonest is due in ${daysLeft} day${daysLeft === 1 ? '' : 's'} — $${soonest.amount.toLocaleString()}.`
           }
         </p>

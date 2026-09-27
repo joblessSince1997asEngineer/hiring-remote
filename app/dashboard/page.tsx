@@ -1,8 +1,10 @@
+export const dynamic = 'force-dynamic'
 import { getUserId } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Briefcase, Users, FileText, Calendar, CheckSquare, DollarSign } from 'lucide-react'
+import InvoiceAlert from '@/components/InvoiceAlert'
 
 export default async function DashboardOverview() {
   const userId = await getUserId()
@@ -19,7 +21,8 @@ export default async function DashboardOverview() {
   let totalInterviews = 0
   let pendingApprovals = 0
   let pendingInvoices = 0
-  let recentApplications: any[] = []
+    let recentApplications: any[] = []
+  let pendingInvoiceDetails: any[] = []
 
   if (isAdmin) {
     ;[
@@ -68,6 +71,14 @@ export default async function DashboardOverview() {
         },
       }),
     ])
+        // Fetch client's pending invoices for banner + top alert
+        pendingInvoiceDetails = await prisma.invoice.findMany({
+      where: {
+        status: 'pending',
+        application: { jobId: { in: myJobIds } },
+      },
+      orderBy: { dueAt: 'asc' },
+    })
 
     const uniqueCandidates = await prisma.application.findMany({
       where: { jobId: { in: myJobIds } },
@@ -185,6 +196,17 @@ export default async function DashboardOverview() {
   ]
   return (
     <div className="p-6 md:p-10">
+            {/* Payment reminder alert — client only, when unpaid invoices exist */}
+      {!isAdmin && pendingInvoiceDetails && pendingInvoiceDetails.length > 0 && (
+        <InvoiceAlert
+          invoices={pendingInvoiceDetails.map(inv => ({
+            id: inv.id,
+            amount: inv.amount,
+            dueAt: inv.dueAt.toISOString(),
+          }))}
+        />
+      )}
+
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[#0f172a] mb-1">Overview</h1>
         <p className="text-slate-500">Welcome back, here is what is happening today.</p>

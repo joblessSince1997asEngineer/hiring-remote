@@ -3,7 +3,7 @@
 import { toast } from 'sonner'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
-import { Building2, User, Briefcase, DollarSign, CheckCircle2, ArrowLeft, ArrowRight } from 'lucide-react'
+import { Building2, Briefcase, DollarSign, CheckCircle2, ArrowLeft, ArrowRight } from 'lucide-react'
 
 export default function ClientRequestForm() {
   const router = useRouter()
@@ -25,7 +25,7 @@ export default function ClientRequestForm() {
     seniority: '',
     remoteType: '',
     location: '',
-    tech_stack: [] as string[],
+    tech_stack: '',   // ← now a plain string, converted to array on submit
 
     // Step 3: Budget & Timeline
     budget_min: '',
@@ -53,11 +53,23 @@ export default function ClientRequestForm() {
     }
     setLoading(true)
     setError('')
+
     try {
+      // Convert tech_stack string → array for the API
+      const techStackArray = formData.tech_stack
+        .split(',')
+        .map(s => s.trim())
+        .filter(Boolean)
+
+      const payload = {
+        ...formData,
+        tech_stack: techStackArray,
+      }
+
       const res = await fetch('/api/client-requests', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify(payload),
       })
       const data = await res.json()
       if (res.ok) {
@@ -83,7 +95,8 @@ export default function ClientRequestForm() {
 
   return (
     <div className="max-w-2xl mx-auto p-6 md:p-8 bg-white rounded-2xl border border-slate-200 shadow-sm">
-                              <h1 className="text-2xl font-bold mb-6 text-slate-900">Start Hiring</h1>
+      <h1 className="text-2xl font-bold mb-6 text-slate-900">Start Hiring</h1>
+
       {/* Step indicator */}
       <div className="flex items-center justify-between mb-8">
         {steps.map((s, idx) => {
@@ -215,10 +228,17 @@ export default function ClientRequestForm() {
 
             <div>
               <label className={labelClass}>Tech Stack / Skills *</label>
-              <input type="text" required value={formData.tech_stack.join(', ')}
-                onChange={(e) => update('tech_stack', e.target.value.split(',').map(s => s.trim()).filter(Boolean))}
-                placeholder="e.g. React, TypeScript, Node.js" className={inputClass} />
-              <p className="text-xs text-slate-400 mt-1">Comma separated — used for candidate matching</p>
+              <input
+                type="text"
+                required
+                value={formData.tech_stack}
+                onChange={(e) => update('tech_stack', e.target.value)}
+                placeholder="e.g. React, TypeScript, Node.js"
+                className={inputClass}
+              />
+              <p className="text-xs text-slate-400 mt-1">
+                Comma separated — used for candidate matching
+              </p>
             </div>
 
             <div className="flex gap-3">
@@ -328,7 +348,9 @@ export default function ClientRequestForm() {
             <div className="bg-slate-50 rounded-xl p-4 space-y-3 text-sm">
               <div>
                 <p className="text-xs text-slate-400 uppercase">Company</p>
-                <p className="font-medium text-slate-800">{formData.company_name} {formData.companySize && `• ${formData.companySize}`}</p>
+                <p className="font-medium text-slate-800">
+                  {formData.company_name} {formData.companySize && `• ${formData.companySize}`}
+                </p>
                 <p className="text-slate-600 text-xs">{formData.contactName} • {formData.contact_email}</p>
               </div>
               <div className="border-t border-slate-200 pt-3">
@@ -337,8 +359,8 @@ export default function ClientRequestForm() {
                 <p className="text-slate-600 text-xs">
                   {formData.seniority} • {formData.remoteType} • {formData.location}
                 </p>
-                {formData.tech_stack.length > 0 && (
-                  <p className="text-slate-600 text-xs mt-1">Skills: {formData.tech_stack.join(', ')}</p>
+                {formData.tech_stack.trim() && (
+                  <p className="text-slate-600 text-xs mt-1">Skills: {formData.tech_stack}</p>
                 )}
               </div>
               <div className="border-t border-slate-200 pt-3">

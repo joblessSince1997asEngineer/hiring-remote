@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Briefcase, Users, FileText, Calendar,
-  Inbox, BarChart3, Settings, LogOut, CheckSquare, MessageSquare, Send,
+  Inbox, BarChart3, Settings, LogOut, CheckSquare, MessageSquare, Send, Globe, FileEdit,
 } from 'lucide-react'
 
 export default function DashboardSidebar({
@@ -35,6 +35,8 @@ export default function DashboardSidebar({
     { href: '/dashboard/client-requests', label: 'Client Requests', icon: Inbox, roles: ['admin'] },
     { href: '/dashboard/analytics', label: 'Analytics', icon: BarChart3, roles: ['admin'] },
     { href: '/dashboard/team', label: 'Team Management', icon: Settings, roles: ['admin'] },
+        { href: '/dashboard/website', label: 'Website Team', icon: Globe, roles: ['admin'] },
+            { href: '/dashboard/content', label: 'Website Content', icon: FileEdit, roles: ['admin'] },
   ]
 
   const visibleItems = menuItems.filter((item) => item.roles.includes(role))

@@ -54,9 +54,10 @@ export default async function ApplicationsPage({
   const appIds = applications.map(a => a.id)
   const candidateIds = [...new Set(applications.map(a => a.userId))]
 
-  const [interviews, profiles] = await Promise.all([
+    const [interviews, profiles, invoices] = await Promise.all([
     prisma.interview.findMany({ where: { applicationId: { in: appIds } } }),
     prisma.candidateProfile.findMany({ where: { userId: { in: candidateIds } } }),
+    prisma.invoice.findMany({ where: { applicationId: { in: appIds } } }),
   ])
 
     // Title comes from loaded applications — safe because we already filtered by role.
@@ -76,10 +77,11 @@ export default async function ApplicationsPage({
         </p>
       </div>
 
-      <ApplicationsView
+            <ApplicationsView
         applications={JSON.parse(JSON.stringify(applications))}
         interviews={JSON.parse(JSON.stringify(interviews))}
         profiles={JSON.parse(JSON.stringify(profiles))}
+        invoices={JSON.parse(JSON.stringify(invoices))}
         role={role}
       />
     </div>

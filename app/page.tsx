@@ -3,7 +3,20 @@ import { Search, ShieldCheck, Calendar } from 'lucide-react'
 import { getUserId } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
+async function getContent() {
+  try {
+    const rows = await prisma.siteContent.findMany()
+    const map: Record<string, string> = {}
+    for (const r of rows) map[r.key] = r.value
+    return map
+  } catch {
+    return {}
+  }
+}
+
 export default async function HomePage() {
+  const content = await getContent()
+
   // Determine where "Hire Talent" should go based on role
   const userId = await getUserId()
   const roleRow = userId
@@ -63,17 +76,17 @@ export default async function HomePage() {
   return (
     <div className="min-h-screen w-full bg-[#0f172a] text-white flex flex-col items-center px-4 sm:px-6 py-12 md:py-16 text-center">
       
-      <div className="inline-block bg-white/10 border border-white/20 text-slate-100 px-3 py-1.5 rounded-full text-[11px] md:text-xs font-semibold tracking-wider mb-5">
-        GLOBAL REACH • ELITE TALENT
+                  <div className="inline-block bg-white/10 border border-white/20 text-slate-100 px-3 py-1.5 rounded-full text-[11px] md:text-xs font-semibold tracking-wider mb-5">
+        {content['home.hero.badge'] || 'GLOBAL REACH • ELITE TALENT'}
       </div>
 
-      <h1 className="text-3xl md:text-6xl font-extrabold leading-tight mb-5">
-        Hire Top Remote <br className="hidden sm:block" />
-        <span className="text-blue-500">Talent Worldwide.</span>
+            <h1 className="text-3xl md:text-6xl font-extrabold leading-tight mb-5">
+        {content['home.hero.title'] || 'Hire Top Remote'} <br className="hidden sm:block" />
+        <span className="text-blue-500">{content['home.hero.titleAccent'] || 'Talent Worldwide.'}</span>
       </h1>
 
-      <p className="text-slate-200 text-base md:text-lg max-w-xl leading-relaxed mb-8">
-        Empowering startups and enterprises to build high-performing distributed teams. We source, screen, and vet the world's top 1% of remote professionals for you.
+            <p className="text-slate-200 text-base md:text-lg max-w-xl leading-relaxed mb-8">
+        {content['home.hero.subtitle'] || "Empowering startups and enterprises to build high-performing distributed teams. We source, screen, and vet the world's top 1% of remote professionals for you."}
       </p>
 
       <div className="flex flex-col sm:flex-row gap-3 w-full sm:w-auto justify-center mb-12 md:mb-16">

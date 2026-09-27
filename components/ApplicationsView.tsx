@@ -10,11 +10,13 @@ export default function ApplicationsView({
   applications,
   interviews,
   profiles,
+  invoices,
   role,
 }: {
   applications: any[]
   interviews: any[]
   profiles: any[]
+  invoices: any[]
   role: string
 }) {
   const [selectedApp, setSelectedApp] = useState<any>(applications[0] || null)
@@ -32,6 +34,9 @@ export default function ApplicationsView({
 
   const getProfile = (userId: string) => {
     return profiles.find((p: any) => p.userId === userId) || null
+  }
+    const getInvoice = (applicationId: string) => {
+    return invoices.find((inv: any) => inv.applicationId === applicationId) || null
   }
     const getCandidateName = (userId: string) => {
     const p = getProfile(userId)
@@ -380,6 +385,19 @@ export default function ApplicationsView({
                   Reject
                 </button>
               </div>
+                              {/* Pay Now — appears when awaiting payment */}
+                {!isAdmin && selectedApp.status === 'awaiting_payment' && (() => {
+                  const invoice = getInvoice(selectedApp.id)
+                  if (!invoice) return null
+                  return (
+                    <a
+                      href={`/invoice?id=${invoice.id}`}
+                      className="bg-[#facc15] text-slate-900 px-5 py-2.5 rounded-full text-sm font-semibold hover:bg-yellow-300 transition-colors flex items-center gap-2 no-underline"
+                    >
+                      Pay Now → ${invoice.amount.toLocaleString()}
+                    </a>
+                  )
+                })()}
 
               {/* Amber warning — client only, when interview not complete OR status blocked */}
               {!isAdmin && !canClientRequestHire(selectedApp) && (

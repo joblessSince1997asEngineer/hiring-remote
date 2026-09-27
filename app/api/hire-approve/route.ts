@@ -1,6 +1,5 @@
 import { getUserId } from '@/lib/auth'
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
 import { prisma } from '@/lib/prisma'
 
 const TIER_DISCOUNTS: Record<string, number> = {
@@ -11,7 +10,6 @@ const TIER_DISCOUNTS: Record<string, number> = {
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = await cookies()
     const userId = await getUserId()
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
@@ -46,6 +44,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Application is not pending hire approval' }, { status: 400 })
     }
 
+    // Load job to find the client (job owner)
+    const job = await prisma.job.findUnique({
+      where: { id: application.jobId },
+    })
+    if (!job) return NextResponse.json({ error: 'Job not found' }, { status: 404 })
+
+    const clientId = job.recruiterId
+    if (!clientId) {
+      return NextResponse.json({ error: 'Job has no client assigned' }, { status: 400 })
+    }
+
     // No duplicate invoice
     const existing = await prisma.invoice.findUnique({ where: { applicationId } })
     if (existing) {
@@ -53,9 +62,10 @@ export async function POST(request: Request) {
     }
 
     // Apply client's subscription discount (if active)
+    // NOTE: subscription is on the CLIENT, not the candidate
     const subscription = await prisma.subscription.findFirst({
       where: {
-        userId: application.userId,
+        userId: clientId,
         status: 'active',
         expiresAt: { gt: new Date() },
       },
@@ -73,7 +83,7 @@ export async function POST(request: Request) {
         data: {
           applicationId: application.id,
           jobId: application.jobId,
-          clientId: application.userId,
+          clientId,                          // ← client (job owner), NOT candidate
           planType,
           baseAmount: amount,
           discountPercent,
@@ -89,14 +99,14 @@ export async function POST(request: Request) {
       }),
     ])
 
-    // Notify the client
+    // Notify the client (job owner)
     await prisma.notification.create({
       data: {
-        userId: application.userId,
+        userId: clientId,                    // ← client, NOT candidate
         type: 'invoice_created',
         title: 'Hire approved — invoice ready',
         message: `Your hire has been approved. Invoice of $${finalAmount.toLocaleString()} is due within 15 days.`,
-        link: '/account',
+        link: `/invoice?id=${invoice.id}`,
       },
     })
 

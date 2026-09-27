@@ -1,12 +1,20 @@
 'use client'
 
 import { toast } from 'sonner'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Mail, MapPin } from 'lucide-react'
 
 export default function ContactPage() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)
+  const [content, setContent] = useState<Record<string, string>>({})
+
+  useEffect(() => {
+    fetch('/api/cms/content')
+      .then(r => r.json())
+      .then(d => setContent(d.content || {}))
+      .catch(() => {})
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
@@ -66,7 +74,9 @@ export default function ContactPage() {
               <div>
                 <h3 className="font-semibold text-[#0f172a]">Email us</h3>
                 <p className="text-sm text-slate-500">Our friendly team is here to help.</p>
-                <p className="text-sm text-blue-600 font-medium">hr@remotehirring.com</p>
+                <p className="text-sm text-[#0f172a] font-medium">
+  {content['contact.email'] || 'hr@remotehirring.com'}
+</p>
               </div>
             </div>
 
@@ -76,7 +86,9 @@ export default function ContactPage() {
               </div>
               <div>
                 <h3 className="font-semibold text-[#0f172a]">Global HQ</h3>
-                <p className="text-sm text-slate-500">We are a fully remote company.</p>
+                <p className="text-sm text-slate-500">
+  {content['contact.hq'] || 'We are a fully remote company.'}
+</p>
                 <p className="text-sm text-slate-500">San Francisco, CA (Mailing Address)</p>
               </div>
             </div>

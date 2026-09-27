@@ -29,6 +29,13 @@ export default async function InterviewsPage() {
     orderBy: { createdAt: 'desc' },
     include: { job: true },
   })
+    // Stale interviews: scheduled > 24h ago, still not marked complete
+  const staleThreshold = new Date(Date.now() - 24 * 60 * 60 * 1000)
+  const staleInterviews = interviews.filter((i) =>
+    i.status === 'scheduled' &&
+    i.scheduledDate &&
+    new Date(i.scheduledDate) < staleThreshold
+  )
 
   // Enrich with candidate name + email
   const candidateIds = [...new Set(interviews.map(i => i.candidateId))]
@@ -63,10 +70,12 @@ export default async function InterviewsPage() {
         </p>
       </div>
 
-      <InterviewsView
+                  <InterviewsView
         interviews={JSON.parse(JSON.stringify(enrichedInterviews))}
         canSchedule={canSchedule}
         role={roleRow.role}
+        currentUserId={userId}
+        staleInterviewIds={staleInterviews.map(i => i.id)}
       />
     </div>
   )

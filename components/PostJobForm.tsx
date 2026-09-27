@@ -19,15 +19,14 @@ export function PostJobForm({ clients }: { clients: { id: string; email: string 
         </h2>
         <div>
           <label className={labelClass}>This job belongs to *</label>
-          <select name="ownerId" required className={inputClass} defaultValue="">
+                    <select name="ownerId" required className={inputClass} defaultValue="">
             <option value="">Select a client...</option>
-            <option value="__internal__">Internal (Remote Hirring — no client)</option>
             {clients.map(c => (
               <option key={c.id} value={c.id}>{c.email}</option>
             ))}
           </select>
-          <p className="text-xs text-slate-400 mt-1">
-            Choose a client so they see this job + pay the placement fee. Pick "Internal" for admin-only jobs.
+                    <p className="text-xs text-slate-400 mt-1">
+            Every job must belong to a client. If a client hasn&apos;t signed up yet, ask them to create an account first.
           </p>
         </div>
       </div>

@@ -62,31 +62,43 @@ export async function PUT(request: Request) {
     const jobTitle = job?.title || 'the role'
     const formattedDate = new Date(scheduledDate).toLocaleString()
 
-    // 1. Email each interviewer in the panel
+        // 1. Email + bell for each interviewer in the panel
     for (const memberId of interviewers || []) {
       const member = await prisma.user.findUnique({ where: { id: memberId } })
-      if (member?.email) {
-        const memberProfile = await prisma.candidateProfile.findUnique({ where: { userId: memberId } })
-        const memberName = memberProfile?.fullName || 'there'
+      if (!member?.email) continue
 
-        const panelRows = [
-          { label: 'Role', value: jobTitle },
-          { label: 'Date & Time', value: formattedDate, highlight: true },
-          { label: 'Time Zone', value: timeZone },
-        ]
-        if (clientNotes) panelRows.push({ label: 'Panel Notes', value: clientNotes })
+      const memberProfile = await prisma.candidateProfile.findUnique({ where: { userId: memberId } })
+      const memberName = memberProfile?.fullName || member.email.split('@')[0]
 
-        await sendEmail({
-          to: member.email,
-          subject: `Interview Panel Invite — ${jobTitle}`,
-          title: 'Interview Panel Invite',
-          greeting: `Hi ${memberName},`,
-          body: `You've been added to the interview panel for this role. Please review the details below.`,
-          infoRows: panelRows,
-          buttonText: 'Join Video Call',
-          buttonUrl: videoLink,
-        })
-      }
+      const panelRows = [
+        { label: 'Role', value: jobTitle },
+        { label: 'Date & Time', value: formattedDate, highlight: true },
+        { label: 'Time Zone', value: timeZone },
+      ]
+      if (clientNotes) panelRows.push({ label: 'Panel Notes', value: clientNotes })
+
+      // Email
+      await sendEmail({
+        to: member.email,
+        subject: `Interview Panel Invite — ${jobTitle}`,
+        title: 'Interview Panel Invite',
+        greeting: `Hi ${memberName},`,
+        body: `You've been added to the interview panel for this role. Please review the details below.`,
+        infoRows: panelRows,
+        buttonText: 'Join Video Call',
+        buttonUrl: videoLink,
+      })
+
+      // Bell notification
+      await prisma.notification.create({
+        data: {
+          userId: memberId,
+          type: 'interview_panel_invite',
+          title: 'You\'re on an interview panel',
+          message: `${jobTitle} — ${formattedDate} (${timeZone})`,
+          link: '/dashboard/interviews',
+        },
+      })
     }
 
     // 2. Email the candidate + bell notification

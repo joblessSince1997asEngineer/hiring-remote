@@ -90,6 +90,44 @@ export default async function DashboardOverview() {
     where: { userId: { in: recentCandidateIds } },
     select: { userId: true, fullName: true },
   })
+    // Fetch upcoming interviews for the current user
+  // (either they're on the panel, or they requested it)
+    // Fetch all scheduled upcoming interviews, then filter by user in JS
+  // (Prisma can't query inside Json fields directly)
+  const allUpcomingInterviews = await prisma.interview.findMany({
+    where: {
+      status: 'scheduled',
+      scheduledDate: { gte: new Date() },
+    },
+    orderBy: { scheduledDate: 'asc' },
+    take: 50,
+    include: { job: true },
+  })
+
+  const upcomingInterviews = allUpcomingInterviews
+    .filter((i) => {
+      if (i.requestedByUserId === userId) return true
+      const panel: string[] = Array.isArray(i.interviewers) ? (i.interviewers as string[]) : []
+      return panel.includes(userId)
+    })
+    .slice(0, 5)
+
+  // Enrich with candidate names
+  const interviewCandidateIds = [...new Set(upcomingInterviews.map(i => i.candidateId))]
+  const interviewProfiles = await prisma.candidateProfile.findMany({
+    where: { userId: { in: interviewCandidateIds } },
+    select: { userId: true, fullName: true },
+  })
+
+  const enrichedUpcomingInterviews = upcomingInterviews.map((i) => {
+    const profile = interviewProfiles.find(p => p.userId === i.candidateId)
+    const panel: string[] = Array.isArray(i.interviewers) ? i.interviewers as string[] : []
+    return {
+      ...i,
+      candidateName: profile?.fullName || 'Unknown Candidate',
+      isOnPanel: panel.includes(userId),
+    }
+  })
 
   const enrichedRecentApps = recentApplications.map((app) => {
     const profile = recentProfiles.find(p => p.userId === app.userId)
@@ -169,6 +207,63 @@ export default async function DashboardOverview() {
           )
         })}
       </div>
+
+           {/* Upcoming Interviews Widget */}
+      {enrichedUpcomingInterviews.length > 0 && (
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-xl font-bold text-[#0f172a]">Upcoming Interviews</h2>
+            <Link href="/dashboard/interviews" className="text-sm text-blue-600 font-medium no-underline hover:underline">
+              View All →
+            </Link>
+          </div>
+
+          <div className="space-y-3">
+            {enrichedUpcomingInterviews.map((interview: any) => (
+              <div
+                key={interview.id}
+                className={`p-4 rounded-xl border ${
+                  interview.isOnPanel
+                    ? 'bg-amber-50/60 border-amber-200'
+                    : 'bg-slate-50 border-slate-200'
+                }`}
+              >
+                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2 flex-wrap mb-1">
+                      <p className="font-semibold text-[#0f172a] text-sm">
+                        {interview.candidateName}
+                      </p>
+                      {interview.isOnPanel && (
+                        <span className="text-[10px] bg-[#facc15] text-slate-900 px-2 py-0.5 rounded-full font-bold">
+                          YOU&apos;RE ON PANEL
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-slate-500 truncate">
+                      {interview.job?.title || 'Interview'}
+                    </p>
+                    <p className="text-xs text-slate-400 mt-1">
+                      📅 {new Date(interview.scheduledDate).toLocaleString()} • {interview.timeZone}
+                    </p>
+                  </div>
+
+                  {interview.videoLink && (
+                    <a
+                      href={interview.videoLink}
+                      target="_blank"
+                      rel="noreferrer"
+                      className="bg-[#0f172a] text-white px-4 py-2 rounded-full text-xs font-semibold hover:bg-slate-800 transition whitespace-nowrap no-underline self-start"
+                    >
+                      Join Call →
+                    </a>
+                  )}
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Recent Applications + Quick Actions */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">

@@ -327,50 +327,72 @@ export default function ApplicationsView({
                           : 'Interview Completed'}
                 </button>
 
-                {/* Confirm Hire / Request Hire — role + interview + status gated */}
-                <button
-                  onClick={() => {
-                    if (isAdmin && selectedApp.status === 'hire_pending') {
-                      window.location.href = '/dashboard/hire-approvals'
-                    } else if (isAdmin) {
-                      handleAction(selectedApp.jobId, selectedApp.id, selectedApp.userId, 'hire')
-                    } else {
-                      setHirePrompt({
-                        jobId: selectedApp.jobId,
-                        candidateId: selectedApp.userId,
-                        jobTitle: selectedApp.job.title,
-                      })
-                    }
-                  }}
-                  disabled={actionLoading !== null || !canClientRequestHire(selectedApp)}
-                  className="bg-green-600 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
-                >
-                  {!isAdmin && getInterviewStatus(selectedApp.id) !== 'completed' ? (
-                    <>
-                      <Lock className="w-4 h-4" />
-                      Interview Required
-                    </>
-                  ) : !isAdmin && ['hire_pending', 'awaiting_payment', 'hired', 'hire_cancelled'].includes(selectedApp.status) ? (
-                    <>
-                      <Lock className="w-4 h-4" />
-                      {selectedApp.status === 'hire_pending' ? 'Hire Requested' :
-                       selectedApp.status === 'awaiting_payment' ? 'Awaiting Payment' :
-                       selectedApp.status === 'hired' ? 'Hired' :
-                       'Hire Cancelled'}
-                    </>
-                  ) : (
-                    <>
-                      <CheckCircle className="w-4 h-4" />
-                      {actionLoading === 'hire'
-                        ? 'Hiring...'
-                        : isAdmin && selectedApp.status === 'hire_pending'
-                          ? 'Go to Approvals →'
-                          : isAdmin
-                            ? 'Confirm Hire'
-                            : 'Request Hire'}
-                    </>
-                  )}
-                </button>
+                                {/* Confirm Hire / Request Hire — role + interview + status gated */}
+                {(() => {
+                  // Admin logic: NEVER direct-hire. Only route to approvals for hire_pending.
+                  if (isAdmin) {
+                    const canGoToApprovals = selectedApp.status === 'hire_pending'
+
+                    return (
+                      <button
+                        onClick={() => {
+                          if (canGoToApprovals) {
+                            window.location.href = '/dashboard/hire-approvals'
+                          }
+                        }}
+                        disabled={!canGoToApprovals}
+                        className="bg-green-600 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                      >
+                        {selectedApp.status === 'hire_pending' ? (
+                          <><CheckCircle className="w-4 h-4" /> Go to Approvals →</>
+                        ) : selectedApp.status === 'awaiting_payment' ? (
+                          <><Lock className="w-4 h-4" /> Awaiting Payment</>
+                        ) : selectedApp.status === 'hired' ? (
+                          <><CheckCircle className="w-4 h-4" /> Hired</>
+                        ) : selectedApp.status === 'rejected' || selectedApp.status === 'hire_cancelled' ? (
+                          <><Lock className="w-4 h-4" /> Closed</>
+                        ) : (
+                          <><Lock className="w-4 h-4" /> Awaiting Hire Request</>
+                        )}
+                      </button>
+                    )
+                  }
+
+                  // Client logic: unchanged
+                  return (
+                    <button
+                      onClick={() => {
+                        setHirePrompt({
+                          jobId: selectedApp.jobId,
+                          candidateId: selectedApp.userId,
+                          jobTitle: selectedApp.job.title,
+                        })
+                      }}
+                      disabled={actionLoading !== null || !canClientRequestHire(selectedApp)}
+                      className="bg-green-600 text-white px-5 py-2.5 rounded-full text-sm font-medium hover:bg-green-700 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                    >
+                      {getInterviewStatus(selectedApp.id) !== 'completed' ? (
+                        <>
+                          <Lock className="w-4 h-4" />
+                          Interview Required
+                        </>
+                      ) : ['hire_pending', 'awaiting_payment', 'hired', 'hire_cancelled'].includes(selectedApp.status) ? (
+                        <>
+                          <Lock className="w-4 h-4" />
+                          {selectedApp.status === 'hire_pending' ? 'Hire Requested' :
+                           selectedApp.status === 'awaiting_payment' ? 'Awaiting Payment' :
+                           selectedApp.status === 'hired' ? 'Hired' :
+                           'Hire Cancelled'}
+                        </>
+                      ) : (
+                        <>
+                          <CheckCircle className="w-4 h-4" />
+                          {actionLoading === 'hire' ? 'Hiring...' : 'Request Hire'}
+                        </>
+                      )}
+                    </button>
+                  )
+                })()}
 
                 <button
                   onClick={() => {

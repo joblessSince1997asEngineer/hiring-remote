@@ -14,19 +14,14 @@ export async function postJob(prevState: unknown, formData: FormData) {
     throw new Error('Only administrators can post new jobs.')
   }
 
-  // Determine owner: selected client OR admin (for internal jobs)
+  // Every job MUST belong to a client — no internal jobs
   const ownerIdRaw = formData.get('ownerId') as string
-  if (!ownerIdRaw) throw new Error('Please select who this job belongs to.')
+  if (!ownerIdRaw) throw new Error('Please select a client for this job.')
 
-  let recruiterId: string
-  if (ownerIdRaw === '__internal__') {
-    recruiterId = userId  // admin-owned (no client to invoice)
-  } else {
-    // Verify the selected client actually exists with recruiter role
-    const client = await prisma.user.findUnique({ where: { id: ownerIdRaw } })
-    if (!client) throw new Error('Selected client not found')
-    recruiterId = client.id
-  }
+  const client = await prisma.user.findUnique({ where: { id: ownerIdRaw } })
+  if (!client) throw new Error('Selected client not found')
+
+  const recruiterId = client.id
 
   // Parse skills
   const skillsRaw = formData.get('skills') as string

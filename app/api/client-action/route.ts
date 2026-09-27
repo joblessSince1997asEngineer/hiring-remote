@@ -32,11 +32,22 @@ export async function POST(request: Request) {
       })
     }
 
-    // 3. Update status
+        // 3. Update status
     let status = ''
     if (action === 'interview') status = 'shortlisted'
     else if (action === 'reject') status = 'rejected'
-    else if (action === 'hire') status = 'hired'
+    else if (action === 'hire') {
+      // SECURITY: Admins must NOT direct-hire — they use /api/hire-approve
+      const roleRow = await prisma.roles.findUnique({ where: { user_id: userId } })
+      const isAdmin = roleRow?.role === 'admin' || roleRow?.role === 'super_admin'
+      if (isAdmin) {
+        return NextResponse.json(
+          { error: 'Admins must approve hires via /dashboard/hire-approvals. Direct hire is disabled.' },
+          { status: 403 }
+        )
+      }
+      status = 'hired'
+    }
 
     const updateData: any = { status }
     if (action === 'reject' && feedback) updateData.feedback = feedback

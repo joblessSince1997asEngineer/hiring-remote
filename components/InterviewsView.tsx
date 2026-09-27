@@ -8,10 +8,14 @@ export default function InterviewsView({
   interviews,
   canSchedule,
   role,
+  currentUserId,
+  staleInterviewIds = [],
 }: {
   interviews: any[]
   canSchedule: boolean
   role: string
+  currentUserId: string
+  staleInterviewIds?: string[]
 }) {
   const [schedulingInterview, setSchedulingInterview] = useState<any>(null)
   const [filter, setFilter] = useState<string>('all')
@@ -20,6 +24,10 @@ export default function InterviewsView({
   const [actionLoading, setActionLoading] = useState<string | null>(null)
 
   const isAdmin = role === 'admin' || role === 'super_admin'
+    const isOnPanel = (interview: any) => {
+    const panel: string[] = Array.isArray(interview.interviewers) ? interview.interviewers : []
+    return panel.includes(currentUserId)
+  }
 
   const [formData, setFormData] = useState({
     scheduledDate: '',
@@ -179,6 +187,25 @@ export default function InterviewsView({
 
   return (
     <>
+            {/* Stale interviews warning (admin only) */}
+      {isAdmin && staleInterviewIds.length > 0 && (
+        <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4 flex items-start gap-3">
+          <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0 mt-0.5">
+            <span className="text-amber-700 font-bold text-sm">{staleInterviewIds.length}</span>
+          </div>
+          <div className="flex-1 min-w-0">
+            <p className="text-sm font-semibold text-amber-800">
+              {staleInterviewIds.length === 1
+                ? '1 interview needs your attention'
+                : `${staleInterviewIds.length} interviews need your attention`}
+            </p>
+            <p className="text-xs text-amber-700 mt-1">
+              These interviews were scheduled more than 24 hours ago but haven't been marked as complete. Please review and mark them done, or cancel them.
+            </p>
+          </div>
+        </div>
+      )}
+
       <div className="bg-white p-4 rounded-2xl border border-slate-200 shadow-sm mb-6 flex flex-wrap gap-2">
         {['all', 'pending', 'scheduled', 'completion_requested', 'completed', 'cancelled'].map((f) => (
           <button
@@ -214,17 +241,42 @@ export default function InterviewsView({
                 </tr>
               ) : (
                 filteredInterviews.map((interview) => (
-                  <tr key={interview.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                                        <td className="p-4 font-medium text-[#0f172a] text-sm">
-                      {interview.candidateName || 'Unknown'}
+                                                      <tr
+                    key={interview.id}
+                    className={`border-b border-slate-100 transition-colors ${
+                      isOnPanel(interview) ? 'bg-amber-50/40 hover:bg-amber-50' :
+                      staleInterviewIds.includes(interview.id) ? 'bg-red-50/40 hover:bg-red-50' :
+                      'hover:bg-slate-50'
+                    }`}
+                  >
+                                                            <td className="p-4 font-medium text-[#0f172a] text-sm">
+                      <div className="flex items-center gap-2 flex-wrap">
+                        <span>{interview.candidateName || 'Unknown'}</span>
+                        {isOnPanel(interview) && (
+                          <span className="text-[10px] bg-[#facc15] text-slate-900 px-2 py-0.5 rounded-full font-bold whitespace-nowrap">
+                            ON PANEL
+                          </span>
+                        )}
+                      </div>
                     </td>
                     <td className="p-4 text-slate-600 text-sm">
                       {interview.candidateEmail || '—'}
                     </td>
                     <td className="p-4 text-slate-600 text-sm">{interview.job?.title || 'Unknown Job'}</td>
                     <td className="p-4 text-slate-600 text-sm capitalize">{interview.requestedBy}</td>
-                    <td className="p-4 text-slate-600 text-sm">
-                      {interview.scheduledDate ? new Date(interview.scheduledDate).toLocaleString() : <span className="text-slate-400">Not Scheduled</span>}
+                                        <td className="p-4 text-slate-600 text-sm">
+                      {interview.scheduledDate ? (
+                        <div>
+                          <div>{new Date(interview.scheduledDate).toLocaleString()}</div>
+                          {staleInterviewIds.includes(interview.id) && (
+                            <span className="text-[10px] bg-red-100 text-red-700 px-2 py-0.5 rounded-full font-bold mt-1 inline-block">
+                              OVERDUE
+                            </span>
+                          )}
+                        </div>
+                      ) : (
+                        <span className="text-slate-400">Not Scheduled</span>
+                      )}
                     </td>
                     <td className="p-4">
                       <span className={`text-xs font-medium px-3 py-1 rounded-full ${getStatusBadge(interview.status)}`}>

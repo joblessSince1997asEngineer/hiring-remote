@@ -303,38 +303,60 @@ export default function InterviewsView({
                         <span className="text-xs text-slate-400">Awaiting Admin</span>
                       )}
 
-                      {interview.status === 'scheduled' && isAdmin && (
-                        <button
-                          onClick={() => handleMarkComplete(interview.id)}
-                          disabled={actionLoading === interview.id}
-                          className="bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-medium hover:bg-green-700 disabled:opacity-50 flex items-center gap-1"
-                        >
-                          <CheckCircle2 className="w-3 h-3" />
-                          {actionLoading === interview.id ? 'Saving...' : 'Mark Complete'}
-                        </button>
-                      )}
-                      {interview.status === 'scheduled' && !isAdmin && (
-                        <button
-                          onClick={() => handleRequestComplete(interview.id)}
-                          disabled={actionLoading === interview.id}
-                          className="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-medium hover:bg-blue-700 disabled:opacity-50"
-                        >
-                          {actionLoading === interview.id ? 'Sending...' : 'Mark Done'}
-                        </button>
-                      )}
+                                            {interview.status === 'scheduled' && (() => {
+                        const panel: string[] = Array.isArray(interview.interviewers)
+                          ? interview.interviewers
+                          : []
+                        const canComplete = isAdmin
+                          || panel.includes(currentUserId)
+                          || interview.requestedByUserId === currentUserId
 
-                      {interview.status === 'completion_requested' && isAdmin && (
-                        <button
-                          onClick={() => handleMarkComplete(interview.id)}
-                          disabled={actionLoading === interview.id}
-                          className="bg-purple-600 text-white px-4 py-2 rounded-lg text-xs font-medium hover:bg-purple-700 disabled:opacity-50"
-                        >
-                          {actionLoading === interview.id ? 'Confirming...' : 'Confirm Complete'}
-                        </button>
-                      )}
-                      {interview.status === 'completion_requested' && !isAdmin && (
-                        <span className="text-xs text-purple-600">Waiting for admin</span>
-                      )}
+                        if (canComplete) {
+                          return (
+                            <button
+                              onClick={() => handleMarkComplete(interview.id)}
+                              disabled={actionLoading === interview.id}
+                              className="bg-green-600 text-white px-4 py-2 rounded-lg text-xs font-medium hover:bg-green-700 disabled:opacity-50 flex items-center gap-1"
+                            >
+                              <CheckCircle2 className="w-3 h-3" />
+                              {actionLoading === interview.id ? 'Saving...' : 'Mark Complete'}
+                            </button>
+                          )
+                        }
+
+                        return (
+                          <button
+                            onClick={() => handleRequestComplete(interview.id)}
+                            disabled={actionLoading === interview.id}
+                            className="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-medium hover:bg-blue-700 disabled:opacity-50"
+                          >
+                            {actionLoading === interview.id ? 'Sending...' : 'Request Complete'}
+                          </button>
+                        )
+                      })()}
+
+                                            {interview.status === 'completion_requested' && (() => {
+                        const panel: string[] = Array.isArray(interview.interviewers)
+                          ? interview.interviewers
+                          : []
+                        const canConfirm = isAdmin || panel.includes(currentUserId)
+
+                        if (canConfirm) {
+                          return (
+                            <button
+                              onClick={() => handleMarkComplete(interview.id)}
+                              disabled={actionLoading === interview.id}
+                              className="bg-purple-600 text-white px-4 py-2 rounded-lg text-xs font-medium hover:bg-purple-700 disabled:opacity-50"
+                            >
+                              {actionLoading === interview.id ? 'Confirming...' : 'Confirm Complete'}
+                            </button>
+                          )
+                        }
+
+                        return (
+                          <span className="text-xs text-purple-600">Waiting for confirmation</span>
+                        )
+                      })()}
 
                       {interview.status === 'completed' && (
                         <span className="text-xs text-green-600 flex items-center gap-1">

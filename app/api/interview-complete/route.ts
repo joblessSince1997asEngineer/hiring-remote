@@ -1,19 +1,11 @@
-import { getUserId } from '@/lib/auth'
 import { NextResponse } from 'next/server'
-import { cookies } from 'next/headers'
+import { getUserId } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 
 export async function POST(request: Request) {
   try {
-    const cookieStore = await cookies()
     const userId = await getUserId()
     if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-    // Verify admin
-    const roleRow = await prisma.roles.findUnique({ where: { user_id: userId } })
-    if (!roleRow || !['admin', 'super_admin'].includes(roleRow.role)) {
-      return NextResponse.json({ error: 'Only admin can confirm completion' }, { status: 403 })
-    }
 
     const { interviewId } = await request.json()
     if (!interviewId) return NextResponse.json({ error: 'Missing interviewId' }, { status: 400 })
@@ -21,20 +13,64 @@ export async function POST(request: Request) {
     const interview = await prisma.interview.findUnique({ where: { id: interviewId } })
     if (!interview) return NextResponse.json({ error: 'Interview not found' }, { status: 404 })
 
+    if (interview.status === 'completed') {
+      return NextResponse.json({ error: 'Interview already completed' }, { status: 400 })
+    }
+
+    // Permission check: admin OR on the panel OR requested it
+    const roleRow = await prisma.roles.findUnique({ where: { user_id: userId } })
+    const isAdmin = roleRow?.role === 'admin'
+
+    const panel: string[] = Array.isArray(interview.interviewers)
+      ? (interview.interviewers as string[])
+      : []
+    const isOnPanel = panel.includes(userId)
+    const isRequester = interview.requestedByUserId === userId
+
+    if (!isAdmin && !isOnPanel && !isRequester) {
+      return NextResponse.json(
+        { error: 'Only the admin, panel members, or the requester can mark this complete' },
+        { status: 403 }
+      )
+    }
+
+    // Mark complete
     await prisma.interview.update({
       where: { id: interviewId },
       data: { status: 'completed' },
     })
 
-    // Notify the client (whoever requested)
-    if (interview.requestedByUserId) {
+    // Notify everyone involved (except the person who just did it)
+    const notifyIds = new Set<string>()
+
+    if (interview.candidateId && interview.candidateId !== userId) {
+      notifyIds.add(interview.candidateId)
+    }
+
+    for (const memberId of panel) {
+      if (memberId !== userId) notifyIds.add(memberId)
+    }
+
+    if (interview.requestedByUserId && interview.requestedByUserId !== userId) {
+      notifyIds.add(interview.requestedByUserId)
+    }
+
+    // All admins
+    const admins = await prisma.roles.findMany({
+      where: { role: 'admin' },
+    })
+    for (const a of admins) {
+      if (a.user_id !== userId) notifyIds.add(a.user_id)
+    }
+
+    for (const notifyId of notifyIds) {
       await prisma.notification.create({
         data: {
-          userId: interview.requestedByUserId,
+          userId: notifyId,
           type: 'interview_completed',
-          title: 'Interview confirmed complete',
-          message: 'Admin confirmed the interview. You can now request a hire.',
-          link: '/dashboard/applications',
+          title: 'Interview marked complete',
+          message: `The interview has been marked complete. Hire can now be requested.`,
+          link: '/dashboard/interviews',
         },
       })
     }

@@ -5,6 +5,7 @@ import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
 import { Briefcase, Users, FileText, Calendar, CheckSquare, DollarSign } from 'lucide-react'
 import InvoiceAlert from '@/components/InvoiceAlert'
+import SubscriptionCard from '@/components/SubscriptionCard'
 
 export default async function DashboardOverview() {
   const userId = await getUserId()
@@ -13,7 +14,18 @@ export default async function DashboardOverview() {
   const roleRow = await prisma.roles.findUnique({ where: { user_id: userId } })
   if (!roleRow) redirect('/login')
 
-  const isAdmin = roleRow.role === 'admin' || roleRow.role === 'super_admin'
+    const isAdmin = roleRow.role === 'admin' || roleRow.role === 'super_admin'
+
+  // Active annual subscription — recruiter only
+  const mySubscription = !isAdmin
+    ? await prisma.subscription.findFirst({
+        where: {
+          userId,
+          status: 'active',
+          expiresAt: { gt: new Date() },
+        },
+      })
+    : null
 
   let activeJobs = 0
   let totalCandidates = 0
@@ -229,7 +241,10 @@ export default async function DashboardOverview() {
             </Link>
           )
         })}
-      </div>
+            </div>
+
+      {/* Annual Subscription card — client only */}
+      {mySubscription && <SubscriptionCard subscription={mySubscription} />}
 
            {/* Upcoming Interviews Widget */}
       {enrichedUpcomingInterviews.length > 0 && (

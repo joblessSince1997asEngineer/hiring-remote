@@ -3,7 +3,7 @@
 import { Suspense, useState, useEffect } from 'react'
 import { useSearchParams } from 'next/navigation'
 import { Calendar, DollarSign, CheckCircle2, Clock } from 'lucide-react'
-import PayPalButton from '@/components/PayPalButton'
+import PaymentInstructions from '@/components/PaymentInstructions'
 
 function InvoiceContent() {
   const searchParams = useSearchParams()
@@ -155,11 +155,21 @@ function InvoiceContent() {
           {!isPaid && !isCancelled ? (
             <div className="mt-8 pt-6 border-t border-slate-100">
               <p className="text-sm font-semibold text-slate-800 mb-4">Pay with PayPal or Card</p>
-              <PayPalButton
-                invoiceId={invoice.id}
-                amount={invoice.amount}
-                currency={invoice.currency || 'USD'}
-              />
+              {!isPaid && !isCancelled ? (
+  <PaymentInstructions
+    invoiceId={invoice.id}
+    invoiceNumber={invoice.invoiceNumber}
+    amount={invoice.amount}
+    alreadyNotified={!!invoice.paymentNotifiedAt}
+  />
+) : (
+  <button
+    onClick={() => window.print()}
+    className="mt-8 w-full border border-slate-300 text-slate-700 py-3 rounded-full font-semibold text-sm hover:bg-slate-50 transition"
+  >
+    Print Invoice
+  </button>
+)}
             </div>
           ) : (
             <button

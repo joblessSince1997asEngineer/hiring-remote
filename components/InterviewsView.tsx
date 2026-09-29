@@ -24,7 +24,7 @@ export default function InterviewsView({
   const [actionLoading, setActionLoading] = useState<string | null>(null)
 
   const isAdmin = role === 'admin' || role === 'super_admin'
-    const isOnPanel = (interview: any) => {
+  const isOnPanel = (interview: any) => {
     const panel: string[] = Array.isArray(interview.interviewers) ? interview.interviewers : []
     return panel.includes(currentUserId)
   }
@@ -187,7 +187,7 @@ export default function InterviewsView({
 
   return (
     <>
-            {/* Stale interviews warning (admin only) */}
+      {/* Stale interviews warning (admin only) */}
       {isAdmin && staleInterviewIds.length > 0 && (
         <div className="bg-amber-50 border border-amber-200 rounded-2xl p-4 mb-4 flex items-start gap-3">
           <div className="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center shrink-0 mt-0.5">
@@ -200,7 +200,7 @@ export default function InterviewsView({
                 : `${staleInterviewIds.length} interviews need your attention`}
             </p>
             <p className="text-xs text-amber-700 mt-1">
-              These interviews were scheduled more than 24 hours ago but haven't been marked as complete. Please review and mark them done, or cancel them.
+              These interviews were scheduled more than 24 hours ago but haven&apos;t been marked as complete. Please review and mark them done, or cancel them.
             </p>
           </div>
         </div>
@@ -222,16 +222,16 @@ export default function InterviewsView({
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full min-w-[900px] text-left">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Candidate</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Email</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Job</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Requested By</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Scheduled For</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Status</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Actions</th>
+                <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Candidate</th>
+                <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Email</th>
+                <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Job</th>
+                <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Requested By</th>
+                <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Scheduled For</th>
+                <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Status</th>
+                <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -241,7 +241,7 @@ export default function InterviewsView({
                 </tr>
               ) : (
                 filteredInterviews.map((interview) => (
-                                                      <tr
+                  <tr
                     key={interview.id}
                     className={`border-b border-slate-100 transition-colors ${
                       isOnPanel(interview) ? 'bg-amber-50/40 hover:bg-amber-50' :
@@ -249,7 +249,7 @@ export default function InterviewsView({
                       'hover:bg-slate-50'
                     }`}
                   >
-                                                            <td className="p-4 font-medium text-[#0f172a] text-sm">
+                    <td className="p-4 font-medium text-[#0f172a] text-sm whitespace-nowrap">
                       <div className="flex items-center gap-2 flex-wrap">
                         <span>{interview.candidateName || 'Unknown'}</span>
                         {isOnPanel(interview) && (
@@ -259,12 +259,12 @@ export default function InterviewsView({
                         )}
                       </div>
                     </td>
-                    <td className="p-4 text-slate-600 text-sm">
+                    <td className="p-4 text-slate-600 text-sm whitespace-nowrap">
                       {interview.candidateEmail || '—'}
                     </td>
-                    <td className="p-4 text-slate-600 text-sm">{interview.job?.title || 'Unknown Job'}</td>
-                    <td className="p-4 text-slate-600 text-sm capitalize">{interview.requestedBy}</td>
-                                        <td className="p-4 text-slate-600 text-sm">
+                    <td className="p-4 text-slate-600 text-sm whitespace-nowrap">{interview.job?.title || 'Unknown Job'}</td>
+                    <td className="p-4 text-slate-600 text-sm capitalize whitespace-nowrap">{interview.requestedBy}</td>
+                    <td className="p-4 text-slate-600 text-sm whitespace-nowrap">
                       {interview.scheduledDate ? (
                         <div>
                           <div>{new Date(interview.scheduledDate).toLocaleString()}</div>
@@ -278,12 +278,12 @@ export default function InterviewsView({
                         <span className="text-slate-400">Not Scheduled</span>
                       )}
                     </td>
-                    <td className="p-4">
+                    <td className="p-4 whitespace-nowrap">
                       <span className={`text-xs font-medium px-3 py-1 rounded-full ${getStatusBadge(interview.status)}`}>
                         {getStatusLabel(interview.status)}
                       </span>
                     </td>
-                    <td className="p-4">
+                    <td className="p-4 whitespace-nowrap">
                       {interview.status === 'pending' && canSchedule && (
                         <button
                           onClick={() => {
@@ -303,7 +303,7 @@ export default function InterviewsView({
                         <span className="text-xs text-slate-400">Awaiting Admin</span>
                       )}
 
-                                            {interview.status === 'scheduled' && (() => {
+                      {interview.status === 'scheduled' && (() => {
                         const panel: string[] = Array.isArray(interview.interviewers)
                           ? interview.interviewers
                           : []
@@ -335,7 +335,7 @@ export default function InterviewsView({
                         )
                       })()}
 
-                                            {interview.status === 'completion_requested' && (() => {
+                      {interview.status === 'completion_requested' && (() => {
                         const panel: string[] = Array.isArray(interview.interviewers)
                           ? interview.interviewers
                           : []
@@ -365,7 +365,6 @@ export default function InterviewsView({
                         </span>
                       )}
 
-                      {/* Cancel — for pending/scheduled/completion_requested */}
                       {['pending', 'scheduled', 'completion_requested'].includes(interview.status) && (
                         <button
                           onClick={() => handleCancel(interview.id)}
@@ -391,7 +390,7 @@ export default function InterviewsView({
               <X className="w-5 h-5 text-slate-600" />
             </button>
 
-                        <h2 className="text-2xl font-bold text-[#0f172a] mb-1">Schedule Interview</h2>
+            <h2 className="text-2xl font-bold text-[#0f172a] mb-1">Schedule Interview</h2>
             <p className="text-slate-500 text-sm mb-6">
               For <strong className="text-slate-700">{schedulingInterview.candidateName || 'Unknown Candidate'}</strong>
             </p>

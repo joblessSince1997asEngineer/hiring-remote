@@ -13,7 +13,6 @@ export default async function DashboardJobsPage() {
 
   const isAdmin = roleRow.role === 'admin' || roleRow.role === 'super_admin'
 
-  // Admin sees all jobs, client sees only their own
   const jobs = await prisma.job.findMany({
     where: isAdmin ? {} : { recruiterId: userId },
     orderBy: { postedAt: 'desc' },
@@ -22,7 +21,7 @@ export default async function DashboardJobsPage() {
 
   return (
     <div className="p-6 md:p-10">
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-8 gap-3 flex-wrap">
         <div>
           <h1 className="text-3xl font-bold text-[#0f172a] mb-1">
             {isAdmin ? 'Jobs' : 'My Jobs'}
@@ -34,7 +33,7 @@ export default async function DashboardJobsPage() {
 
         {isAdmin && (
           <Link href="/dashboard/post" className="no-underline">
-            <button className="bg-black text-white px-5 py-2.5 rounded-full font-semibold text-sm flex items-center gap-2 hover:bg-slate-800 transition">
+            <button className="bg-black text-white px-5 py-2.5 rounded-full font-semibold text-sm flex items-center gap-2 hover:bg-slate-800 transition whitespace-nowrap">
               <Plus className="w-4 h-4" /> Post New Job
             </button>
           </Link>
@@ -43,16 +42,16 @@ export default async function DashboardJobsPage() {
 
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full min-w-[900px] text-left">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Job Title</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Company</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Location</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Type</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Applicants</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Posted</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Actions</th>
+                <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Job Title</th>
+                <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Company</th>
+                <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Location</th>
+                <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Type</th>
+                <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Applicants</th>
+                <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Posted</th>
+                <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Actions</th>
               </tr>
             </thead>
             <tbody>
@@ -65,18 +64,18 @@ export default async function DashboardJobsPage() {
               ) : (
                 jobs.map((job) => (
                   <tr key={job.id} className="border-b border-slate-100 hover:bg-slate-50 transition-colors">
-                    <td className="p-4 font-medium text-[#0f172a] text-sm">{job.title}</td>
-                    <td className="p-4 text-slate-600 text-sm">{job.company}</td>
-                    <td className="p-4 text-slate-600 text-sm">{job.location}</td>
-                    <td className="p-4 text-slate-600 text-sm">
+                    <td className="p-4 font-medium text-[#0f172a] text-sm whitespace-nowrap">{job.title}</td>
+                    <td className="p-4 text-slate-600 text-sm whitespace-nowrap">{job.company}</td>
+                    <td className="p-4 text-slate-600 text-sm whitespace-nowrap">{job.location}</td>
+                    <td className="p-4 text-slate-600 text-sm whitespace-nowrap">
                       <span className="bg-slate-100 px-2 py-1 rounded text-xs">{job.type}</span>
                     </td>
-                    <td className="p-4 text-slate-600 text-sm font-medium">{job._count.applications}</td>
-                    <td className="p-4 text-slate-500 text-sm">{new Date(job.postedAt).toLocaleDateString()}</td>
-                    <td className="p-4">
+                    <td className="p-4 text-slate-600 text-sm font-medium whitespace-nowrap">{job._count.applications}</td>
+                    <td className="p-4 text-slate-500 text-sm whitespace-nowrap">{new Date(job.postedAt).toLocaleDateString()}</td>
+                    <td className="p-4 whitespace-nowrap">
                       <Link
                         href={`/dashboard/applications?jobId=${job.id}`}
-                        className="text-blue-600 text-sm font-medium no-underline hover:underline"
+                        className="text-blue-600 text-sm font-medium no-underline hover:underline whitespace-nowrap"
                       >
                         View Applicants
                       </Link>

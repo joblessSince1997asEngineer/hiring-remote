@@ -3,6 +3,7 @@ import { getUserId } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import { prisma } from '@/lib/prisma'
 import Link from 'next/link'
+import InvoiceRowActions from '@/components/InvoiceRowActions'
 
 const STATUS_STYLES: Record<string, string> = {
   pending:   'bg-amber-50 text-amber-700 border-amber-200',
@@ -31,8 +32,6 @@ export default async function InvoicesPage({
     ? (statusParam as Status)
     : 'all'
 
-  // Client scope: only invoices tied to jobs this recruiter owns.
-  // (Mirrors the filter used on /dashboard for pendingInvoiceDetails.)
   let scopeFilter: any = {}
   if (!isAdmin) {
     const myJobs = await prisma.job.findMany({
@@ -53,7 +52,6 @@ export default async function InvoicesPage({
     include: { application: { include: { job: true } } },
   })
 
-  // Admin: batch-fetch client emails so we don't N+1
   let clientMap = new Map<string, string>()
   if (isAdmin && invoices.length) {
     const ids = [...new Set(invoices.map(i => i.clientId).filter(Boolean) as string[])]
@@ -64,7 +62,6 @@ export default async function InvoicesPage({
     clientMap = new Map(clients.map(c => [c.id, c.email]))
   }
 
-  // Filter pill counts come from the full scope, ignoring the active status filter
   const grouped = await prisma.invoice.groupBy({
     by: ['status'],
     where: scopeFilter,
@@ -122,19 +119,20 @@ export default async function InvoicesPage({
         </div>
       ) : (
         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
+          {/* Horizontal scroll wrapper for mobile */}
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[760px] text-sm">
               <thead className="bg-slate-50 text-slate-500 uppercase text-xs">
                 <tr>
-                  <th className="text-left px-5 py-3 font-medium">Invoice #</th>
-                  <th className="text-left px-5 py-3 font-medium">Date</th>
+                  <th className="text-left px-5 py-3 font-medium whitespace-nowrap">Invoice #</th>
+                  <th className="text-left px-5 py-3 font-medium whitespace-nowrap">Date</th>
                   {isAdmin && (
-                    <th className="text-left px-5 py-3 font-medium">Client</th>
+                    <th className="text-left px-5 py-3 font-medium whitespace-nowrap">Client</th>
                   )}
-                  <th className="text-left px-5 py-3 font-medium">Job</th>
-                  <th className="text-right px-5 py-3 font-medium">Amount</th>
-                  <th className="text-left px-5 py-3 font-medium">Due</th>
-                  <th className="text-left px-5 py-3 font-medium">Status</th>
+                  <th className="text-left px-5 py-3 font-medium whitespace-nowrap">Job</th>
+                  <th className="text-right px-5 py-3 font-medium whitespace-nowrap">Amount</th>
+                  <th className="text-left px-5 py-3 font-medium whitespace-nowrap">Due</th>
+                  <th className="text-left px-5 py-3 font-medium whitespace-nowrap">Status</th>
                   <th className="px-5 py-3" />
                 </tr>
               </thead>
@@ -144,28 +142,28 @@ export default async function InvoicesPage({
                     STATUS_STYLES[inv.status] ?? STATUS_STYLES.cancelled
                   return (
                     <tr key={inv.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="px-5 py-3 font-mono text-slate-800">
+                      <td className="px-5 py-3 font-mono text-slate-800 whitespace-nowrap">
                         {inv.invoiceNumber ?? '—'}
                       </td>
-                      <td className="px-5 py-3 text-slate-500">
+                      <td className="px-5 py-3 text-slate-500 whitespace-nowrap">
                         {new Date(inv.createdAt).toLocaleDateString()}
                       </td>
                       {isAdmin && (
-                        <td className="px-5 py-3 text-slate-600">
+                        <td className="px-5 py-3 text-slate-600 whitespace-nowrap">
                           {clientMap.get(inv.clientId) ??
                             inv.clientId.slice(0, 8)}
                         </td>
                       )}
-                      <td className="px-5 py-3 text-slate-800">
+                      <td className="px-5 py-3 text-slate-800 whitespace-nowrap">
                         {inv.application?.job?.title ?? '—'}
                       </td>
-                      <td className="px-5 py-3 text-right font-semibold text-[#0f172a]">
+                      <td className="px-5 py-3 text-right font-semibold text-[#0f172a] whitespace-nowrap">
                         ${inv.amount.toLocaleString()}
                       </td>
-                      <td className="px-5 py-3 text-slate-500">
+                      <td className="px-5 py-3 text-slate-500 whitespace-nowrap">
                         {new Date(inv.dueAt).toLocaleDateString()}
                       </td>
-                      <td className="px-5 py-3">
+                      <td className="px-5 py-3 whitespace-nowrap">
                         <span
                           className={`inline-block px-2.5 py-0.5 rounded-full text-xs font-medium border capitalize ${style}`}
                         >
@@ -173,12 +171,29 @@ export default async function InvoicesPage({
                         </span>
                       </td>
                       <td className="px-5 py-3 text-right">
-                        <Link
-                          href={`/invoice?id=${inv.id}`}
-                          className="text-blue-600 hover:underline text-xs font-medium no-underline"
-                        >
-                          View →
-                        </Link>
+                        <div className="flex items-center justify-end gap-3">
+                          {isAdmin && (
+                            <InvoiceRowActions
+                              invoice={{
+                                id: inv.id,
+                                invoiceNumber: inv.invoiceNumber ?? '—',
+                                amount: inv.amount,
+                                clientEmail:
+                                  clientMap.get(inv.clientId) ??
+                                  inv.clientId.slice(0, 8),
+                                status: inv.status,
+                                paymentNotifiedAt:
+                                  inv.paymentNotifiedAt?.toISOString() ?? null,
+                              }}
+                            />
+                          )}
+                          <Link
+                            href={`/invoice?id=${inv.id}`}
+                            className="text-blue-600 hover:underline text-xs font-medium no-underline whitespace-nowrap"
+                          >
+                            View →
+                          </Link>
+                        </div>
                       </td>
                     </tr>
                   )

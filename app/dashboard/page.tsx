@@ -249,12 +249,12 @@ export default async function DashboardOverview() {
            {/* Upcoming Interviews Widget */}
       {enrichedUpcomingInterviews.length > 0 && (
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mb-6">
-          <div className="flex justify-between items-center mb-4">
-            <h2 className="text-xl font-bold text-[#0f172a]">Upcoming Interviews</h2>
-            <Link href="/dashboard/interviews" className="text-sm text-blue-600 font-medium no-underline hover:underline">
-              View All →
-            </Link>
-          </div>
+          <div className="flex justify-between items-center mb-4 gap-3 flex-wrap">
+  <h2 className="text-xl font-bold text-[#0f172a]">Upcoming Interviews</h2>
+  <Link href="/dashboard/interviews" className="text-sm text-blue-600 font-medium no-underline hover:underline whitespace-nowrap">
+    View All →
+  </Link>
+</div>
 
           <div className="space-y-3">
             {enrichedUpcomingInterviews.map((interview: any) => (
@@ -308,12 +308,12 @@ export default async function DashboardOverview() {
 
         {/* Recent Applications */}
         <div className="lg:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
-          <div className="flex justify-between items-center mb-6">
-            <h2 className="text-xl font-bold text-[#0f172a]">Recent Applications</h2>
-            <Link href="/dashboard/applications" className="text-sm text-blue-600 font-medium no-underline hover:underline">
-              View All →
-            </Link>
-          </div>
+          <div className="flex justify-between items-center mb-6 gap-3 flex-wrap">
+  <h2 className="text-xl font-bold text-[#0f172a]">Recent Applications</h2>
+  <Link href="/dashboard/applications" className="text-sm text-blue-600 font-medium no-underline hover:underline whitespace-nowrap">
+    View All →
+  </Link>
+</div>
 
           {enrichedRecentApps.length === 0 ? (
             <p className="text-slate-400 text-sm py-8 text-center">No applications yet.</p>

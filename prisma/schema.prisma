@@ -168,12 +168,16 @@ model Invoice {
   createdAt              DateTime  @default(now())
   updatedAt              DateTime  @updatedAt
 
+  // Manual payment tracking
+  paymentMethod          String?   // 'paypal_me' | 'bank_transfer' | 'other'
+  paymentReference       String?   // reference string client used
+  paymentNotifiedAt      DateTime? // when client clicked "I've sent it"
+
   application            Application @relation(fields: [applicationId], references: [id], onDelete: Cascade)
 
   @@index([clientId, status])
   @@index([dueAt, status])
 }
-
 model Subscription {
   id                     String    @id @default(cuid())
   userId                 String    @unique

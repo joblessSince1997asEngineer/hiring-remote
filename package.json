@@ -15,6 +15,7 @@
     "@paypal/react-paypal-js": "^10.5.1",
     "@prisma/adapter-pg": "^7.9.1",
     "@prisma/client": "^7.9.1",
+    "@sentry/nextjs": "^10.75.3",
     "@supabase/supabase-js": "^2.112.4",
     "@tailwindcss/postcss": "^4.3.3",
     "bcryptjs": "^3.0.3",

@@ -118,17 +118,17 @@ export default function CandidatesTable({ initialJobs }: { initialJobs: any[] })
       {/* Table */}
       <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden">
         <div className="overflow-x-auto">
-          <table className="w-full text-left">
+          <table className="w-full min-w-[1100px] text-left">
             <thead className="bg-slate-50 border-b border-slate-200">
               <tr>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Status</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Candidate</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Primary Skill</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Exp</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Salary Exp.</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">CV</th>
-                <th className="p-4 text-xs font-semibold text-slate-500 uppercase">Assign</th>
-              </tr>
+  <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Status</th>
+  <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Candidate</th>
+  <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Primary Skill</th>
+  <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Exp</th>
+  <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Salary Exp.</th>
+  <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">CV</th>
+  <th className="p-4 text-xs font-semibold text-slate-500 uppercase whitespace-nowrap">Assign</th>
+</tr>
             </thead>
             <tbody>
               {loading ? (
@@ -157,14 +157,14 @@ export default function CandidatesTable({ initialJobs }: { initialJobs: any[] })
                           <AlertCircle className="w-5 h-5 text-slate-300" />
                         )}
                       </td>
-                                            <td className="p-4 font-medium text-[#0f172a] text-sm">
-                        {candidate.full_name || 'Unknown Candidate'}
-                      </td>
-                      <td className="p-4 text-slate-600 text-sm">
-                        {candidate.primary_skill && candidate.primary_skill !== 'Not Set'
-                          ? candidate.primary_skill
-                          : <span className="text-slate-300">—</span>}
-                      </td>
+                                            <td className="p-4 font-medium text-[#0f172a] text-sm whitespace-nowrap">
+  {candidate.full_name || 'Unknown Candidate'}
+</td>
+                      <td className="p-4 text-slate-600 text-sm whitespace-nowrap">
+  {candidate.primary_skill && candidate.primary_skill !== 'Not Set'
+    ? candidate.primary_skill
+    : <span className="text-slate-300">—</span>}
+</td>
                       <td className="p-4 text-slate-600 text-sm">
                         {candidate.years_exp
                           ? `${candidate.years_exp} yrs`

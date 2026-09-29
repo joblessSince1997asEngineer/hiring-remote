@@ -180,18 +180,18 @@ export default function SubscriptionsView({
       ) : (
         <div className="bg-white border border-slate-200 rounded-2xl overflow-hidden shadow-sm">
           <div className="overflow-x-auto">
-            <table className="w-full text-sm">
+            <table className="w-full min-w-[900px] text-sm">
               <thead className="bg-slate-50 text-slate-500 uppercase text-xs">
                 <tr>
-                  <th className="text-left px-5 py-3 font-medium">Client</th>
-                  <th className="text-left px-5 py-3 font-medium">Tier</th>
-                  <th className="text-left px-5 py-3 font-medium">Discount</th>
-                  <th className="text-left px-5 py-3 font-medium">Started</th>
-                  <th className="text-left px-5 py-3 font-medium">Expires</th>
-                  <th className="text-left px-5 py-3 font-medium">Days Left</th>
-                  <th className="text-left px-5 py-3 font-medium">Status</th>
-                  <th className="px-5 py-3" />
-                </tr>
+  <th className="text-left px-5 py-3 font-medium whitespace-nowrap">Client</th>
+  <th className="text-left px-5 py-3 font-medium whitespace-nowrap">Tier</th>
+  <th className="text-left px-5 py-3 font-medium whitespace-nowrap">Discount</th>
+  <th className="text-left px-5 py-3 font-medium whitespace-nowrap">Started</th>
+  <th className="text-left px-5 py-3 font-medium whitespace-nowrap">Expires</th>
+  <th className="text-left px-5 py-3 font-medium whitespace-nowrap">Days Left</th>
+  <th className="text-left px-5 py-3 font-medium whitespace-nowrap">Status</th>
+  <th className="px-5 py-3" />
+</tr>
               </thead>
               <tbody className="divide-y divide-slate-100">
                 {subscriptions.map(sub => {
@@ -199,9 +199,9 @@ export default function SubscriptionsView({
                   const style = STATUS_STYLES[sub.status] ?? STATUS_STYLES.expired
                   return (
                     <tr key={sub.id} className="hover:bg-slate-50/60 transition-colors">
-                      <td className="px-5 py-3 text-slate-800 font-medium">
-                        {sub.clientEmail}
-                      </td>
+                      <td className="px-5 py-3 text-slate-800 font-medium whitespace-nowrap">
+  {sub.clientEmail}
+</td>
                       <td className="px-5 py-3 text-slate-700 capitalize">{sub.tier}</td>
                       <td className="px-5 py-3 text-slate-700">
                         {TIER_DISCOUNTS[sub.tier] ?? 0}% off

@@ -246,12 +246,20 @@ export default function AccountPage() {
                     </div>
                   )}
 
-                  {interview.status === 'completed' && (
+                                    {interview.status === 'completed' && (
                     <div className="mt-3 flex items-center gap-2 text-sm text-green-700">
                       <CheckCircle2 className="w-4 h-4" />
                       Interview completed
                     </div>
                   )}
+
+                  <Link
+                    href={`/account/interviews/${interview.id}`}
+                    className="mt-4 inline-flex items-center gap-1 text-sm font-medium text-blue-600 hover:underline no-underline"
+                  >
+                    View full details
+                    <ArrowRight className="w-4 h-4" />
+                  </Link>
                 </div>
               ))}
             </div>

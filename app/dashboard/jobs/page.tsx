@@ -73,13 +73,21 @@ export default async function DashboardJobsPage() {
                     <td className="p-4 text-slate-600 text-sm font-medium whitespace-nowrap">{job._count.applications}</td>
                     <td className="p-4 text-slate-500 text-sm whitespace-nowrap">{new Date(job.postedAt).toLocaleDateString()}</td>
                     <td className="p-4 whitespace-nowrap">
-                      <Link
-                        href={`/dashboard/applications?jobId=${job.id}`}
-                        className="text-blue-600 text-sm font-medium no-underline hover:underline whitespace-nowrap"
-                      >
-                        View Applicants
-                      </Link>
-                    </td>
+  <div className="flex items-center gap-3">
+    <Link
+      href={`/dashboard/applications?jobId=${job.id}`}
+      className="text-blue-600 text-sm font-medium no-underline hover:underline whitespace-nowrap"
+    >
+      Applicants
+    </Link>
+    <Link
+      href={`/dashboard/jobs/${job.id}/questions`}
+      className="text-purple-600 text-sm font-medium no-underline hover:underline whitespace-nowrap"
+    >
+      Questions
+    </Link>
+  </div>
+</td>
                   </tr>
                 ))
               )}

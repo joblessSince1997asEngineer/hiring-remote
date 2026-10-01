@@ -32,6 +32,7 @@ model Job {
   interviews  Interview[]
   assignments  Job_Assignments[]
   savedBy     SavedJob[]
+  screeningQuestions  ScreeningQuestion[]
 }
 
 model Application {
@@ -49,9 +50,17 @@ model Application {
   hireNotes       String?
   hireRequestedAt DateTime?
   source          String   @default("self_applied")
+  screeningStatus       String?   // null | 'pending' | 'submitted' | 'approved' | 'rejected'
+screeningStartedAt    DateTime?
+screeningSubmittedAt  DateTime?
+screeningReviewedAt   DateTime?
+screeningReviewedBy   String?
+screeningNotes        String?
+screeningAttempts     Int       @default(0)
 
 
   job         Job      @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  screeningResponses  ScreeningResponse[]
   invoice     Invoice?
 }
 
@@ -273,4 +282,32 @@ model SiteContent {
   key       String   @unique
   value     String
   updatedAt DateTime @updatedAt
+}
+model ScreeningQuestion {
+  id         String   @id @default(cuid())
+  jobId      String
+  question   String
+  timeLimit  Int      @default(60)
+  order      Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  job        Job                 @relation(fields: [jobId], references: [id], onDelete: Cascade)
+  responses  ScreeningResponse[]
+
+  @@index([jobId, order])
+}
+
+model ScreeningResponse {
+  id             String   @id @default(cuid())
+  applicationId  String
+  questionId     String
+  videoUrl       String
+  duration       Int
+  tabSwitches    Int      @default(0)
+  submittedAt    DateTime @default(now())
+
+  application    Application       @relation(fields: [applicationId], references: [id], onDelete: Cascade)
+  question       ScreeningQuestion @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@unique([applicationId, questionId])
 }

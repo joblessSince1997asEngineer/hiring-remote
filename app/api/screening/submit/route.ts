@@ -31,12 +31,14 @@ export async function POST(request: Request) {
     const totalQuestions = await prisma.screeningQuestion.count({
       where: { jobId: app.jobId },
     })
-    if (responses.length !== totalQuestions) {
-      return NextResponse.json(
-        { error: `Expected ${totalQuestions} responses, got ${responses.length}` },
-        { status: 400 }
-      )
-    }
+    for (const r of responses) {
+  if (!r.questionId || !r.path) {
+    return NextResponse.json(
+      { error: 'Each response must include questionId and path' },
+      { status: 400 }
+    )
+  }
+}
 
     // Save responses + update app in a transaction
     await prisma.$transaction([

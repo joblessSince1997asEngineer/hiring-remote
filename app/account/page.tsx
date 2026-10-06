@@ -145,22 +145,46 @@ export default function AccountPage() {
           ) : (
             <div className="space-y-3">
               {applications.map((app: any) => (
-                <div
-                  key={app.id}
-                  className="border border-slate-200 rounded-xl p-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3"
-                >
-                  <div className="min-w-0 flex-1">
-                    <h3 className="font-semibold text-[#0f172a] truncate">{app.job.title}</h3>
-                    <p className="text-sm text-slate-500 truncate">{app.job.company}</p>
-                    <p className="text-xs text-slate-400 mt-1">
-                      Applied {new Date(app.appliedAt).toLocaleDateString()}
-                    </p>
-                  </div>
-                  <span className={`text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap ${STATUS_STYLES[app.status] || 'bg-slate-100 text-slate-700'}`}>
-                    {STATUS_LABELS[app.status] || app.status}
-                  </span>
-                </div>
-              ))}
+  <div
+    key={app.id}
+    className="border border-slate-200 rounded-xl p-4"
+  >
+    <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+      <div className="min-w-0 flex-1">
+        <h3 className="font-semibold text-[#0f172a] truncate">{app.job.title}</h3>
+        <p className="text-sm text-slate-500 truncate">{app.job.company}</p>
+        <p className="text-xs text-slate-400 mt-1">
+          Applied {new Date(app.appliedAt).toLocaleDateString()}
+        </p>
+      </div>
+      <span className={`text-xs font-medium px-3 py-1.5 rounded-full whitespace-nowrap ${STATUS_STYLES[app.status] || 'bg-slate-100 text-slate-700'}`}>
+        {STATUS_LABELS[app.status] || app.status}
+      </span>
+    </div>
+
+    {app.screeningStatus === 'pending' && (
+      <div className="mt-3 pt-3 border-t border-slate-100 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
+        <div className="flex items-center gap-2 text-xs text-amber-700">
+          <span className="w-2 h-2 rounded-full bg-amber-500 animate-pulse" />
+          Video screening required
+        </div>
+        <Link
+          href={`/account/screening/${app.id}`}
+          className="inline-flex items-center gap-1 bg-[#0f172a] text-white px-4 py-2 rounded-full text-xs font-semibold hover:bg-slate-800 transition no-underline self-start sm:self-auto"
+        >
+          Start Screening →
+        </Link>
+      </div>
+    )}
+
+    {app.screeningStatus === 'submitted' && (
+      <div className="mt-3 pt-3 border-t border-slate-100 flex items-center gap-2 text-xs text-emerald-700">
+        <CheckCircle2 className="w-3.5 h-3.5" />
+        Screening submitted — under review
+      </div>
+    )}
+  </div>
+))}
             </div>
           )}
         </div>

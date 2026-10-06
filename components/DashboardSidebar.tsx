@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
   LayoutDashboard, Briefcase, Users, FileText, Calendar,
-  Inbox, BarChart3, Settings, LogOut, CheckSquare, MessageSquare, Send, Globe, FileEdit, Receipt, CreditCard,
+  Inbox, BarChart3, Settings, LogOut, CheckSquare, MessageSquare, Send, Globe, FileEdit, Receipt, CreditCard, Video,
 } from 'lucide-react'
 
 export default function DashboardSidebar({
@@ -30,6 +30,7 @@ export default function DashboardSidebar({
     { href: '/dashboard/applications', label: 'Applications', icon: FileText, roles: ['admin', 'recruiter'] },
     { href: '/dashboard/invoices', label: 'Invoices', icon: Receipt, roles: ['admin', 'recruiter'] },
     { href: '/dashboard/subscriptions', label: 'Subscriptions', icon: CreditCard, roles: ['admin'] },
+    { href: '/dashboard/screenings', label: 'Screenings', icon: Video, roles: ['admin'] },
     { href: '/dashboard/interviews', label: 'Interviews', icon: Calendar, roles: ['admin', 'recruiter'] },
     { href: '/dashboard/my-requests', label: 'My Requests', icon: Send, roles: ['recruiter'] },
     { href: '/dashboard/hire-approvals', label: 'Hire Approvals', icon: CheckSquare, roles: ['admin'] },

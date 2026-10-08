@@ -3,7 +3,7 @@ import { emailTemplate } from './email-template'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const FROM = process.env.EMAIL_FROM || 'Remote Hirring <onboarding@resend.dev>'
+const FROM = process.env.EMAIL_FROM || 'Remote Hirring <hr@remotehirring.com>'
 
 type InfoRow = {
   label: string

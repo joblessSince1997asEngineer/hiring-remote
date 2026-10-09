@@ -4,23 +4,34 @@ import { prisma } from '@/lib/prisma'
 import bcrypt from 'bcryptjs'
 import { signSession } from '@/lib/session'
 import { rateLimit, getClientIp } from '@/lib/rate-limit'
+
 export async function POST(request: Request) {
   try {
+    // 1. Rate limit: 3 signups per IP per hour
     const ip = getClientIp(request)
-const rl = await rateLimit(`register:${ip}`, 3, 60 * 60 * 1000) // 3 signups / hour
-if (!rl.ok) {
-  return NextResponse.json(
-    { error: `Too many signups from your network. Try again in ${Math.ceil(rl.retryAfterSeconds / 60)} min.` },
-    { status: 429 }
-  )
-}
-    const { email, password, role } = await request.json()
+    const rl = await rateLimit(`register:${ip}`, 3, 60 * 60 * 1000)
+    if (!rl.ok) {
+      return NextResponse.json(
+        { error: `Too many signups from your network. Try again in ${Math.ceil(rl.retryAfterSeconds / 60)} min.` },
+        { status: 429 }
+      )
+    }
 
-        if (!email || !password) {
+    // 2. Parse body
+    const body = await request.json()
+    const { email, password, role, website_url } = body
+
+    // 3. Honeypot — bots only. Silent success so the bot doesn't know it failed.
+    if (website_url) {
+      return NextResponse.json({ success: true })
+    }
+
+    // 4. Field validation
+    if (!email || !password) {
       return NextResponse.json({ error: 'Missing fields' }, { status: 400 })
     }
 
-    // Block free email providers for recruiter accounts
+    // 5. Block free email providers for recruiter accounts
     if (role === 'recruiter') {
       const freeDomains = [
         'gmail.com', 'yahoo.com', 'yahoo.co.uk', 'outlook.com', 'hotmail.com',
@@ -29,7 +40,7 @@ if (!rl.ok) {
         'yandex.com', 'yandex.ru', 'qq.com', '163.com', '126.com', 'rediffmail.com',
         'zoho.com', 'tutanota.com', 'fastmail.com',
       ]
-      const domain = email.split('@')[1]?.toLowerCase()
+      const domain = String(email).split('@')[1]?.toLowerCase()
       if (domain && freeDomains.includes(domain)) {
         return NextResponse.json(
           { error: 'Please use your work email. Personal email addresses (Gmail, Yahoo, etc.) are not accepted for company accounts.' },
@@ -42,11 +53,13 @@ if (!rl.ok) {
       return NextResponse.json({ error: 'Password must be at least 8 characters' }, { status: 400 })
     }
 
+    // 6. Check duplicate
     const existing = await prisma.user.findUnique({ where: { email } })
     if (existing) {
       return NextResponse.json({ error: 'Email already exists' }, { status: 400 })
     }
 
+    // 7. Create user
     const hashedPassword = await bcrypt.hash(password, 10)
 
     const user = await prisma.user.create({
@@ -64,6 +77,7 @@ if (!rl.ok) {
       },
     })
 
+    // 8. Set session cookie
     const cookieStore = await cookies()
     cookieStore.set('userId', signSession(user.id), {
       path: '/',

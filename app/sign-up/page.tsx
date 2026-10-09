@@ -1,7 +1,6 @@
 'use client'
-import { useState } from 'react'
+import { useState, useRef } from 'react'
 import { Building2, User, Eye, EyeOff } from 'lucide-react'
-import { toast } from 'sonner'
 
 // Free email providers that should be blocked for recruiters
 const FREE_EMAIL_DOMAINS = [
@@ -27,25 +26,23 @@ export default function SignUpPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showConfirmPassword, setShowConfirmPassword] = useState(false)
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState('')
+  const [error, setError] = useState('')          // ← RESTORED
+  const honeypotRef = useRef<HTMLInputElement>(null)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setError('')
 
-    // Validate: recruiter must use organizational email
     if (role === 'recruiter' && isFreeEmail(email)) {
       setError('Please use your work email (e.g., you@company.com). Personal emails like Gmail are not accepted for company accounts.')
       return
     }
 
-    // Validate: passwords match
     if (password !== confirmPassword) {
       setError('Passwords do not match.')
       return
     }
 
-    // Validate: min length
     if (password.length < 8) {
       setError('Password must be at least 8 characters.')
       return
@@ -54,10 +51,18 @@ export default function SignUpPage() {
     setLoading(true)
 
     try {
+      const honeypotValue = honeypotRef.current?.value || ''
+
       const res = await fetch('/api/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password, role }),
+        body: JSON.stringify({
+          email,
+          password,
+          role,
+          companyName,
+          website_url: honeypotValue,   // ← honeypot
+        }),
       })
 
       const data = await res.json()
@@ -103,7 +108,7 @@ export default function SignUpPage() {
               }`}
             >
               <Building2 size={24} className={role === 'recruiter' ? 'text-[#facc15]' : ''} />
-              <span className="text-sm font-medium">I'm hiring</span>
+              <span className="text-sm font-medium">I&apos;m hiring</span>
             </button>
             <button
               type="button"
@@ -115,7 +120,7 @@ export default function SignUpPage() {
               }`}
             >
               <User size={24} className={role === 'candidate' ? 'text-[#facc15]' : ''} />
-              <span className="text-sm font-medium">I'm a candidate</span>
+              <span className="text-sm font-medium">I&apos;m a candidate</span>
             </button>
           </div>
 
@@ -201,7 +206,6 @@ export default function SignUpPage() {
                   {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
-              {/* Match indicator */}
               {confirmPassword && password !== confirmPassword && (
                 <p className="text-xs text-red-500 mt-1">Passwords do not match</p>
               )}
@@ -215,6 +219,31 @@ export default function SignUpPage() {
                 {error}
               </div>
             )}
+
+            {/* Honeypot — hidden from humans, bots fill it automatically */}
+            <div
+              aria-hidden="true"
+              style={{
+                position: 'absolute',
+                left: '-9999px',
+                width: '1px',
+                height: '1px',
+                overflow: 'hidden',
+                opacity: 0,
+                pointerEvents: 'none',
+              }}
+            >
+              <label htmlFor="website_url">Website</label>
+              <input
+                ref={honeypotRef}
+                id="website_url"
+                name="website_url"
+                type="text"
+                tabIndex={-1}
+                autoComplete="off"
+                defaultValue=""
+              />
+            </div>
 
             <button
               type="submit"

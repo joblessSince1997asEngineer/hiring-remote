@@ -7,7 +7,7 @@ import { rateLimit, getClientIp } from '@/lib/rate-limit'
 export async function POST(request: Request) {
   try {
     const ip = getClientIp(request)
-const rl = rateLimit(`register:${ip}`, 3, 60 * 60 * 1000) // 3 signups / hour
+const rl = await rateLimit(`register:${ip}`, 3, 60 * 60 * 1000) // 3 signups / hour
 if (!rl.ok) {
   return NextResponse.json(
     { error: `Too many signups from your network. Try again in ${Math.ceil(rl.retryAfterSeconds / 60)} min.` },

@@ -6,7 +6,7 @@ import bcrypt from 'bcryptjs'
 export async function POST(request: Request) {
   // Rate limit: 5 attempts / 15 min (protects 6-digit code from brute-force)
   const ip = getClientIp(request)
-  const rl = rateLimit(`reset:${ip}`, 5, 15 * 60 * 1000)
+  const rl = await rateLimit(`reset:${ip}`, 5, 15 * 60 * 1000)
   if (!rl.ok) {
     return NextResponse.json(
       { error: `Too many attempts. Try again in ${Math.ceil(rl.retryAfterSeconds / 60)} min.` },

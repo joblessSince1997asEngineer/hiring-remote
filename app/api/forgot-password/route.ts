@@ -6,7 +6,7 @@ import { sendEmail } from '@/lib/email-send'
 export async function POST(request: Request) {
   // Rate limit FIRST — before any DB work
   const ip = getClientIp(request)
-  const rl = rateLimit(`forgot:${ip}`, 3, 60 * 60 * 1000) // 3 reset requests / hour
+  const rl = await rateLimit(`forgot:${ip}`, 3, 60 * 60 * 1000) // 3 reset requests / hour
   if (!rl.ok) {
     return NextResponse.json(
       { error: `Too many reset requests. Try again in ${Math.ceil(rl.retryAfterSeconds / 60)} min.` },

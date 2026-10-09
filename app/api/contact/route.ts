@@ -7,7 +7,7 @@ export async function POST(request: Request) {
   try {
     // Rate limit: 3 messages per IP per hour
     const ip = getClientIp(request)
-    const rl = rateLimit(`contact:${ip}`, 3, 60 * 60 * 1000)
+    const rl = await rateLimit(`contact:${ip}`, 3, 60 * 60 * 1000)
     if (!rl.ok) {
       return NextResponse.json(
         { error: `Too many messages. Try again in ${Math.ceil(rl.retryAfterSeconds / 60)} min.` },

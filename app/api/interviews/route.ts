@@ -23,7 +23,7 @@ export async function POST(request: Request) {
 export async function PUT(request: Request) {
   // Rate limit: 10 scheduling requests / hour per IP
   const ip = getClientIp(request)
-  const rl = rateLimit(`interviews-schedule:${ip}`, 10, 60 * 60 * 1000)
+  const rl = await rateLimit(`interviews-schedule:${ip}`, 10, 60 * 60 * 1000)
   if (!rl.ok) {
     return NextResponse.json(
       { error: `Too many requests. Try again in ${Math.ceil(rl.retryAfterSeconds / 60)} min.` },

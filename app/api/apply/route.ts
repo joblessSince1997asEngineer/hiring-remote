@@ -7,7 +7,7 @@ import { sendEmail } from '@/lib/email-send'
 export async function POST(request: Request) {
   // Rate limit: 10 applications per IP per hour
   const ip = getClientIp(request)
-  const rl = rateLimit(`apply:${ip}`, 10, 60 * 60 * 1000)
+  const rl = await rateLimit(`apply:${ip}`, 10, 60 * 60 * 1000)
   if (!rl.ok) {
     return NextResponse.json(
       { error: `Too many applications. Please try again in ${Math.ceil(rl.retryAfterSeconds / 60)} min.` },

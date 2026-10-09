@@ -311,3 +311,14 @@ model ScreeningResponse {
 
   @@unique([applicationId, questionId])
 }
+model RateLimit {
+  id        String   @id @default(cuid())
+  key       String
+  action    String
+  ip        String
+  createdAt DateTime @default(now())
+
+  @@index([key, createdAt])
+  @@index([ip, createdAt])
+  @@index([createdAt])
+}

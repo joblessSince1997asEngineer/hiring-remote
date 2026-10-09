@@ -1,3 +1,4 @@
+import { Suspense } from 'react'
 import { getJob } from '@/lib/queries'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
@@ -27,18 +28,10 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
 
                     {/* Header */}
           <div className="bg-[#0f172a] p-6 rounded-xl mb-6">
-            <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-4">
-              <div>
-                <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">{job.title}</h1>
-                <p className="text-slate-300">{job.company} • {job.location}</p>
-              </div>
-              <a
-                href="#apply-section"
-                className="bg-[#facc15] text-slate-900 px-6 py-2.5 rounded-full font-semibold text-sm hover:bg-yellow-300 transition-colors whitespace-nowrap self-start"
-              >
-                Apply Now
-              </a>
-            </div>
+            <div className="mb-4">
+  <h1 className="text-2xl md:text-3xl font-bold text-white mb-2">{job.title}</h1>
+  <p className="text-slate-300">{job.company} • {job.location}</p>
+</div>
             {/* Meta pills */}
             <div className="flex flex-wrap gap-2">
               {job.remoteType && (
@@ -137,7 +130,9 @@ export default async function JobDetailPage({ params }: { params: Promise<{ id: 
           )}
 
                               {/* Apply section — hidden form by default */}
-          <ApplySection jobId={job.id} />
+<Suspense fallback={<div className="h-24" />}>
+  <ApplySection jobId={job.id} />
+</Suspense>
         </div>
       </div>
     </div>

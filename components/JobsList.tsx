@@ -174,39 +174,45 @@ export default function JobsList({ initialJobs }: { initialJobs: any[] }) {
             {/* Job Cards */}
             {currentJobs.length > 0 ? (
                             currentJobs.map((job) => (
-                <Link
-                  key={job.id}
-                  href={`/jobs/${job.id}`}
-                  className="block bg-white border border-slate-200 rounded-2xl p-6 mb-4 hover:border-[#facc15] hover:shadow-md transition-all no-underline"
-                >
-                  <div className="flex flex-col md:flex-row justify-between items-start gap-4">
-                    <div className="flex flex-col md:flex-row gap-4 flex-1">
-                      <div className="w-12 h-12 bg-slate-200 rounded-xl shrink-0"></div>
-                      <div className="w-full">
-                        <div className="flex flex-col md:flex-row items-start md:items-center gap-2 mb-2">
-                          <h4 className="text-lg font-semibold text-[#0f172a]">{job.title}</h4>
-                        </div>
-                        <p className="text-slate-500 text-sm mb-3">{job.company} • {job.location}</p>
-                        <p className="text-slate-600 text-sm mb-3 line-clamp-2">{job.description}</p>
-                        <div className="flex flex-wrap gap-2">
-                          <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs">🌐 {job.location}</span>
-                          <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs">💼 {job.type}</span>
-                          {job.salaryMin && job.salaryMax && (
-                            <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs">
-                              💰 {job.currency || '$'}{job.salaryMin.toLocaleString()} - {job.currency || '$'}{job.salaryMax.toLocaleString()}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex gap-2 items-center md:flex-col md:items-end">
-                      <SaveJobButton jobId={job.id} />
-                                            <span className="bg-white border border-slate-200 text-[#0f172a] px-5 py-2 rounded-full text-sm font-medium">
-                        Apply Now
-                      </span>
-                    </div>
-                  </div>
-                </Link>
+                <div
+  key={job.id}
+  className="bg-white border border-slate-200 rounded-2xl p-6 mb-4 hover:border-[#facc15] hover:shadow-md transition-all"
+>
+  <div className="flex flex-col md:flex-row justify-between items-start gap-4">
+    <Link
+      href={`/jobs/${job.id}`}
+      className="flex flex-col md:flex-row gap-4 flex-1 no-underline"
+    >
+      <div className="w-12 h-12 bg-slate-200 rounded-xl shrink-0"></div>
+      <div className="w-full">
+        <div className="flex flex-col md:flex-row items-start md:items-center gap-2 mb-2">
+          <h4 className="text-lg font-semibold text-[#0f172a]">{job.title}</h4>
+        </div>
+        <p className="text-slate-500 text-sm mb-3">{job.company} • {job.location}</p>
+        <p className="text-slate-600 text-sm mb-3 line-clamp-2">{job.description}</p>
+        <div className="flex flex-wrap gap-2">
+          <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs">🌐 {job.location}</span>
+          <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs">💼 {job.type}</span>
+          {job.salaryMin && job.salaryMax && (
+            <span className="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs">
+              💰 {job.currency || '$'}{job.salaryMin.toLocaleString()} - {job.currency || '$'}{job.salaryMax.toLocaleString()}
+            </span>
+          )}
+        </div>
+      </div>
+    </Link>
+
+    <div className="flex gap-2 items-center md:flex-col md:items-end">
+      <SaveJobButton jobId={job.id} />
+      <Link
+        href={`/jobs/${job.id}?apply=1#apply-section`}
+        className="bg-white border border-slate-200 text-[#0f172a] px-5 py-2 rounded-full text-sm font-medium no-underline hover:border-[#facc15] hover:bg-amber-50 transition-colors"
+      >
+        Apply Now
+      </Link>
+    </div>
+  </div>
+</div>
               ))
             ) : (
               <div className="bg-white border border-slate-200 rounded-2xl p-10 text-center">

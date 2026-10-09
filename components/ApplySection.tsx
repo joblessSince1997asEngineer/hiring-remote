@@ -1,15 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'next/navigation'
 import { ArrowRight, X } from 'lucide-react'
 import LongApplicationForm from '@/components/LongApplicationForm'
 
 export default function ApplySection({ jobId }: { jobId: string }) {
+  const searchParams = useSearchParams()
   const [showForm, setShowForm] = useState(false)
 
+  useEffect(() => {
+    if (searchParams.get('apply') === '1') {
+      setShowForm(true)
+    }
+  }, [searchParams])
+
   return (
-    <div className="border-t border-slate-200 pt-8 mt-8">
-            {!showForm ? (
+    <div id="apply-section" className="border-t border-slate-200 pt-8 mt-8">
+      {!showForm ? (
         <div className="text-center">
           <button
             onClick={() => setShowForm(true)}

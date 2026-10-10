@@ -4,6 +4,7 @@ import { useState, useMemo, useEffect } from 'react'
 import Link from 'next/link'
 import { Search, MapPin } from 'lucide-react'
 import SaveJobButton from '@/components/SaveJobButton'
+import { getCompanyInitials, getCompanyColor } from '@/lib/company-avatar'
 export default function JobsList({ initialJobs }: { initialJobs: any[] }) {
   // Core Filtering State
   const [searchTerm, setSearchTerm] = useState('')
@@ -183,7 +184,18 @@ export default function JobsList({ initialJobs }: { initialJobs: any[] }) {
       href={`/jobs/${job.id}`}
       className="flex flex-col md:flex-row gap-4 flex-1 no-underline"
     >
-      <div className="w-12 h-12 bg-slate-200 rounded-xl shrink-0"></div>
+      {(() => {
+  const initials = getCompanyInitials(job.company || '')
+  const { bg, fg } = getCompanyColor(job.company || '')
+  return (
+    <div
+      className="w-12 h-12 rounded-xl shrink-0 flex items-center justify-center font-bold text-sm"
+      style={{ backgroundColor: bg, color: fg }}
+    >
+      {initials}
+    </div>
+  )
+})()}
       <div className="w-full">
         <div className="flex flex-col md:flex-row items-start md:items-center gap-2 mb-2">
           <h4 className="text-lg font-semibold text-[#0f172a]">{job.title}</h4>

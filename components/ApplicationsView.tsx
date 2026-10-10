@@ -5,7 +5,7 @@ import { useState } from 'react'
 import ViewCVButton from '@/components/ViewCVButton'
 import HireRequestModal from '@/components/HireRequestModal'
 import InviteToScreeningButton from '@/components/InviteToScreeningButton'
-import { CheckCircle, XCircle, Calendar, X, Lock, User } from 'lucide-react'
+import { CheckCircle, XCircle, Calendar, X, Lock, User, ArrowLeft } from 'lucide-react'
 
 export default function ApplicationsView({
   applications,
@@ -24,6 +24,7 @@ export default function ApplicationsView({
   const [actionLoading, setActionLoading] = useState<string | null>(null)
   const [interviewPrompt, setInterviewPrompt] = useState<any>(null)
   const [wantToAttend, setWantToAttend] = useState(true)
+  const [mobileDetailView, setMobileDetailView] = useState(false)
   const [hirePrompt, setHirePrompt] = useState<any>(null)
 
   const isAdmin = role === 'admin' || role === 'super_admin'
@@ -248,7 +249,7 @@ export default function ApplicationsView({
       <div className="grid grid-cols-1 lg:grid-cols-[380px_1fr] gap-6">
 
         {/* Left Pane: Application List */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden max-h-[80vh] overflow-y-auto">
+        <div className={`bg-white rounded-2xl border border-slate-200 shadow-sm overflow-hidden max-h-[80vh] overflow-y-auto ${mobileDetailView ? 'hidden lg:block' : 'block'}`}>
           {applications.length === 0 ? (
             <p className="p-8 text-center text-slate-400 text-sm">No applications yet.</p>
           ) : (
@@ -256,38 +257,53 @@ export default function ApplicationsView({
               const isActive = selectedApp?.id === app.id
               return (
                 <button
-                  key={app.id}
-                  onClick={() => setSelectedApp(app)}
-                  className={`w-full text-left p-4 border-b border-slate-100 transition-colors
-                    ${isActive ? 'bg-slate-50 border-l-4 border-l-blue-600' : 'hover:bg-slate-50 border-l-4 border-l-transparent'}`}
-                >
-                  <div className="flex justify-between items-start mb-1">
-                                        <p className="font-semibold text-[#0f172a] text-sm">
-                      {getCandidateName(app.userId)}
-                    </p>
-                    <span className={`text-xs font-medium px-2 py-0.5 rounded-full capitalize ${
-                      app.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                      app.status === 'shortlisted' ? 'bg-blue-100 text-blue-700' :
-                      app.status === 'hire_pending' ? 'bg-purple-100 text-purple-700' :
-                      app.status === 'hired' ? 'bg-green-100 text-green-700' :
-                      'bg-red-100 text-red-700'
-                    }`}>
-                      {app.status === 'hire_pending' ? 'Hire Pending' : app.status}
-                    </span>
-                  </div>
-                  <p className="text-xs text-slate-500 truncate">{app.job.title}</p>
-                  <p className="text-xs text-slate-400 mt-1">
-                    {new Date(app.appliedAt).toLocaleDateString()}
-                  </p>
-                </button>
+  key={app.id}
+  onClick={() => {
+    setSelectedApp(app)
+    if (typeof window !== 'undefined' && window.innerWidth < 1024) {
+      setMobileDetailView(true)
+    }
+  }}
+  className={`w-full text-left p-4 border-b border-slate-100 transition-colors
+    ${isActive ? 'bg-slate-50 border-l-4 border-l-blue-600' : 'hover:bg-slate-50 border-l-4 border-l-transparent'}`}
+>
+  <div className="flex justify-between items-start mb-1">
+    <p className="font-semibold text-[#0f172a] text-sm">
+      {getCandidateName(app.userId)}
+    </p>
+    <span className={`text-xs font-medium px-2 py-0.5 rounded-full capitalize ${
+      app.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+      app.status === 'shortlisted' ? 'bg-blue-100 text-blue-700' :
+      app.status === 'hire_pending' ? 'bg-purple-100 text-purple-700' :
+      app.status === 'hired' ? 'bg-green-100 text-green-700' :
+      'bg-red-100 text-red-700'
+    }`}>
+      {app.status === 'hire_pending' ? 'Hire Pending' : app.status}
+    </span>
+  </div>
+  <p className="text-xs text-slate-500 truncate">{app.job.title}</p>
+  <p className="text-xs text-slate-400 mt-1">
+    {new Date(app.appliedAt).toLocaleDateString()}
+  </p>
+</button>
               )
             })
           )}
         </div>
 
         {/* Right Pane: Application Details */}
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 max-h-[80vh] overflow-y-auto">
-          {selectedApp ? (
+        <div className={`bg-white rounded-2xl border border-slate-200 shadow-sm p-6 max-h-[80vh] overflow-y-auto ${mobileDetailView ? 'block' : 'hidden lg:block'}`}>
+
+  {mobileDetailView && (
+    <button
+      onClick={() => setMobileDetailView(false)}
+      className="lg:hidden mb-4 inline-flex items-center gap-1 text-sm font-medium text-slate-600 hover:text-slate-900"
+    >
+      <ArrowLeft className="w-4 h-4" /> Back to list
+    </button>
+  )}
+
+  {selectedApp ? (
             <>
               <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6 pb-6 border-b border-slate-200">
                 <div>

@@ -26,9 +26,9 @@ export default function ConditionalChrome({ children }: { children: React.ReactN
 </span>
         </Link>
 
-        <div className="hidden md:flex gap-8 items-center">
-          <NavLinks />
-        </div>
+        <div className="hidden lg:flex gap-5 xl:gap-7 items-center">
+  <NavLinks />
+</div>
 
         <div className="flex items-center gap-2 md:gap-4 shrink-0">
           <AuthButtons />

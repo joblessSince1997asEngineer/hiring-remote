@@ -6,7 +6,7 @@ export default function MobileNavbar() {
   const [isOpen, setIsOpen] = useState(false)
 
   return (
-    <div className="md:hidden relative z-50">
+    <div className="lg:hidden relative z-50">
       {/* Hamburger Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}

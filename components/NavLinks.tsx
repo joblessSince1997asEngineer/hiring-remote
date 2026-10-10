@@ -24,7 +24,7 @@ export default function NavLinks() {
           <Link
             key={link.href}
             href={link.href}
-            className={`no-underline text-sm transition-all border-b-[3px] pb-1 ${
+            className={`no-underline text-sm transition-all border-b-[3px] pb-1 whitespace-nowrap ${
               isActive
                 ? 'text-[#0f172a] font-semibold border-transparent'
                 : 'text-slate-600 font-medium hover:text-[#0f172a] hover:font-semibold border-transparent hover:border-[#0f172a]'

@@ -1,6 +1,13 @@
 export const dynamic = 'force-dynamic'
 import { FileText, Search, ShieldCheck, Briefcase } from 'lucide-react'
 import { getContent } from '@/lib/get-content'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Our Process — Four Steps to Hiring',
+  description:
+    'How we hire: requirements gathering, global sourcing, rigorous vetting, and seamless onboarding.',
+}
 
 export default async function ProcessPage() {
   const content = await getContent()

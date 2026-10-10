@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react'
 import { Loader2 } from 'lucide-react'
 
+
 export default function AboutPage() {
   const [content, setContent] = useState<Record<string, string>>({})
   const [loading, setLoading] = useState(true)

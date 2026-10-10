@@ -1,9 +1,40 @@
+import type { Metadata } from 'next'
 import { Suspense } from 'react'
 import { getJob } from '@/lib/queries'
 import { notFound } from 'next/navigation'
 import Link from 'next/link'
 import { ArrowLeft, MapPin, Briefcase, DollarSign, Clock, Calendar } from 'lucide-react'
 import ApplySection from '@/components/ApplySection'
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string }>
+}): Promise<Metadata> {
+  const { id } = await params
+  const job = await getJob(id)
+
+  if (!job) {
+    return { title: 'Job Not Found' }
+  }
+
+  const salary =
+    job.salaryMin && job.salaryMax
+      ? ` · $${job.salaryMin.toLocaleString()}–$${job.salaryMax.toLocaleString()}`
+      : ''
+
+  return {
+    title: `${job.title} at ${job.company}`,
+    description: `${job.company} is hiring a ${job.title} (${job.location}, ${job.type})${salary}. Apply through Remote Hirring.`,
+    openGraph: {
+      title: `${job.title} at ${job.company}`,
+      description: `Remote ${job.type} role · ${job.location}${salary}`,
+      type: 'website',
+    },
+    alternates: {
+      canonical: `/jobs/${job.id}`,
+    },
+  }
+}
 
 export default async function JobDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params

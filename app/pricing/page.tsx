@@ -2,6 +2,13 @@ export const dynamic = 'force-dynamic'
 import Link from 'next/link'
 import { Check } from 'lucide-react'
 import { getContent } from '@/lib/get-content'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Pricing — Transparent Recruitment Fees',
+  description:
+    'Flexible pricing: one-time placement fees, flat fee per hire, or annual subscription with up to 50% off per hire. No hidden costs.',
+}
 
 export default async function PricingPage() {
   const content = await getContent()

@@ -4,6 +4,7 @@ import { toast } from 'sonner'
 import { useState, useEffect } from 'react'
 import { Mail, MapPin } from 'lucide-react'
 
+
 export default function ContactPage() {
   const [loading, setLoading] = useState(false)
   const [success, setSuccess] = useState(false)

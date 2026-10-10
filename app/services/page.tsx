@@ -2,6 +2,13 @@ export const dynamic = 'force-dynamic'
 import { Search, ShieldCheck, Calendar } from 'lucide-react'
 import ServicesView from '@/components/ServicesView'
 import { getContent } from '@/lib/get-content'
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Services — Sourcing, Screening, Coordination',
+  description:
+    'End-to-end remote recruitment: talent sourcing, multi-stage vetting, interview coordination. Only the top 1% make it through.',
+}
 
 export default async function ServicesPage() {
   const content = await getContent()

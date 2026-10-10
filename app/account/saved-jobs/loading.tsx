@@ -1,0 +1,29 @@
+export default function Loading() {
+  return (
+    <div className="p-6 md:p-10">
+      {/* Header */}
+      <div className="space-y-2 mb-6">
+        <div className="animate-pulse bg-slate-200 h-7 w-44 rounded" />
+        <div className="animate-pulse bg-slate-100 h-4 w-60 rounded" />
+      </div>
+
+      {/* Saved job cards */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {[...Array(6)].map((_, i) => (
+          <div key={i} className="p-5 bg-white border border-slate-200 rounded-xl space-y-3">
+            <div className="animate-pulse bg-slate-200 h-5 w-3/4 rounded" />
+            <div className="animate-pulse bg-slate-100 h-4 w-1/2 rounded" />
+            <div className="flex gap-2 pt-2">
+              <div className="animate-pulse bg-slate-100 h-5 w-16 rounded-full" />
+              <div className="animate-pulse bg-slate-100 h-5 w-20 rounded-full" />
+            </div>
+            <div className="flex items-center justify-between pt-3 border-t border-slate-100">
+              <div className="animate-pulse bg-slate-200 h-4 w-20 rounded" />
+              <div className="animate-pulse bg-slate-200 h-8 w-24 rounded-lg" />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}

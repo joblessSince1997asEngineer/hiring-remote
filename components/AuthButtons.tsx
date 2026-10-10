@@ -76,12 +76,12 @@ export default function AuthButtons() {
             {(role === 'admin' || role === 'recruiter') && (
               <>
                 <Link
-                  href="/dashboard/applications"
-                  onClick={() => setIsOpen(false)}
-                  className="block p-2.5 text-slate-700 text-sm font-medium rounded-md hover:bg-slate-50 no-underline"
-                >
-                  Dashboard
-                </Link>
+  href="/dashboard"
+  onClick={() => setIsOpen(false)}
+  className="block p-2.5 text-slate-700 text-sm font-medium rounded-md hover:bg-slate-50 no-underline"
+>
+  Dashboard
+</Link>
                 <div className="border-t border-slate-200 my-1"></div>
               </>
             )}

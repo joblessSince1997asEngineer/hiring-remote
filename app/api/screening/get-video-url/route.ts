@@ -1,17 +1,14 @@
 import { NextResponse } from 'next/server'
 import { getUserId } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
-import { createClient } from '@supabase/supabase-js'
+import dns from 'dns'
+
+// Force IPv4 — fixes Windows Node fetch timeout to Cloudflare/Supabase Storage
+dns.setDefaultResultOrder('ipv4first')
 
 if (process.env.NODE_ENV !== 'production') {
   process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0'
 }
-
-const supabaseAdmin = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL || '',
-  process.env.SUPABASE_SERVICE_ROLE_KEY || '',
-  { auth: { persistSession: false } }
-)
 
 export async function POST(request: Request) {
   const userId = await getUserId()
@@ -30,15 +27,44 @@ export async function POST(request: Request) {
     })
     if (!response) return NextResponse.json({ error: 'Response not found' }, { status: 404 })
 
-    const { data, error } = await supabaseAdmin.storage
-      .from('screening-videos')
-      .createSignedUrl(response.videoUrl, 3600) // 1 hour
+    const url = process.env.NEXT_PUBLIC_SUPABASE_URL
+    const key = process.env.SUPABASE_SERVICE_ROLE_KEY
+    if (!url || !key) {
+      return NextResponse.json({ error: 'Supabase credentials missing' }, { status: 500 })
+    }
 
-    if (error) throw error
+    // Call Supabase Storage REST API directly — no SDK, no undici
+    const apiUrl = `${url}/storage/v1/object/sign/screening-videos/${response.videoUrl}`
+    console.log('[get-video-url] calling', apiUrl)
 
-    return NextResponse.json({ url: data.signedUrl })
+    const res = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${key}`,
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ expiresIn: 3600 }),
+    })
+
+    if (!res.ok) {
+      const errText = await res.text()
+      console.error('[get-video-url] storage error', res.status, errText)
+      return NextResponse.json(
+        { error: `Storage error (${res.status}): ${errText}` },
+        { status: 500 }
+      )
+    }
+
+    const data = await res.json()
+    const signedUrl = `${url}/storage/v1${data.signedURL}`
+    console.log('[get-video-url] SUCCESS')
+
+    return NextResponse.json({ url: signedUrl })
   } catch (err: any) {
-    console.error('get-video-url error:', err)
-    return NextResponse.json({ error: err.message || 'Server error' }, { status: 500 })
+    console.error('[get-video-url] caught error:', err?.message)
+    return NextResponse.json(
+      { error: err?.message || 'Server error' },
+      { status: 500 }
+    )
   }
 }

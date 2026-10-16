@@ -106,15 +106,15 @@ And this is just the beginning of our journey.`,
   'pricing.card3.ctaNote': 'Online subscription coming soon',
 }
 
-export const CONTENT_LABELS: Record<string, { label: string; type: 'text' | 'textarea' }> = {
+export const CONTENT_LABELS: Record<string, { label: string; type: 'text' | 'textarea' | 'image' }> = {
   'about.title': { label: 'Page Title', type: 'text' },
   'about.subtitle': { label: 'Page Subtitle', type: 'textarea' },
   'about.section1Title': { label: 'Section 1 — Title', type: 'text' },
   'about.section1Body': { label: 'Section 1 — Body Text', type: 'textarea' },
-  'about.section1Image': { label: 'Section 1 — Image URL', type: 'text' },
+  'about.section1Image': { label: 'Section 1 — Image', type: 'image' },
   'about.section2Title': { label: 'Section 2 — Title', type: 'text' },
   'about.section2Body': { label: 'Section 2 — Body Text', type: 'textarea' },
-  'about.section2Image': { label: 'Section 2 — Image URL', type: 'text' },
+  'about.section2Image': { label: 'Section 2 — Image', type: 'image' },
 
   'home.hero.badge': { label: 'Hero Badge', type: 'text' },
   'home.hero.title': { label: 'Hero Title (White)', type: 'text' },

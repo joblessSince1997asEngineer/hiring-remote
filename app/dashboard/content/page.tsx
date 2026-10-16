@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react'
 import { toast } from 'sonner'
 import { Loader2, Save, RotateCcw } from 'lucide-react'
 import { CONTENT_DEFAULTS, CONTENT_LABELS, CONTENT_SECTIONS } from '@/lib/content-defaults'
+import ImageUploadField from '@/components/ImageUploadField'
 
 export default function ContentEditorPage() {
   const [values, setValues] = useState<Record<string, string>>({})
@@ -150,21 +151,26 @@ export default function ContentEditorPage() {
                       )}
                     </div>
 
-                    {meta.type === 'textarea' ? (
-                      <textarea
-                        value={value}
-                        onChange={(e) => handleChange(key, e.target.value)}
-                        rows={key === 'about.story' ? 14 : 4}
-                        className={inputClass + ' resize-none'}
-                      />
-                    ) : (
-                      <input
-                        type="text"
-                        value={value}
-                        onChange={(e) => handleChange(key, e.target.value)}
-                        className={inputClass}
-                      />
-                    )}
+                    {meta.type === 'image' ? (
+  <ImageUploadField
+    value={value}
+    onChange={(url) => handleChange(key, url)}
+  />
+) : meta.type === 'textarea' ? (
+  <textarea
+    value={value}
+    onChange={(e) => handleChange(key, e.target.value)}
+    rows={key === 'about.story' ? 14 : 4}
+    className={inputClass + ' resize-none'}
+  />
+) : (
+  <input
+    type="text"
+    value={value}
+    onChange={(e) => handleChange(key, e.target.value)}
+    className={inputClass}
+  />
+)}
                   </div>
                 )
               })}

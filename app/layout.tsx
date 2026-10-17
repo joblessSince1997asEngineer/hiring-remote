@@ -79,6 +79,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
         </ConditionalChrome>
         <Toaster position="top-right" richColors closeButton />
+        <Analytics />
       </body>
     </html>
   )

@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import './globals.css'
 import ConditionalChrome from '@/components/ConditionalChrome'
+import { Analytics } from '@vercel/analytics/next';
 import { Toaster } from 'sonner'
 
 const SITE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://hiring-remote.vercel.app'
